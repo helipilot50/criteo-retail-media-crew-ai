@@ -1,0 +1,7 @@
+list_my_accounts_task:
+  description: >
+    List all the Retail Media accounts accessible to the account manager.
+
+  expected_output: >
+    A formatted list of accounts accessible to the account manager, including all relevant details.
+
