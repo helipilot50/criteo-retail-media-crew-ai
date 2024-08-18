@@ -4,6 +4,10 @@ from langchain_openai import ChatOpenAI
 from textwrap import dedent
 from crew import RetailMediaCrew
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # This is the main function that will run the crew.
 if __name__ == "__main__":
