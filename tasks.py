@@ -28,12 +28,40 @@ class RetailMediaTasks:
         return Task(
             description=dedent(
                 f"""
-            Find all the Retail Media Accounts I can access and output them.
-                                       
-            {self.__tip_section()}
+                    Find all the Retail Media Accounts I can access and output them.
+                                            
+                    {self.__tip_section()}
 
-            Make sure to format the output as a table
-        """
+                    Make sure to format the output as a table
+                """
+            ),
+            agent=agent,
+        )
+    
+    def show_my_brands(self, agent):
+        return Task(
+            description=dedent(
+                f"""
+                    Find all the Retail Media Brands I can access and output them.
+                                                
+                    {self.__tip_section()}
+
+                    Make sure to format the output as a table
+                """
+            ),
+            agent=agent,
+        )
+    
+    def show_my_brands(self, agent):
+        return Task(
+            description=dedent(
+                f"""
+                    Find all the Retail Media Retailers I can access and output them.
+                                                
+                    {self.__tip_section()}
+
+                    Make sure to format the output as a table
+                """
             ),
             agent=agent,
         )
