@@ -5,18 +5,13 @@ list_my_accounts_task:
   expected_output: >
     A formatted list of accounts accessible to the account manager, including all relevant details.
 
-list_my_brands_task:
+list_brands_for_an_account_task:
   description: >
-    List all the Retail Media brands accessible to the account manager.
+    List all the Retail Media brands accessible for an account.
+    Use the {accountId} to get the account details.
 
   expected_output: >
-    A formatted list of brands accessible to the account manager, including all relevant details.
+    A formatted list of brands accessible to an account, including all relevant details.
 
-list_my_retailers_task:
-  description: >
-    List all the Retail Media retailer accessible to the account manager.
-
-  expected_output: >
-    A formatted list of retailers accessible to the account manager, including all relevant details.
 
 
