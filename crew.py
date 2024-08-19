@@ -2,6 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from tools.accounts import AccountsTool, BrandsTool, RetailersTool
 from tools.auth import AuthTool
+from tools.search import SearchTools
 
 auth = AuthTool()
 auth_response = auth._run()
@@ -17,9 +18,22 @@ class RetailMediaCrew():
     def account_manager(self) -> Agent:
         return Agent(
             config=self.agents_config['account-manager'],
-						tools=[AccountsTool(token=token)],
+						tools=[AccountsTool(token=token), RetailersTool(token=token), BrandsTool(token=token)],
             allow_delegation=False,
 						verbose=True
+        )
+    @agent
+    def company_researcher(self) -> Agent:
+        return Agent(
+            config=self.agents_config['company_researcher'],
+            tools=[
+              SearchTools.search_internet,
+              SearchTools.search_linkedin,
+              SearchTools.search_instagram,
+              SearchTools.open_page,
+            ],
+            allow_delegation=False,
+            verbose=True
         )
     
     @task
@@ -29,18 +43,19 @@ class RetailMediaCrew():
             agent=self.account_manager()
         )
     
-    # @task
-    # def my_retailers(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config['list_my_retailers_task'],
-    #         agent=self.account_manager()
-    #     )
+    
+    @task
+    def account_retailers(self) -> Task:
+        return Task(
+            config=self.tasks_config['list_retailers_for_an_account_task'],
+            agent=self.account_manager(),
+        )
     
     # @task
-    # def my_brands(self) -> Task:
+    # def account_brands(self) -> Task:
     #     return Task(
-    #         config=self.tasks_config['list_my_brands_task'],
-    #         agent=self.account_manager()
+    #         config=self.tasks_config['list_brands_for_an_account_task'],
+    #         agent=self.account_manager(),
     #     )
     
     @crew

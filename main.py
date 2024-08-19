@@ -12,7 +12,7 @@ load_dotenv()
 # This is the main function that will run the crew.
 if __name__ == "__main__":
     print("## Welcome to Retail Media Crew AI")
-    
+   
 
     result = RetailMediaCrew().crew().kickoff()
     print("\n\n############################################")

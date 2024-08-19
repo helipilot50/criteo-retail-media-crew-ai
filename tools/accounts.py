@@ -1,4 +1,5 @@
 from crewai_tools import BaseTool
+
 import requests
 import os
 
@@ -25,10 +26,11 @@ class AccountsTool(BaseTool):
 class BrandsTool(BaseTool):
     name: str = "Retail Media Brands API Caller"
     description: str = "Calls the Retail Media REST API and returns the Brands accessable to the account manager."
-    base_url:str = base_url_env
     token:str
+    base_url:str = base_url_env
     
-    def _run(self, accountId):
+    
+    def _run(self, accountId:str):
         headers =  {
             'Authorization': 'Bearer ' + self.token
         } 
@@ -42,9 +44,10 @@ class RetailersTool(BaseTool):
     token:str
     base_url:str = base_url_env
     
-    def _run(self, accountId):
+    def _run(self, accountId:str):
         headers =  {
             'Authorization': 'Bearer ' + self.token
         }    
         response = requests.request('GET', f"{self.base_url}accounts/{accountId}/retailers", headers=headers)
         return response.json()
+    
