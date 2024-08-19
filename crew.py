@@ -1,6 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from tools.accounts import AccountsTool
+from tools.accounts import AccountsTool, BrandsTool, RetailersTool
 from tools.auth import AuthTool
 
 auth = AuthTool()
@@ -28,6 +28,20 @@ class RetailMediaCrew():
             config=self.tasks_config['list_my_accounts_task'],
             agent=self.account_manager()
         )
+    
+    # @task
+    # def my_retailers(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config['list_my_retailers_task'],
+    #         agent=self.account_manager()
+    #     )
+    
+    # @task
+    # def my_brands(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config['list_my_brands_task'],
+    #         agent=self.account_manager()
+    #     )
     
     @crew
     def crew(self) -> Crew:
