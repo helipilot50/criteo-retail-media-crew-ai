@@ -8,10 +8,18 @@ list_my_accounts_task:
 list_brands_for_an_account_task:
   description: >
     List all the Retail Media brands accessible for an account.
-    Use the {accountId} to get the account details.
+    Use the {accountId} to get the brands details.
 
   expected_output: >
     A formatted list of brands accessible to an account, including all relevant details.
+
+list_retailers_for_an_account_task:
+  description: >
+    List all the Retail Media retailers accessible for an account.
+    Use the {accountId} to get the retailers details.
+
+  expected_output: >
+    A formatted list of retailers accessible to an account, including all relevant details.
 
 
 
