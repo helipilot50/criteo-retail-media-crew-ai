@@ -77,6 +77,7 @@ account_retailers = Task(
     expected_output = 'A formatted list of retailers accessible to an account, including all relevant details.',
     agent=account_manager,
     tools=[RetailersTool(token=token)],
+    context=[my_accounts]
 )
     
 account_brands = Task(
@@ -84,11 +85,12 @@ account_brands = Task(
     expected_output = 'A formatted list of brands accessible to an account, including all relevant details.',
     agent=account_manager,
     tools=[BrandsTool(token=token)],
+    context=[my_accounts]
 )
     
 crew =  Crew(
-            agents=[account_manager, company_researcher],
-            tasks=[my_accounts, account_retailers, account_brands],
-            process=Process.sequential,
-            verbose=True,
-        )
+    agents=[account_manager, company_researcher],
+    tasks=[my_accounts, account_retailers, account_brands],
+    process=Process.sequential,
+    verbose=True,
+)
