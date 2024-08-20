@@ -20,10 +20,15 @@ account_manager = Agent(
     cache=True,
     verbose=True,
     max_retry_limit=2,
+    # tools=[
+    #     AccountsTool(token=token),
+    #     RetailersTool(token=token),
+    #     BrandsTool(token=token)],
+    max_iter = 2
 )
 writer = Agent(
     role='Content Writer',
-    goal='Craft engaging blog posts about the AI industry',
+    goal='Craft beautiful makrdown documents for the Retail Media accounts, retailers and brands.',
     backstory='A skilled writer with a passion for technology.',
     verbose=True
 )
@@ -77,40 +82,57 @@ accounts =  Task(
     expected_output =  'A formatted list of accounts accessible to the account manager, including all relevant details.',
     agent=account_manager,
     tools=[AccountsTool(token=token)],
-)
     
+)
     
 account_retailers = Task(
     description = 'List all the Retail Media retailers accessible for an account. Use the {accountId} to get the retailers .',
     expected_output = 'A formatted list of retailers accessible to an account, including all relevant details.',
     agent=account_manager,
-    asynch=True,
     tools=[RetailersTool(token=token)],
     context=[accounts]
 )
-    
+
 account_brands = Task(
     description = 'List all the Retail Media brands accessible for an account. Use the {accountId} to get the brands.',
     expected_output = 'A formatted list of brands accessible to an account, including all relevant details.',
     agent=account_manager,
-    asynch=True,
     tools=[BrandsTool(token=token)],
     context=[accounts]
 )
 
-write = Task(
-    description='Write the {brands} and {retailers}  as tables in markdown format',
-    expected_output='Markdown format with a table for brands and a table for retailers',
+# writers
+write_accounts = Task(
+    description='Write the {accounts} as a table in markdown format with the title "Accounts"',
+    expected_output='Markdown with a table for accounts',
     agent=writer,
-    context=[account_brands, account_retailers],
+    context=[accounts],
     tools=[DirectoryReadTool(directory='./output'), FileReadTool()],
-    output_file='output/chapter-1.md'  
+    output_file='output/chapter-1-accounts.md'  
+)
+
+write_retailers = Task(
+    description='Write the {retailers}  as a table in markdown format with the title "Retailers"',
+    expected_output='Markdown table for retailers',
+    agent=writer,
+    context=[account_retailers],
+    tools=[DirectoryReadTool(directory='./output'), FileReadTool()],
+    output_file='output/chapter-1-retailers.md'  
+)
+
+write_brands = Task(
+    description='Write the {brands} as a table in markdown format with the title "Brands"',
+    expected_output='Markdown document with a table for brands',
+    agent=writer,
+    context=[account_brands],
+    tools=[DirectoryReadTool(directory='./output'), FileReadTool()],
+    output_file='output/chapter-1-brands.md'  
 )
 
     
 crew =  Crew(
-    agents=[account_manager],
-    tasks=[accounts, account_retailers, account_brands, write],
+    agents=[account_manager, writer],
+    tasks=[accounts,  account_retailers, account_brands, write_retailers, write_brands, write_accounts],
     process=Process.sequential,
     verbose=True,
 )
