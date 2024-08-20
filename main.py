@@ -16,6 +16,5 @@ if __name__ == "__main__":
 
     result = crew_1.kickoff()
     print("\n\n############################################")
-    print("## Here is you Retail Media crew run result:")
+    print("## Retail Media crew rcompleted")
     print("############################################\n")
-    print(result)
