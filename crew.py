@@ -72,7 +72,7 @@ analyst = Agent(
         verbose=True,
 )
     
-my_accounts =  Task(
+accounts =  Task(
     description = 'List all the Retail Media accounts accessible to the account manager.',
     expected_output =  'A formatted list of accounts accessible to the account manager, including all relevant details.',
     agent=account_manager,
@@ -86,7 +86,7 @@ account_retailers = Task(
     agent=account_manager,
     asynch=True,
     tools=[RetailersTool(token=token)],
-    context=[my_accounts]
+    context=[accounts]
 )
     
 account_brands = Task(
@@ -95,7 +95,7 @@ account_brands = Task(
     agent=account_manager,
     asynch=True,
     tools=[BrandsTool(token=token)],
-    context=[my_accounts]
+    context=[accounts]
 )
 
 write = Task(
@@ -110,7 +110,7 @@ write = Task(
     
 crew =  Crew(
     agents=[account_manager],
-    tasks=[my_accounts, account_retailers, account_brands, write],
+    tasks=[accounts, account_retailers, account_brands, write],
     process=Process.sequential,
     verbose=True,
 )
