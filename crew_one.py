@@ -20,6 +20,8 @@ account_manager = Agent(
     cache=True,
     verbose=True,
     max_retry_limit=2,
+    tools=[AccountsTool(token=token)],
+    max_iter = 2
 )
 writer = Agent(
     role='Content Writer',
@@ -76,7 +78,7 @@ accounts =  Task(
     description = 'List all the Retail Media accounts accessible to the account manager.',
     expected_output =  'A formatted list of accounts accessible to the account manager, including all relevant details.',
     agent=account_manager,
-    tools=[AccountsTool(token=token)],
+    
 )
     
     
