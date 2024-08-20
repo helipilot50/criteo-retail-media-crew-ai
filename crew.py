@@ -1,8 +1,12 @@
 from crewai import Agent, Crew, Process, Task
-# from crewai.project import CrewBase, agent, crew, task
 from tools.accounts import AccountsTool, BrandsTool, RetailersTool
 from tools.auth import AuthTool
 from tools.search import SearchTools
+
+from crewai_tools import (
+    DirectoryReadTool,
+    FileReadTool,
+)
 
 auth = AuthTool()
 auth_response = auth._run()
@@ -17,10 +21,15 @@ account_manager = Agent(
     verbose=True,
     max_retry_limit=2,
 )
+writer = Agent(
+    role='Content Writer',
+    goal='Craft engaging blog posts about the AI industry',
+    backstory='A skilled writer with a passion for technology.',
+    verbose=True
+)
 
 
-
-company_researcher = Agent(
+researcher = Agent(
     role = 'Company Researcher',
     goal = 'Analyze company {company_name} industry trends, competitor activities, and popular hashtags on Linkedin. And perform research on the latest trends, hashtags, and competitor activities using your Search tools.',
     backstory = 'Armed with a keen eye for digital trends and a deep understanding of the Linkedin landscape, you excel at uncovering actionable insights from social media data. Your analytical skills are unmatched, providing a solid foundation for strategic decisions in content creation. You are great at identifying the latest trends and the best hashtags for a given campaign.',
@@ -35,7 +44,7 @@ company_researcher = Agent(
     verbose=True,
 )
 
-campaign_analyst = Agent(
+analyst = Agent(
             
     role='Campaign Performance Analyst',
     goal="""
@@ -58,13 +67,12 @@ campaign_analyst = Agent(
         You are fluent in English
         """,
 
-        tools=[],
         allow_delegation=False,
         cache=True,
         verbose=True,
 )
     
-my_accounts =  Task(
+accounts =  Task(
     description = 'List all the Retail Media accounts accessible to the account manager.',
     expected_output =  'A formatted list of accounts accessible to the account manager, including all relevant details.',
     agent=account_manager,
@@ -76,21 +84,33 @@ account_retailers = Task(
     description = 'List all the Retail Media retailers accessible for an account. Use the {accountId} to get the retailers .',
     expected_output = 'A formatted list of retailers accessible to an account, including all relevant details.',
     agent=account_manager,
+    asynch=True,
     tools=[RetailersTool(token=token)],
-    context=[my_accounts]
+    context=[accounts]
 )
     
 account_brands = Task(
     description = 'List all the Retail Media brands accessible for an account. Use the {accountId} to get the brands.',
     expected_output = 'A formatted list of brands accessible to an account, including all relevant details.',
     agent=account_manager,
+    asynch=True,
     tools=[BrandsTool(token=token)],
-    context=[my_accounts]
+    context=[accounts]
 )
+
+write = Task(
+    description='Write the {brands} and {retailers}  as tables in markdown format',
+    expected_output='Markdown format with a table for brands and a table for retailers',
+    agent=writer,
+    context=[account_brands, account_retailers],
+    tools=[DirectoryReadTool(directory='./output'), FileReadTool()],
+    output_file='output/chapter-1.md'  
+)
+
     
 crew =  Crew(
-    agents=[account_manager, company_researcher],
-    tasks=[my_accounts, account_retailers, account_brands],
+    agents=[account_manager],
+    tasks=[accounts, account_retailers, account_brands, write],
     process=Process.sequential,
     verbose=True,
 )
