@@ -18,9 +18,9 @@ class PreferredLineitems(BaseTool):
         response = requests.request('GET', f"{self.base_url}campaigns/{campaignId}/preferred-line-items", headers=headers)
         return response.json()
     
-class OffsiteLineitems(BaseTool):
-    name: str = "Retail Media Offsite Lineitems t API Caller"
-    description: str = "Calls the Retail Media  REST API and returns the offsite Lineitems for a campaignr"
+class AuctionLineitems(BaseTool):
+    name: str = "Retail Media Auction Lineitems t API Caller"
+    description: str = "Calls the Retail Media  REST API and returns the auction Lineitems for a campaignr"
     base_url:str = base_url_env
     token:str
     
@@ -32,8 +32,8 @@ class OffsiteLineitems(BaseTool):
         return response.json()
     
 class AccountLineitems(BaseTool):
-    name: str = "Retail Media Offsite Lineitems t API Caller"
-    description: str = "Calls the Retail Media  REST API and returns the offsite Lineitems for a campaignr"
+    name: str = "Retail Media Account Lineitems API Caller"
+    description: str = "Calls the Retail Media  REST API and returns the account Lineitems"
     base_url:str = base_url_env
     token:str
     

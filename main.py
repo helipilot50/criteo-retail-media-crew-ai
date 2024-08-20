@@ -2,7 +2,8 @@ import os
 from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
 from textwrap import dedent
-from crew_one import crew
+# from crew_one import crew as crew1
+from crew_two import crew
 
 from dotenv import load_dotenv
 
