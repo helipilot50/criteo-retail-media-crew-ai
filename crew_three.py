@@ -1,5 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from tools.accounts import AccountsTool
+from tools.analytics import DownloadReportTool
 from tools.auth import AuthTool
 from tools.campaigns import CampaignsList
 from tools.lineitems import AuctionLineitems, PreferredLineitems
@@ -85,18 +86,6 @@ campaigns = Task(
     context=[accounts],
 )
 
-write_campaigns = Task(
-    description="""
-    write the {campaigns} as a table in markdown format with the title 'Campaigns', 
-    """,
-    expected_output="1 table in Markdown format",
-    agent=writer,
-    asynch=True,
-    context=[campaigns],
-    tools=[DirectoryReadTool(directory="./output"), FileReadTool()],
-    output_file="output/chapter-2-campaigns.md",
-)
-
 
 auction_lineitems = Task(
     description="Choose a random campaign. List all the Retail Media auction lineitems accessible for the chosen campaign. Use the {campaignId} of each campaign to get the lineitems.",
@@ -121,16 +110,19 @@ preferred_lineitems = Task(
 )
 
 
-write_lineitems = Task(
+download_report = Task(
     description="""
-    If there are preferred lineitems write the preffered {PreferredLineitems} as a table in markdown format with the title 'Preferred Lineitems' else write 'No Preferred Lineitems', 
-    if there are auction lineitems write the auction {Auctionlineitems} as a table in markdown format with the title 'Auction Lineitems' else write 'No Auction Lineitems',
+    Download and save a report for {reportId} in the output directory.
     """,
     expected_output="3 tables in Markdown format",
     agent=writer,
     context=[preferred_lineitems, auction_lineitems],
-    tools=[DirectoryReadTool(directory="./output"), FileReadTool()],
-    output_file="output/chapter-2-lineitems.md",
+    tools=[
+        DownloadReportTool(token=token),
+        DirectoryReadTool(directory="./output"),
+        FileReadTool(),
+    ],
+    output_file="output/chapter-3-lineitems-report.md",
 )
 
 
