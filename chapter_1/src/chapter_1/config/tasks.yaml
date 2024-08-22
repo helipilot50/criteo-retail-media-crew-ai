@@ -1,0 +1,26 @@
+accounts:
+  description: >
+    Retrieve a list of accounts available to this user.
+  expected_output: >
+    A list of accounts available to this user formatted as a table in Markdown.
+  agent: account_manager
+
+brands:
+  description: >
+    Iterate through the {accounts list}, and for each {account} retrieve the Retail Media brands. Use the {account id} to get the brands.
+  expected_output: >
+    A list of brands for the account formatted as a table in Markdown.
+  agent: account_manager
+  context:
+    - accounts
+
+retailers:
+  description: >
+    Iterate through the {accounts list}, and for each {account} retrieve the Retail Media retailser. Use the {account id} to get the retailers.
+  expected_output: >
+    A list of retailers for the account formatted as a table in Markdown.
+  agent: account_manager
+  context:
+    - accounts
+
+
