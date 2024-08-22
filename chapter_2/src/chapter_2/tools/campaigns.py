@@ -5,7 +5,7 @@ import os
 
 base_url_env = os.environ['RETAIL_MEDIA_API_URL']
 
-class CampaignsList(BaseTool):
+class CampaignsTool(BaseTool):
     name: str = "Retail Media Campaigns API Caller"
     description: str = "Calls the Retail Media  REST API and returns the Campaigns accessable to the account manager"
     base_url:str = base_url_env

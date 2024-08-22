@@ -5,7 +5,7 @@ import os
 
 base_url_env = os.environ['RETAIL_MEDIA_API_URL']
 
-class PreferredLineitems(BaseTool):
+class PreferredLineitemsTool(BaseTool):
     name: str = "Retail Media preferred Lineitems  API Caller"
     description: str = "Calls the Retail Media  REST API and returns the preferred Lineitems for a campaign"
     base_url:str = base_url_env
@@ -18,7 +18,7 @@ class PreferredLineitems(BaseTool):
         response = requests.request('GET', f"{self.base_url}campaigns/{campaignId}/preferred-line-items", headers=headers)
         return response.json()
     
-class AuctionLineitems(BaseTool):
+class AuctionLineitemsTool(BaseTool):
     name: str = "Retail Media Auction Lineitems t API Caller"
     description: str = "Calls the Retail Media  REST API and returns the auction Lineitems for a campaignr"
     base_url:str = base_url_env
@@ -31,7 +31,7 @@ class AuctionLineitems(BaseTool):
         response = requests.request('GET', f"{self.base_url}campaigns/{campaignId}/auction-line-items", headers=headers)
         return response.json()
     
-class AccountLineitems(BaseTool):
+class AccountLineitemsTool(BaseTool):
     name: str = "Retail Media Account Lineitems API Caller"
     description: str = "Calls the Retail Media  REST API and returns the account Lineitems"
     base_url:str = base_url_env
