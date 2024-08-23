@@ -9,7 +9,7 @@ campaigns:
 
 create_impressions_report:
   description: >
-    From the list of campaign ids, choose one campaign at random then create an impression report by using the chosen campaign id and date range of {startDate} and {endDate} to create the report.
+    From the list of campaign ids, choose the second id. Use this id with the date range of {startDate} and {endDate} to create an impression report.
   expected_output: >
     A report creation object in JSON.
   agent: campaign_reporter
