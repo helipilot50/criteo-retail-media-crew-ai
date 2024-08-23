@@ -1,8 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from chapter_3.src.chapter_3.tools.analytics import CampaignAnalyticsTool, DownloadReportTool, ReportStatusTool
+from chapter_3.tools.analytics import CampaignAnalyticsTool, DownloadReportTool, ReportStatusTool
 from chapter_3.tools.auth import AuthTool
-from chapter_3.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 from chapter_3.tools.campaigns import CampaignsTool
 
 auth = AuthTool()
@@ -11,7 +10,7 @@ token = auth_response['access_token']
 
 @CrewBase
 class Chapter3Crew():
-	"""Chapter3 crew"""
+	"""Chapter 3 crew"""
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 
@@ -34,30 +33,24 @@ class Chapter3Crew():
 			
 		)
 	
-	@agent
-	def researcher(self) -> Agent:
-		return Agent(
-			config=self.agents_config['researcher'],
-			verbose=True
-		)
+	# @agent
+	# def researcher(self) -> Agent:
+	# 	return Agent(
+	# 		config=self.agents_config['researcher'],
+	# 		verbose=True
+	# 	)
 
-	@agent
-	def campaign_reporter(self) -> Agent:
-		return Agent(
-			config=self.agents_config['campaign_reporter'],
-			verbose=True
-		)
-	@agent
-	def reporting_analyst(self) -> Agent:
-		return Agent(
-			config=self.agents_config['reporting_analyst'],
-			verbose=True
-		)
+	# @agent
+	# def reporting_analyst(self) -> Agent:
+	# 	return Agent(
+	# 		config=self.agents_config['reporting_analyst'],
+	# 		verbose=True
+	# 	)
 
 	@task
-	def create_impressions_report(self) -> Task:
+	def campaigns(self) -> Task:
 		return Task(
-			config=self.tasks_config['create_impressions_report'],
+			config=self.tasks_config['campaigns'],
 			cache=True,
 		)
 
@@ -66,6 +59,13 @@ class Chapter3Crew():
 		return Task(
 			config=self.tasks_config['check_report_status'],
 		)
+	
+	@task
+	def create_impressions_report(self) -> Task:
+		return Task(
+			config=self.tasks_config['create_impressions_report'],
+		)
+	
 	@task
 	def download_report(self) -> Task:
 		return Task(
