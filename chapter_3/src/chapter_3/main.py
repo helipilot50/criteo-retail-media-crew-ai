@@ -8,7 +8,9 @@ def run():
     Run the crew.
     """
     inputs = {
-        'account id': '26'
+        'accountId': '26',
+        'startDate': '2023-01-01',
+        'endDate': '2023-01-31'
     }
     Chapter3Crew().crew().kickoff(inputs=inputs)
 
