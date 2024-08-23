@@ -9,7 +9,7 @@ campaigns:
 
 create_impressions_report:
   description: >
-    From the list of campaign ids, choose the second id. Use this id with the date range of {startDate} and {endDate} to create an impression report.
+     Use the list of campaign ids, with the date range of {startDate} and {endDate}, to create an impression report.
   expected_output: >
     A report creation object in JSON.
   agent: campaign_reporter
@@ -17,22 +17,22 @@ create_impressions_report:
     - campaigns
 
 
-# check_report_status:
-#   description: >
-#     Check the status of the report using report.id.
-#   expected_output: >
-#     The status of the report.
-#   agent: campaign_reporter
-#   context:
-#     - create_impressions_report
+check_report_status:
+  description: >
+    Check the status of the report using id.
+  expected_output: >
+    The status of the report.
+  agent: campaign_reporter
+  context:
+    - create_impressions_report
  
 
-# download_report:
-#   description: >
-#     Download the report  using report.id.
-#   expected_output: >
-#     The report as JSON.
-#   agent: campaign_reporter
-#   context:
-#     - check_report_status
+download_report:
+  description: >
+    Download the report using id.
+  expected_output: >
+    The report as JSON.
+  agent: campaign_reporter
+  context:
+    - check_report_status
   

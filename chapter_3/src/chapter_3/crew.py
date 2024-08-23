@@ -21,7 +21,8 @@ class Chapter3Crew():
 			config=self.agents_config['campaign_manager'],
 			tools=[CampaignsTool(token=token)],
 			verbose=True,
-			cache=True
+			cache=True,
+			memory=True
 		)
 	
 	@agent
@@ -30,7 +31,9 @@ class Chapter3Crew():
 			config=self.agents_config['campaign_reporter'],
 			tools=[CampaignAnalyticsTool(token=token), ReportStatusTool(token=token), DownloadReportTool(token=token)],
 			verbose=True,
-			
+			max_iter=2,
+			max_rpm=5,
+			memory=True
 		)
 	
 	# @agent
@@ -61,21 +64,22 @@ class Chapter3Crew():
 			config=self.tasks_config['create_impressions_report'],
 			output_file='output/create_report_.json',
 		)
+	iter
 	
-	# @task
-	# def check_report_status(self) -> Task:
-	# 	return Task(
-	# 		config=self.tasks_config['check_report_status'],
-	# 		output_file='output/report_status.json',
-	# 	)
+	@task
+	def check_report_status(self) -> Task:
+		return Task(
+			config=self.tasks_config['check_report_status'],
+			output_file='output/report_status.json',
+		)
 	
-	# @task
-	# def download_report(self) -> Task:
-	# 	return Task(
-	# 		config=self.tasks_config['download_report'],
-	# 		cache=True,
-	# 		output_file='output/campaign_report.json',
-	# 	)
+	@task
+	def download_report(self) -> Task:
+		return Task(
+			config=self.tasks_config['download_report'],
+			cache=True,
+			output_file='output/campaign_report.json',
+		)
 
 	@crew
 	def crew(self) -> Crew:

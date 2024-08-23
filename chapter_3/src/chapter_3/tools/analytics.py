@@ -29,14 +29,14 @@ class CampaignAnalyticsTool(BaseTool):
     base_url: str = base_url_env
     token: str
 
-    def _run(self, campaignId: str, startDate: str, endDate: str):
+    def _run(self, campaignIds: List[str], startDate: str, endDate: str):
         headers = {
             "Authorization": "Bearer " + self.token,
             "Content-Type": "application/json",}
         data = {
                 "type": "RetailMediaReportRequest",
                 "attributes": {
-                    "id": campaignId,
+                    "id": campaignIds,
                     "metrics": ["impressions"],
                     "dimensions": ["date"],
                     "reportType": "summary",
