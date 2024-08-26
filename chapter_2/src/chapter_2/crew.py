@@ -1,5 +1,8 @@
+from chapter_2.tools.calculator_tools import CalculatorTool
+from chapter_2.tools.charts import BarChartTool, PieChartTool
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+from langchain_openai import ChatOpenAI
 from chapter_2.tools.auth import AuthTool
 from chapter_2.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 from chapter_2.tools.campaigns import CampaignsTool
@@ -32,6 +35,16 @@ class Chapter2Crew():
 			verbose=True,
 			cache=True
 		)
+	
+	@agent
+	def analyst(self) -> Agent:
+		return Agent(
+			config=self.agents_config['analyst'],
+			tools=[BarChartTool(),  CalculatorTool()],
+			verbose=True,
+			cache=True
+		)
+	
 	@task
 	def accounts(self) -> Task:
 		return Task(
@@ -58,6 +71,12 @@ class Chapter2Crew():
 			output_file='output/preferred_lineitems.md',
 		)
 
+	@task
+	def timeseries_lineitems(self) -> Task:
+		return Task(
+			config=self.tasks_config['timeseries_lineitems'],
+			output_file='output/timeseries_lineitems.md',
+		)
 
 	@crew
 	def crew(self) -> Crew:
@@ -68,5 +87,7 @@ class Chapter2Crew():
 			process=Process.sequential,
 			verbose=True,
 			planning=True,
-			outout_file='output/chapter_2.md'
+			planning_llm=ChatOpenAI(model="gpt-4o-mini"),
+			output_log_file='output/chapter_2.log',
+			output_file='output/chapter_2.md'
 		)

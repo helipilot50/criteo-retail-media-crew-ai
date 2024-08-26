@@ -31,3 +31,33 @@ preferred_lineitems:
   agent: campaign_manager
   context:
     - campaigns
+
+analytics:
+  description: >
+    For each campaign, analyze the preferred and auction lineitems.
+    1. Produce a bar chart showing the timeline and spend for each lineitem.
+    2. Sum the the number of auction and preferrred lineitems for all campaigns and output as a table. 
+   
+  expected_output: >
+    A bar chart where the timeline is the categories and  the values are spend for each lineitem.
+    A table showing the campaign name, campaign id and the count of preferred and auction lineitems.
+  agent: analyst
+  context:
+    - preferred_lineitems
+    - auction_lineitems
+    - campaigns
+
+timeseries_lineitems:
+  description: >
+    For each campaign, analyze the preferred and auction lineitems.
+    1. Produce a line chart showing the timeline and spend for each lineitem.
+    2. Sum the the number of auction and preferrred lineitems for all campaigns and output as a table. 
+   
+  expected_output: >
+    A line chart where the lineitem startDate is the categories and the values are spend for each lineitem. The tile is the campaign name. The file_name is the campaign name.  
+    A table showing the campaign name, campaign id and the count of preferred and auction lineitems.
+  agent: analyst
+  context:
+    - preferred_lineitems
+    - auction_lineitems
+    - campaigns

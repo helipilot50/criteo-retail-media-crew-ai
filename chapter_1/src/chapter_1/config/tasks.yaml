@@ -23,4 +23,15 @@ retailers:
   context:
     - accounts
 
-
+analytics:
+  description: >
+    Analyze the brands and retailers for each account. 
+    Sum the the number of auction and preferrred retailers. 
+    Count the number of brands and retailers.
+  expected_output: >
+    A list of analytics for each account formatted as a table in Markdown.
+  agent: account_manager
+  context:
+    - accounts
+    - brands
+    - retailers

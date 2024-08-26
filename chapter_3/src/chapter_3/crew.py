@@ -1,5 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+from langchain_openai import ChatOpenAI
 from chapter_3.tools.analytics import CampaignAnalyticsTool, DownloadReportTool, ReportStatusTool
 from chapter_3.tools.auth import AuthTool
 from chapter_3.tools.campaigns import CampaignsTool
@@ -85,10 +86,12 @@ class Chapter3Crew():
 	def crew(self) -> Crew:
 		"""Creates the Chapter 3 crew"""
 		return Crew(
-			agents=self.agents, # Automatically created by the @agent decorator
-			tasks=self.tasks, # Automatically created by the @task decorator
+			agents=self.agents, 
+			tasks=self.tasks,
 			process=Process.sequential,
 			verbose=True,
 			planning=True,
+			planning_llm=ChatOpenAI(model="gpt-4o-mini"),
+			output_log_file='output/chapter_3.log',
 			output_file='output/chapter_3.md'
 		)

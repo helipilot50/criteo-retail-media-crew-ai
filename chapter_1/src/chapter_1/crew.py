@@ -1,5 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+from langchain_openai import ChatOpenAI
 from chapter_1.tools.auth import AuthTool
 from chapter_1.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 
@@ -42,6 +43,13 @@ class Chapter1Crew():
 			config=self.tasks_config['retailers'],
 			output_file='output/retailers.md',
 		)
+	
+	@task
+	def analytics(self) -> Task:
+		return Task(
+			config=self.tasks_config['analytics'],
+			output_file='output/analytics.md',
+		)
 
 	@crew
 	def crew(self) -> Crew:
@@ -51,4 +59,8 @@ class Chapter1Crew():
 			tasks=self.tasks, # Automatically created by the @task decorator
 			process=Process.sequential,
 			verbose=True,
+			planning=True,
+			planning_llm=ChatOpenAI(model="gpt-4o-mini"),
+			output_log_file='output/chapter_1.log',
+			output_file='output/chapter_1.md'
 		)
