@@ -19,7 +19,7 @@ def test_bar_chart_tool():
                     title='Test Bar Chart', 
                     file_name=file_name)
     assert os.path.exists(file_name)
-    chart.show()
+    assert chart is not None
 
 def test_pie_chart_tool():
     file_name = 'output/test_pie_chart.png'
@@ -28,5 +28,5 @@ def test_pie_chart_tool():
     bar = PieChartTool()
     chart = bar._run(['A', 'B', 'C'], [1, 2, 3], 'Test Pie Chart', file_name)
     assert os.path.exists(file_name)
-    chart.show()
+    assert chart is not None
 
