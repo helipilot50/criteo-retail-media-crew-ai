@@ -21,4 +21,6 @@ def test_campaigns():
     assert campaigns_api_result is not None
     assert campaigns_api_result['data'] is not None
     assert len(campaigns_api_result['data']) > 0
+    campaign_list = campaigns_api_result['data']
+    # print("campaigns", campaign_list)
    
