@@ -1,6 +1,13 @@
 # Chapter1 Crew
 
-Welcome to the Chapter1 Crew project, powered by [crewAI](https://crewai.com). This template is designed to help you set up a multi-agent AI system with ease, leveraging the powerful and flexible framework provided by crewAI. Our goal is to enable your agents to collaborate effectively on complex tasks, maximizing their collective intelligence and capabilities.
+Welcome to the Chapter 1 of the Criteo Retail Media API, powered by [crewAI](https://crewai.com). This is a simple example showing how to:
+- Obtain an Accress token using client credentials
+- Call the **Accounts** API to get a list of Accounts
+- Call the **Brands** API to get a list of Brands
+- Call the **Retailers** API to get a list of Retailer
+- Perform super simple analytics
+
+
 
 ## Installation
 

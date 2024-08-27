@@ -2,17 +2,15 @@
 import sys
 from chapter_3.crew import Chapter3Crew
 
-# This main file is intended to be a way for your to run your
-# crew locally, so refrain from adding necessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
 
 def run():
     """
     Run the crew.
     """
     inputs = {
-        'account id': '26'
+        'accountId': '26',
+        'startDate': '2023-01-01',
+        'endDate': '2023-01-31'
     }
     Chapter3Crew().crew().kickoff(inputs=inputs)
 

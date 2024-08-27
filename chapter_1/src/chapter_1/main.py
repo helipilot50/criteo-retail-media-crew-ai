@@ -20,11 +20,8 @@ def train():
     """
     Train the crew for a given number of iterations.
     """
-    inputs = {
-        "topic": "AI LLMs"
-    }
     try:
-        Chapter1Crew().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
+        Chapter1Crew().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2])
 
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")

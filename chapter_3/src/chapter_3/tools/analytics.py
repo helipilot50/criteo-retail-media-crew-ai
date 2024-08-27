@@ -1,3 +1,4 @@
+from typing import List
 from crewai_tools import BaseTool
 
 import requests
@@ -23,18 +24,19 @@ base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 class CampaignAnalyticsTool(BaseTool):
     name: str = "Retail Media campaign analytics API Caller"
     description: str = (
-        "Calls the Retail Media  REST API and returns the analytic for the requested campaigns"
+        "Calls the Retail Media  REST API and returns a report for the requested campaign id and date range"
     )
     base_url: str = base_url_env
     token: str
 
-    def _run(self, campaignId: str, startDate: str, endDate: str):
-        headers = {"Authorization": "Bearer " + self.token}
-        body = {
-            "data": {
+    def _run(self, campaignIds: List[str], startDate: str, endDate: str):
+        headers = {
+            "Authorization": "Bearer " + self.token,
+            "Content-Type": "application/json",}
+        data = {
                 "type": "RetailMediaReportRequest",
                 "attributes": {
-                    "id": campaignId,
+                    "id": campaignIds,
                     "metrics": ["impressions"],
                     "dimensions": ["date"],
                     "reportType": "summary",
@@ -45,12 +47,11 @@ class CampaignAnalyticsTool(BaseTool):
                     "salesChannel": "offline",
                 },
             }
-        }
         response = requests.request(
             "POST",
             f"{self.base_url}reports/campaigns",
             headers=headers,
-            body=body,
+            data=data,
         )
         response.raise_for_status()
         return response.json()
@@ -64,13 +65,12 @@ class LineitemAnalyticsTool(BaseTool):
     base_url: str = base_url_env
     token: str
 
-    def _run(self, lineitemId: str, startDate: str, endDate: str):
+    def _run(self, lineitemIds: List[str], startDate: str, endDate: str):
         headers = {"Authorization": "Bearer " + self.token}
-        body = {
-            "data": {
+        data= {
                 "type": "RetailMediaReportRequest",
                 "attributes": {
-                    "id": lineitemId,
+                    "id": lineitemIds,
                     "metrics": ["impressions"],
                     "dimensions": ["date"],
                     "reportType": "summary",
@@ -81,12 +81,11 @@ class LineitemAnalyticsTool(BaseTool):
                     "salesChannel": "offline",
                 },
             }
-        }
         response = requests.request(
             "POST",
             f"{self.base_url}reports/line-items",
             headers=headers,
-            body=body,
+            body=data,
         )
         response.raise_for_status()
         return response.json()
@@ -95,7 +94,7 @@ class LineitemAnalyticsTool(BaseTool):
 class ReportStatusTool(BaseTool):
     name: str = "Retail Media report status API Caller"
     description: str = (
-        "Calls the Retail Media  REST API and returns the status for the requested report"
+        "Calls the Retail Media  REST API and returns the status for the report using reportId"
     )
     base_url: str = base_url_env
     token: str
@@ -114,7 +113,7 @@ class ReportStatusTool(BaseTool):
 
 class DownloadReportTool(BaseTool):
     name: str = "Retail Media report download API Caller"
-    description: str = "Calls the Retail Media  REST API to donload a report"
+    description: str = "Calls the Retail Media  REST API to download a report using reportId"
     base_url: str = base_url_env
     token: str
 
