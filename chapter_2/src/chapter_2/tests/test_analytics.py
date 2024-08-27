@@ -1,4 +1,6 @@
 import os
+from functools import reduce
+from collections import defaultdict
 
 from chapter_2.tools.accounts import AccountsTool
 from chapter_2.tools.campaigns import CampaignsTool
@@ -7,12 +9,28 @@ from chapter_2.tests.utils import (
     attrubtes_only,
     budget,
     date,
-    date_budget,
     fetchToken,
     money,
-    start_date,
+    short_date,
 )
 from chapter_2.tools.charts import BarChartTool
+
+
+def reduce_lineitems(lineitems):
+    #  reduce values to year-month
+
+    # Function to reduce the list
+    def reducer(acc, item):
+        date = short_date(item["startDate"])
+        money = budget(item)
+        acc[date] += money
+        # print("acc", acc)
+        return acc
+
+    # Using reduce to accumulate budgets by date
+    result = reduce(reducer, lineitems, defaultdict(float))
+
+    return result
 
 
 def test_analytics_bar_chart():
@@ -45,7 +63,6 @@ def test_analytics_bar_chart():
     auction_lineitems = []
     for target_campaign in campaign_list:
         campaign_id = target_campaign["id"]
-        # print("id", campaign_id)
 
         # preferred
         preferred_api_result = preferred._run(campaignId=campaign_id)
@@ -60,17 +77,13 @@ def test_analytics_bar_chart():
             if "data" in auction_api_result and len(auction_api_result["data"]) > 0:
                 lineitems = auction_api_result["data"]
                 auction_lineitems.extend(map(attrubtes_only, lineitems))
-    ordered_auction_lineitems = sorted(
-        auction_lineitems, key=lambda lineitem: lineitem["startDate"]
-    )
-    ordered_preferred_lineitems = sorted(
-        preferred_lineitems, key=lambda lineitem: lineitem["startDate"]
-    )
 
-    auction_values = list(map(date_budget, ordered_auction_lineitems))
-    print("auction values", auction_values)
-    preferred_values = list(map(date_budget, ordered_preferred_lineitems))
-    print("preferred values", preferred_values)
+    reduced_auction = reduce_lineitems(auction_lineitems)
+    print("reduced_auction:\n", reduced_auction)
+
+    auction_values = [
+        {"date": date, "budget": budget} for date, budget in reduced_auction.items()
+    ]
 
     output_directory = "output"
     file_name = output_directory + "/test_lineitem_bar_chart.png"
@@ -82,18 +95,26 @@ def test_analytics_bar_chart():
         os.remove(file_name)
 
     dates = list(map(date, auction_values))
-    print("dates", dates)
-    auction_budgets = list(map(money, auction_values))
-    print("auction budgets", auction_budgets)
+    print("dates", dates, len(dates))
+    budgets = list(map(money, auction_values))
+    print("budgets", budgets, len(budgets))
+
+    # preferred_budgets = []
 
     bar = BarChartTool()
     chart = bar._run(
-        categories=[dates],
-        values=[auction_budgets],
-        x_label="Dates",
+        categories=dates,
+        values=[
+            budgets,
+            # preferred_budgets,
+        ],
+        x_label="Date",
         y_label="Budget",
-        labels=["Auction"],
-        title="Lineitem Budgets",
+        labels=[
+            "Auction",
+            # "Preferred"
+        ],
+        title="Test Bar Chart",
         file_name=file_name,
     )
     assert os.path.exists(file_name)

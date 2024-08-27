@@ -36,3 +36,7 @@ def date(li):
 
 def money(li):
     return li["budget"]
+
+
+def short_date(date: str):
+    return date[:7]
