@@ -111,7 +111,7 @@ class ReportStatusTool(BaseTool):
         return response.json()
 
 
-class DownloadReportTool(BaseTool):
+class ReportDownloadTool(BaseTool):
     name: str = "Retail Media report download API Caller"
     description: str = "Calls the Retail Media  REST API to download a report using reportId"
     base_url: str = base_url_env
