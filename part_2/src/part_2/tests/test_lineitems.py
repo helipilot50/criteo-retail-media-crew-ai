@@ -33,7 +33,6 @@ def test_lineitems():
     all_lineitems = []
     for target_campaign in campaign_list:
         campaign_id = target_campaign["id"]
-        # print("id", campaign_id)
 
         # preferred
         preferred_api_result = preferred._run(campaignId=campaign_id)

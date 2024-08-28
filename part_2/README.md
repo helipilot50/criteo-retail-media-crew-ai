@@ -4,7 +4,7 @@ Welcome to the Part2 Crew project, powered by [crewAI](https://crewai.com). This
 
 ## Installation
 
-Ensure you have Python >=3.10 <=3.13 installed on your system. This project uses [Poetry](https://python-poetry.org/) for dependency management and package handling, offering a seamless setup and execution experience.
+Ensure you have Python >=3.12 <=3.13 installed on your system. This project uses [Poetry](https://python-poetry.org/) for dependency management and package handling, offering a seamless setup and execution experience.
 
 First, if you haven't already, install Poetry:
 
@@ -44,7 +44,7 @@ $ crewai run
 or
 
 ```bash
-poetry run part_2
+poetry run
 ```
 
 This command initializes the part_2 Crew, assembling the agents and assigning them tasks as defined in your configuration.
