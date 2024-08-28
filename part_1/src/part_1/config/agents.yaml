@@ -7,4 +7,8 @@ account_manager:
     You're an expert in managing accounts and retrieving information about accounts, retailers, and brands. 
     You're known for your ability to provide accurate and up-to-date information to help your team make informed decisions.
     You use the Retail Media REST API efficently.
+  memory: True
+  max_iter: 5
+  verbose: True
+  cache: True
 

@@ -25,14 +25,13 @@ class Part1Crew:
                 RetailersTool(token=token),
                 BrandsTool(token=token),
             ],
-            verbose=True,
-            cache=True,
         )
 
     @task
     def accounts(self) -> Task:
         return Task(
-            config=self.tasks_config["accounts"], output_file="output/accounts.md"
+            config=self.tasks_config["accounts"], 
+            output_file="output/accounts.md"
         )
 
     @task
@@ -67,5 +66,4 @@ class Part1Crew:
             planning=True,
             planning_llm=ChatOpenAI(model="gpt-4o-mini"),
             output_log_file="output/part_1.log",
-            # output_file="output/part_1.md",
         )
