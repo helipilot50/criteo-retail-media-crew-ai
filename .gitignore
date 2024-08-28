@@ -1,12 +1,12 @@
 # output
 
-output/**/*.log
-output/**/*.md
-output/**/*.json
-output/**/*.pkl
-output/**/*.png
-output/**/*.jpg
-output/**/*.jpeg
+**/output/**/*.log
+**/output/**/*.md
+**/output/**/*.json
+**/output/**/*.pkl
+**/output/**/*.png
+**/output/**/*.jpg
+**/output/**/*.jpeg
 
 
 # Byte-compiled / optimized / DLL files
