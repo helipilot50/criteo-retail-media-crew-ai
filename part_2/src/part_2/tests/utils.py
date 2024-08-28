@@ -34,6 +34,14 @@ def date(li):
     return li["date"]
 
 
+def auction(li):
+    return li["auction"]
+
+
+def preferred(li):
+    return li["preferred"]
+
+
 def money(li):
     return li["budget"]
 

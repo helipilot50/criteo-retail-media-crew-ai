@@ -7,10 +7,12 @@ from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
 from part_2.tests.utils import (
     attrubtes_only,
+    auction,
     budget,
     date,
     fetchToken,
     money,
+    preferred,
     short_date,
 )
 from part_2.tools.charts import BarChartTool
@@ -51,8 +53,8 @@ def test_analytics_bar_chart():
     # tools
     accounts = AccountsTool(token=token)
     campaigns = CampaignsTool(token=token)
-    auction = AuctionLineitemsTool(token=token)
-    preferred = PreferredLineitemsTool(token=token)
+    auction_li = AuctionLineitemsTool(token=token)
+    preferred_li = PreferredLineitemsTool(token=token)
 
     # accounts
     accounts_api_result = accounts._run()
@@ -76,24 +78,29 @@ def test_analytics_bar_chart():
         campaign_id = target_campaign["id"]
 
         # preferred
-        preferred_api_result = preferred._run(campaignId=campaign_id)
+        preferred_api_result = preferred_li._run(campaignId=campaign_id)
         if preferred_api_result is not None:
             if "data" in preferred_api_result and len(preferred_api_result["data"]) > 0:
                 lineitems = auction_api_result["data"]
                 preferred_lineitems.extend(map(attrubtes_only, lineitems))
 
         # auction
-        auction_api_result = auction._run(campaignId=campaign_id)
+        auction_api_result = auction_li._run(campaignId=campaign_id)
         if auction_api_result is not None:
             if "data" in auction_api_result and len(auction_api_result["data"]) > 0:
                 lineitems = auction_api_result["data"]
                 auction_lineitems.extend(map(attrubtes_only, lineitems))
 
-    reduced = reduce_lineitems(auction_lineitems, preferred_lineitems)
+    reduced_lineitems = reduce_lineitems(auction_lineitems, preferred_lineitems)
 
-    chart_data = [{"date": date, "budget": budget} for date, budget in reduced.items()]
-
-    print("chart data:\n", chart_data)
+    chart_data = [
+        {
+            "date": item[0],
+            "auction": item[1]["auction"],
+            "preferred": item[1]["preferred"],
+        }
+        for item in reduced_lineitems.items()
+    ]
 
     output_directory = "output"
     file_name = output_directory + "/test_lineitem_bar_chart.png"
@@ -105,7 +112,6 @@ def test_analytics_bar_chart():
         os.remove(file_name)
 
     dates = list(map(date, chart_data))
-
     auction_money = list(map(auction, chart_data))
     preferred_money = list(map(preferred, chart_data))
 
