@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "part_3"
+version = "0.1.0"
+description = "part_3 using crewAI"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.12,<=3.13"
+crewai = { extras = ["tools"], version = "^0.51.0" }
+
+[tool.poetry.scripts]
+part_3 = "part_3.main:run"
+run_crew = "part_3.main:run"
+train = "part_3.main:train"
+replay = "part_3.main:replay"
+test = "part_3.main:test"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
