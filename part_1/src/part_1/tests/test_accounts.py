@@ -1,5 +1,20 @@
+import os
+import json
 from part_1.tests.utils import fetchToken
 from part_1.tools.accounts import AccountsTool, BrandsTool, RetailersTool
+
+output_directory = "output"
+
+if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
+
+
+def write_data(data, file_name):
+    file_name = f"{output_directory}/{file_name}"
+    if os.path.exists(file_name):
+        os.remove(file_name)
+    with open(file_name, "w") as file:
+        file.write(json.dumps(data))
 
 
 def test_accounts():
@@ -12,6 +27,8 @@ def test_accounts():
     assert accounts_api_result is not None
     assert accounts_api_result["data"] is not None
     assert len(accounts_api_result["data"]) > 0
+    data = accounts_api_result["data"]
+    write_data(data, "test_accounts.json")
 
 
 def test_accounts_brands():
@@ -33,6 +50,8 @@ def test_accounts_brands():
     assert brands_api_result is not None
     assert brands_api_result["data"] is not None
     assert len(brands_api_result["data"]) > 0
+    data = brands_api_result["data"]
+    write_data(data, "test_brands.json")
 
 
 def test_accounts_retailers():
@@ -54,3 +73,5 @@ def test_accounts_retailers():
     assert retailers_api_result is not None
     assert retailers_api_result["data"] is not None
     assert len(retailers_api_result["data"]) > 0
+    data = retailers_api_result["data"]
+    write_data(data, "test_retailers.json")

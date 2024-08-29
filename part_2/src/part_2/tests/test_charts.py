@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 output_directory = "output"
+if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
 
 
 def test_bar_chart_tool():
@@ -216,9 +218,6 @@ def test_bar_chart_tool():
 def test_pie_chart_tool():
 
     file_name = output_directory + "/test_pie_chart.png"
-
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
 
     if os.path.exists(file_name):
         os.remove(file_name)
