@@ -29,8 +29,6 @@ class Part2Crew:
                 RetailersTool(token=token),
                 BrandsTool(token=token),
             ],
-            verbose=True,
-            cache=True,
         )
 
     @agent
@@ -42,8 +40,6 @@ class Part2Crew:
                 AuctionLineitemsTool(token=token),
                 PreferredLineitemsTool(token=token),
             ],
-            verbose=True,
-            cache=True,
         )
 
     @agent
@@ -51,8 +47,6 @@ class Part2Crew:
         return Agent(
             config=self.agents_config["analyst"],
             tools=[BarChartTool(), CalculatorTool()],
-            verbose=True,
-            cache=True,
         )
 
     @task
@@ -83,10 +77,9 @@ class Part2Crew:
         )
 
     @task
-    def timeseries_lineitems(self) -> Task:
+    def lineitems_budget_chart(self) -> Task:
         return Task(
-            config=self.tasks_config["timeseries_lineitems"],
-            output_file="output/timeseries_lineitems.md",
+            config=self.tasks_config["lineitems_budget_chart"],
         )
 
     @crew
@@ -97,6 +90,7 @@ class Part2Crew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
+            memory=True,
             planning=True,
             planning_llm=ChatOpenAI(model="gpt-4o-mini"),
             output_log_file="output/part_2.log",

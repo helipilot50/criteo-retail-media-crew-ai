@@ -25,36 +25,43 @@ auction_lineitems:
 
 preferred_lineitems:
   description: >
-    Iterate through the {campaigns list}, and for each {campaign} use the {campaign id} to get the lineitems.
+    Iterate through the {campaigns list}, and for each {campaign} use the {campaign id} to get the lineitems. If there total items across all pages is zer simply provide an empty list.
   expected_output: >
     A list of preferred lineitems for the campaign formatted as a table in Markdown.
   agent: campaign_manager
   context:
     - campaigns
 
-analytics:
-  description: >
-    For each campaign, analyze the preferred and auction lineitems.
-    1. Produce a bar chart showing the timeline and spend for each lineitem.
-    2. Sum the the number of auction and preferrred lineitems for all campaigns and output as a table. 
-   
-  expected_output: >
-    A bar chart where the timeline is the categories and  the values are spend for each lineitem.
-    A table showing the campaign name, campaign id and the count of preferred and auction lineitems.
-  agent: analyst
-  context:
-    - preferred_lineitems
-    - auction_lineitems
-    - campaigns
+# analytics:
+#   description: >
+#     For each campaign, analyze the preferred and auction lineitems.
+#     1. Produce a bar chart showing the timeline and spend for each lineitem.
+#     2. Sum the the number of auction and preferrred lineitems for all campaigns and output as a table.
 
-timeseries_lineitems:
+#   expected_output: >
+#     A bar chart where the timeline is the categories and  the values are spend for each lineitem.
+#     A table showing the campaign name, campaign id and the count of preferred and auction lineitems.
+#   agent: analyst
+#   context:
+#     - preferred_lineitems
+#     - auction_lineitems
+#     - campaigns
+
+lineitems_budget_chart:
   description: >
     For each campaign, analyze the preferred and auction lineitems.
-    1. Produce a line chart showing the timeline and spend for each lineitem.
-    2. Sum the the number of auction and preferrred lineitems for all campaigns and output as a table. 
-   
+    1. Using auction and preferred lineitems reduce the data to a table of whole month intervals containin the total budget for auction line and the total budget for preferred lineitems, 
+    for each month. with the output like this example 
+    [{date: '2021-01-01', auction: 1000.00, preferred: 2000.00},{date: '2021-02-01', auction: 1500.00, preferred: 2500.00}]
+    2. Produce a bar chart for each campaign using the data from step 1, where the x-axis is the date and the y-axis is the total budget, 
+    the file name is the campaign name and its ID and is in the 'output' folder,
+    the chart title is the campaign name and its ID,
+    the categories ar the date,
+    the values are the auction and preferred values.
+    3. Sum the the number of auction and preferrred lineitems for all campaigns and output as a table.
+
   expected_output: >
-    A line chart where the lineitem startDate is the categories and the values are spend for each lineitem. The tile is the campaign name. The file_name is the campaign name.  
+    A bar chart for each campaign where the dates is the categories and the values auction and preferred. The tile is the campaign name and ID. The file_name is the campaign name and ID.  
     A table showing the campaign name, campaign id and the count of preferred and auction lineitems.
   agent: analyst
   context:

@@ -7,6 +7,10 @@ account_manager:
     You're an expert in managing accounts and retrieving information about accounts, retailers, and brands. 
     You're known for your ability to provide accurate and up-to-date information to help your team make informed decisions.
     You use the Retail Media REST API efficently.
+  memory: True
+  max_iter: 5
+  verbose: True
+  cache: True
 
 campaign_manager:
   role: >
@@ -17,6 +21,10 @@ campaign_manager:
     You're an expert in managing accounts and retrieving information about campaigns, preferred lineitems and auction lineitems. 
     You're known for your ability to provide accurate and up-to-date information to help your team make informed decisions.
     You use the Retail Media REST API efficently.
+    memory: True
+  verbose: True
+  cache: True
+  memory: True
 
 analyst:
   role: >
@@ -25,6 +33,7 @@ analyst:
     Analyse active lineitems and campaigns. 
     Discover underperforming campaigns and lineitems. 
     Provide recommendations to improve performance.
+    Create Bar Charts and Pie Charts to help stakeholders understand the data.
   backstory: >
     You are the most experienced online advertising analyst with an indepth backgroud in retail and online advertising.
     You combine various analytical insights to formulate strategic campaign performance advice. 
@@ -37,5 +46,7 @@ analyst:
     * A background in the digital industry
     You have the combination of technical skills, passion for learning, and the soft skills to work with all personality types in a dynamic environment
     You are fluent in English
-    You are talented charting and visualizing data
-    
+    You are talented charting and visualizing data using MatPlotLib
+  verbose: True
+  cache: True
+  memory: True

@@ -34,6 +34,14 @@ class BarChartTool(BaseTool):
         title: str,
         file_name: Optional[str] = None,
     ):
+        print("Creating bar chart")
+        print("categories", categories)
+        print("values", values)
+        print("x_label", x_label)
+        print("y_label", y_label)
+        print("labels", labels)
+        print("title", title)
+        print("file_name", file_name)
 
         # X-axis positions
         x = np.arange(len(categories))
