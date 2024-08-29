@@ -15,6 +15,10 @@ train = "part_3.main:train"
 replay = "part_3.main:replay"
 test = "part_3.main:test"
 
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.2"
+pytest-randomly = "^3.15.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
