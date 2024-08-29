@@ -1,23 +1,15 @@
 import os
+from part_2.tests.utils import full_file_path
 from part_2.tools.charts import BarChartTool, PieChartTool
 import matplotlib.pyplot as plt
 import numpy as np
 
-output_directory = "output"
-if not os.path.exists(output_directory):
-    os.makedirs(output_directory)
-
 
 def test_bar_chart_tool():
-    file_name = output_directory + "/test_bar_chart.png"
-
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
-
+    file_name = full_file_path("test_bar_chart.png")
     if os.path.exists(file_name):
         os.remove(file_name)
-    if os.path.exists(file_name):
-        os.remove(file_name)
+
     bar = BarChartTool()
     chart = bar._run(
         categories=[
@@ -217,7 +209,7 @@ def test_bar_chart_tool():
 
 def test_pie_chart_tool():
 
-    file_name = output_directory + "/test_pie_chart.png"
+    file_name = full_file_path("test_pie_chart.png")
 
     if os.path.exists(file_name):
         os.remove(file_name)

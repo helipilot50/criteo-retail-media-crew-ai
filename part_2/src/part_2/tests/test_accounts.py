@@ -1,4 +1,4 @@
-from part_2.tests.utils import fetchToken
+from part_2.tests.utils import fetchToken, write_data
 from part_2.tools.accounts import AccountsTool, BrandsTool, RetailersTool
 
 
@@ -12,6 +12,8 @@ def test_accounts():
     assert accounts_api_result is not None
     assert accounts_api_result["data"] is not None
     assert len(accounts_api_result["data"]) > 0
+    data = accounts_api_result["data"]
+    write_data(data, "test_accounts.json")
 
 
 def test_accounts_brands():
@@ -33,6 +35,8 @@ def test_accounts_brands():
     assert brands_api_result is not None
     assert brands_api_result["data"] is not None
     assert len(brands_api_result["data"]) > 0
+    data = brands_api_result["data"]
+    write_data(data, "test_account_brands.json")
 
 
 def test_accounts_retailers():
@@ -54,3 +58,5 @@ def test_accounts_retailers():
     assert retailers_api_result is not None
     assert retailers_api_result["data"] is not None
     assert len(retailers_api_result["data"]) > 0
+    data = retailers_api_result["data"]
+    write_data(data, "test_account_retailers.json")

@@ -1,4 +1,4 @@
-from part_2.tests.utils import attrubtes_only, fetchToken
+from part_2.tests.utils import attrubtes_only, fetchToken, write_data
 from part_2.tools.accounts import AccountsTool
 from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
@@ -49,3 +49,4 @@ def test_lineitems():
                 all_lineitems.extend(map(attrubtes_only, lineitems))
 
     assert len(all_lineitems) > 0
+    write_data(all_lineitems, "test_all_lineitems.json")

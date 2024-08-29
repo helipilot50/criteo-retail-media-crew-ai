@@ -11,9 +11,10 @@ from part_2.tests.utils import (
     budget,
     date,
     fetchToken,
-    money,
+    full_file_path,
     preferred,
     short_date,
+    write_data,
 )
 from part_2.tools.charts import BarChartTool
 
@@ -101,13 +102,9 @@ def test_analytics_bar_chart():
         }
         for item in reduced_lineitems.items()
     ]
+    write_data(chart_data, "test_lineitems_chart_data.json")
 
-    output_directory = "output"
-    file_name = output_directory + "/test_lineitem_bar_chart.png"
-
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
-
+    file_name = full_file_path("test_lineitem_bar_chart.png")
     if os.path.exists(file_name):
         os.remove(file_name)
 

@@ -1,4 +1,23 @@
 from part_2.tools.auth import AuthTool
+import os
+import json
+
+output_directory = "output"
+
+if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
+
+
+def full_file_path(file_name):
+    return f"{output_directory}/{file_name}"
+
+
+def write_data(data, file_name):
+    file_name = full_file_path(file_name)
+    if os.path.exists(file_name):
+        os.remove(file_name)
+    with open(file_name, "w") as file:
+        file.write(json.dumps(data))
 
 
 def fetchToken():
