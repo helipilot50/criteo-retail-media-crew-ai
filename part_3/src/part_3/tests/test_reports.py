@@ -1,4 +1,4 @@
-from part_3.tools.accounts import AccountsTool
+from NYpart_3.tools.accounts import AccountsTool
 from part_3.tools.campaigns import CampaignsTool
 from part_3.tests.utils import fetchToken
 from part_3.tests.utils import write_data
