@@ -37,7 +37,8 @@ class CampaignAnalyticsTool(BaseTool):
         print("url", url)
         headers = {
             "Authorization": "Bearer " + self.token,
-            "Content-Type": "application/json",}
+            "Content-Type": "application/json",
+            "accept": "application/json"}
         data = {
                 "type": "RetailMediaReportRequest",
                 "attributes": {
