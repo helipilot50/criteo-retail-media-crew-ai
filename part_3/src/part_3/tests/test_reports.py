@@ -35,6 +35,6 @@ def test_create_impressions_report():
         campaignIds=campaign_ids, startDate="2020-01-01", endDate="2020-12-31"
     )
     assert impressions_api_result is not None
+    assert impressions_api_result["data"] is not None
     data = impressions_api_result["data"]
-    assert data is not None
     write_data(data, "test_impressions.json")

@@ -3,6 +3,8 @@ from crewai_tools import BaseTool
 
 import requests
 import os
+import json
+import pprint
 
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
@@ -34,35 +36,37 @@ class CampaignAnalyticsTool(BaseTool):
         print("startDate", startDate)
         print("endDate", endDate)
         url = f"{self.base_url}reports/campaigns"
+        # https://api.criteo.com/2024-01/retail-media/reports/campaigns
         print("url", url)
+        # print("token", self.token)
         headers = {
             "Authorization": "Bearer " + self.token,
             "Content-Type": "application/json",
             "accept": "application/json"}
-        data = {
+        payload = {"data" : {
                 "type": "RetailMediaReportRequest",
                 "attributes": {
-                    "id": campaignIds,
-                    "metrics": ["impressions"],
-                    "dimensions": ["date"],
+                    "ids": campaignIds,
+                    "format": "json-compact",
                     "reportType": "summary",
-                    "startDate": startDate,
-                    "endDate": endDate,
-                    "timeZone": "America/New_York",
-                    "campaignType": "sponsoredProducts",
-                    "salesChannel": "offline",
+                    "clickAttributionWindow": "none",
+                    "viewAttributionWindow": "none",
+                    "timeZone": "UTC",
                 },
             }
-        print("data", data)
-        response = requests.request(
-            "POST",
+        }
+        print("payload", payload)
+        response = requests.post(
             url,
             headers=headers,
-            data=data,
+            # json=json.dumps(payload),
+            json=payload
         )
         
-        print("response", response)
-        response.raise_for_status()
+        # print("response", response)
+        response_as_json = response.json()
+        print("response_as_json", response_as_json )
+        # # response.raise_for_status()
         return response.json()
 
 
