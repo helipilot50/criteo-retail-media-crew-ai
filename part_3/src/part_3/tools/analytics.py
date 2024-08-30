@@ -32,12 +32,12 @@ class CampaignAnalyticsTool(BaseTool):
     token: str
 
     def _run(self, campaignIds: List[str], startDate: str, endDate: str):
-        print("campaignIds", campaignIds)
-        print("startDate", startDate)
-        print("endDate", endDate)
+        # print("campaignIds", campaignIds)
+        # print("startDate", startDate)
+        # print("endDate", endDate)
         url = f"{self.base_url}reports/campaigns"
         # https://api.criteo.com/2024-01/retail-media/reports/campaigns
-        print("url", url)
+        # print("url", url)
         # print("token", self.token)
         headers = {
             "Authorization": "Bearer " + self.token,
@@ -55,7 +55,7 @@ class CampaignAnalyticsTool(BaseTool):
                 },
             }
         }
-        print("payload", payload)
+        # print("payload", payload)
         response = requests.post(
             url,
             headers=headers,
@@ -65,9 +65,9 @@ class CampaignAnalyticsTool(BaseTool):
         
         # print("response", response)
         response_as_json = response.json()
-        print("response_as_json", response_as_json )
+        # print("response_as_json", response_as_json )
         # # response.raise_for_status()
-        return response.json()
+        return response_as_json
 
 
 class LineitemAnalyticsTool(BaseTool):
@@ -115,12 +115,11 @@ class ReportStatusTool(BaseTool):
     def _run(self, reportId: str):
         headers = {"Authorization": "Bearer " + self.token}
 
-        response = requests.request(
-            "GET",
+        response = requests.get(
             f"{self.base_url}reports/{reportId}/status",
             headers=headers,
         )
-        response.raise_for_status()
+        print("status response", response)
         return response.json()
 
 
@@ -135,10 +134,10 @@ class ReportDownloadTool(BaseTool):
         headers = {"Authorization": "Bearer " + self.token}
         response = requests.request(
             "GET",
-            f"{self.base_url}/eports/{reportId}/output",
+            f"{self.base_url}reports/{reportId}/output",
             headers=headers,
         )
-        response.raise_for_status()  # Raise an exception if the request fails
         with open(path, "wb") as f:
             f.write(response.content)
         print(f"Report downloaded successfully and saved as {path}")
+        return response.json()
