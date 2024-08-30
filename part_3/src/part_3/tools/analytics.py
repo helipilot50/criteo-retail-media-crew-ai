@@ -30,6 +30,11 @@ class CampaignAnalyticsTool(BaseTool):
     token: str
 
     def _run(self, campaignIds: List[str], startDate: str, endDate: str):
+        print("campaignIds", campaignIds)
+        print("startDate", startDate)
+        print("endDate", endDate)
+        url = f"{self.base_url}reports/campaigns"
+        print("url", url)
         headers = {
             "Authorization": "Bearer " + self.token,
             "Content-Type": "application/json",}
@@ -47,12 +52,15 @@ class CampaignAnalyticsTool(BaseTool):
                     "salesChannel": "offline",
                 },
             }
+        print("data", data)
         response = requests.request(
             "POST",
-            f"{self.base_url}reports/campaigns",
+            url,
             headers=headers,
             data=data,
         )
+        
+        print("response", response)
         response.raise_for_status()
         return response.json()
 
