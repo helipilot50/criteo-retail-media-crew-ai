@@ -33,6 +33,7 @@ class BarChartTool(BaseTool):
         labels: list[str],
         title: str,
         file_name: Optional[str] = None,
+        path: Optional[str] = None,
     ):
         print("Creating bar chart")
         print("categories", categories)
@@ -42,6 +43,7 @@ class BarChartTool(BaseTool):
         print("labels", labels)
         print("title", title)
         print("file_name", file_name)
+        print("path", path)
 
         # X-axis positions
         x = np.arange(len(categories))
@@ -60,9 +62,10 @@ class BarChartTool(BaseTool):
         ax.set_xticklabels(categories, rotation=45, ha="right")
         ax.legend()
         # Save plot
-        if file_name:
-            plt.savefig(file_name)
-        return plt
+        if file_name and path:
+            plt.savefig(f"{path}/{file_name}")
+        ax = None
+        return f"Bar chart created for {title}"
 
 
 class PieChartTool(BaseTool):
@@ -84,4 +87,4 @@ class PieChartTool(BaseTool):
         # Save plot
         if file_name:
             plt.savefig(file_name)
-        return plt
+        return f"Pie chart created: {title}"

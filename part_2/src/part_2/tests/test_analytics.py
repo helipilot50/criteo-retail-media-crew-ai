@@ -104,9 +104,9 @@ def test_analytics_bar_chart():
     ]
     write_data(chart_data, "test_lineitems_chart_data.json")
 
-    file_name = full_file_path("test_lineitem_bar_chart.png")
-    if os.path.exists(file_name):
-        os.remove(file_name)
+    file_name = "test_lineitem_bar_chart.png"
+    if os.path.exists(f"output/{file_name}"):
+        os.remove(f"output/{file_name}")
 
     dates = list(map(date, chart_data))
     auction_money = list(map(auction, chart_data))
@@ -120,7 +120,8 @@ def test_analytics_bar_chart():
         y_label="Budget",
         labels=["Auction", "Preferred"],
         title="Test Bar Chart",
+        path="output",
         file_name=file_name,
     )
-    assert os.path.exists(file_name)
+    assert os.path.exists(f"output/{file_name}")
     assert chart is not None

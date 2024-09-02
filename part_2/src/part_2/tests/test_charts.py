@@ -201,6 +201,7 @@ def test_bar_chart_tool():
         y_label="Budgets",
         labels=["Auction", "Preferred"],
         title="Test Bar Chart",
+        path="output",
         file_name=file_name,
     )
     assert os.path.exists(file_name)

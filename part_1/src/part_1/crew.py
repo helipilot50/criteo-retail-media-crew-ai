@@ -64,6 +64,6 @@ class Part1Crew:
             verbose=True,
             memory=True,
             planning=True,
-            planning_llm=ChatOpenAI(model="gpt-4o-mini"),
+            planning_llm=ChatOpenAI(model="gpt-3.5-turbo"),
             output_log_file="output/part_1.log",
         )

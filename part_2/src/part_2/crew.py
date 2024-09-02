@@ -7,6 +7,7 @@ from part_2.tools.auth import AuthTool
 from part_2.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
+from crewai_tools import FileWriterTool
 
 auth = AuthTool()
 auth_response = auth._run()
@@ -62,18 +63,22 @@ class Part2Crew:
             output_file="output/campaigns.md",
         )
 
-    @task
-    def auction_lineitems(self) -> Task:
-        return Task(
-            config=self.tasks_config["auction_lineitems"],
-            output_file="output/auction_lineitems.md",
-        )
+
 
     @task
     def preferred_lineitems(self) -> Task:
         return Task(
             config=self.tasks_config["auction_lineitems"],
-            output_file="output/preferred_lineitems.md",
+            # output_file="output/preferred_lineitems.md",
+            tools=[FileWriterTool()],
+        )
+    
+    @task
+    def auction_lineitems(self) -> Task:
+        return Task(
+            config=self.tasks_config["auction_lineitems"],
+            # output_file="output/auction_lineitems.md",
+            tools=[FileWriterTool()],
         )
 
     @task

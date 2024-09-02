@@ -19,8 +19,8 @@ class PreferredLineitemsTool(BaseTool):
         return response.json()
     
 class AuctionLineitemsTool(BaseTool):
-    name: str = "Retail Media Auction Lineitems t API Caller"
-    description: str = "Calls the Retail Media  REST API and returns the auction Lineitems for a campaignr"
+    name: str = "Retail Media auction Lineitems API Caller"
+    description: str = "Calls the Retail Media  REST API and returns the auction Lineitems for a campaign"
     base_url:str = base_url_env
     token:str
     
