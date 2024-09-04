@@ -56,6 +56,8 @@ class Part2Crew:
         return Agent(
             config=self.agents_config["file_manager"],
             tools=[FileWriterTool(), FileReadTool(), DirectoryReadTool(), DirectorySearchTool()],
+            max_iter=30,
+            # max_execution_time=60,
         )
 
     @task
