@@ -16,8 +16,10 @@ campaigns:
 
 auction_lineitems:
   description: >
-    Iterate through the {campaigns list}, and for each {campaign} use the {campaign id} to get the lineitems.
-    Write a JSON file with the path 'output/{campaign name}.json' containing the list of auction lineitems.
+    Iterate through the {campaigns list}, and for each {campaign} use the campaign {id} to get the  list of auction lineitems.
+    If there total items across all pages is zero simply provide an empty list.
+    Do not make more API calls than necessary, check the 'totalPages' field in the response and only make additional calls if necessary.
+    Write a JSON file where then content is  the list of preferred lineitems, the directory is 'output' and the file name is '{campaign name}_auction_lineitems.json'.
   expected_output: >
     A list of auction lineitems for the campaign formatted as JSON.
   agent: campaign_manager
@@ -26,47 +28,34 @@ auction_lineitems:
 
 preferred_lineitems:
   description: >
-    Iterate through the {campaigns list}, and for each {campaign} use the {campaign id} to get the lineitems. If there total items across all pages is zer simply provide an empty list.
-    Write a JSON file in the 'output' directory with the name 'output/{campaign name}.json containing the list of preferred lineitems.
+    Iterate through the {campaigns list}, and for each {campaign} use the campaign {id} to get the list of preferred lineitems. 
+    If there total items across all pages is zero simply provide an empty list.
+    Do not make more API calls than necessary, check the 'totalPages' field in the response and only make additional calls if necessary.
+    Write a JSON file where the contenct is the list of preferred lineitems, the directory is 'output' and the file name is '{campaign name}_preferred_lineitems.json'.
   expected_output: >
     A list of preferred lineitems for the campaign formatted as json.
   agent: campaign_manager
   context:
     - campaigns
 
-# analytics:
+# lineitems_budget_chart:
 #   description: >
 #     For each campaign, analyze the preferred and auction lineitems.
-#     1. Produce a bar chart showing the timeline and spend for each lineitem.
-#     2. Sum the the number of auction and preferrred lineitems for all campaigns and output as a table.
+#     step 1. Using auction and preferred lineitems reduce the data to a table of whole month intervals containin the total budget for auction line and the total budget for preferred lineitems, 
+#     for each month. with the output like this example 
+#     [{date: '2021-01-01', auction: 1000.00, preferred: 2000.00},{date: '2021-02-01', auction: 1500.00, preferred: 2500.00}]
+#     step 2. Produce a bar chart for each campaign using the data from step 1, where the x-axis is the date and the y-axis is the total budget, 
+#     the file name is the campaign name and its ID and the path is 'output',
+#     the chart title is the campaign name and its ID,
+#     the categories ar the date,
+#     the values are the auction and preferred values.
+#     step 3. Sum the the number of auction lineitems and preferred lineitems for all campaigns and output as a table.
 
 #   expected_output: >
-#     A bar chart where the timeline is the categories and  the values are spend for each lineitem.
+#     A bar chart for each campaign where the dates is the categories and the values auction and preferred. The tile is the campaign name and ID. The file_name is the campaign name and ID.  
 #     A table showing the campaign name, campaign id and the count of preferred and auction lineitems.
 #   agent: analyst
 #   context:
 #     - preferred_lineitems
 #     - auction_lineitems
 #     - campaigns
-
-lineitems_budget_chart:
-  description: >
-    For each campaign, analyze the preferred and auction lineitems.
-    1. Using auction and preferred lineitems reduce the data to a table of whole month intervals containin the total budget for auction line and the total budget for preferred lineitems, 
-    for each month. with the output like this example 
-    [{date: '2021-01-01', auction: 1000.00, preferred: 2000.00},{date: '2021-02-01', auction: 1500.00, preferred: 2500.00}]
-    2. Produce a bar chart for each campaign using the data from step 1, where the x-axis is the date and the y-axis is the total budget, 
-    the file name is the campaign name and its ID and the path is 'output',
-    the chart title is the campaign name and its ID,
-    the categories ar the date,
-    the values are the auction and preferred values.
-    3. Sum the the number of auction and preferrred lineitems for all campaigns and output as a table.
-
-  expected_output: >
-    A bar chart for each campaign where the dates is the categories and the values auction and preferred. The tile is the campaign name and ID. The file_name is the campaign name and ID.  
-    A table showing the campaign name, campaign id and the count of preferred and auction lineitems.
-  agent: analyst
-  context:
-    - preferred_lineitems
-    - auction_lineitems
-    - campaigns

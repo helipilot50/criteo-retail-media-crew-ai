@@ -7,7 +7,7 @@ from part_2.tools.auth import AuthTool
 from part_2.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
-from crewai_tools import FileWriterTool
+from crewai_tools import FileWriterTool, FileReadTool, DirectoryReadTool, DirectorySearchTool
 
 auth = AuthTool()
 auth_response = auth._run()
@@ -40,6 +40,7 @@ class Part2Crew:
                 CampaignsTool(token=token),
                 AuctionLineitemsTool(token=token),
                 PreferredLineitemsTool(token=token),
+                FileWriterTool(),
             ],
         )
 
@@ -47,7 +48,14 @@ class Part2Crew:
     def analyst(self) -> Agent:
         return Agent(
             config=self.agents_config["analyst"],
-            tools=[BarChartTool(), CalculatorTool()],
+            tools=[BarChartTool()],
+        )
+    
+    @agent
+    def file_manager(self) -> Agent:
+        return Agent(
+            config=self.agents_config["file_manager"],
+            tools=[FileWriterTool(), FileReadTool(), DirectoryReadTool(), DirectorySearchTool()],
         )
 
     @task
@@ -63,29 +71,23 @@ class Part2Crew:
             output_file="output/campaigns.md",
         )
 
-
-
     @task
     def preferred_lineitems(self) -> Task:
         return Task(
             config=self.tasks_config["auction_lineitems"],
-            # output_file="output/preferred_lineitems.md",
-            tools=[FileWriterTool()],
         )
     
     @task
     def auction_lineitems(self) -> Task:
         return Task(
             config=self.tasks_config["auction_lineitems"],
-            # output_file="output/auction_lineitems.md",
-            tools=[FileWriterTool()],
         )
 
-    @task
-    def lineitems_budget_chart(self) -> Task:
-        return Task(
-            config=self.tasks_config["lineitems_budget_chart"],
-        )
+    # @task
+    # def lineitems_budget_chart(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["lineitems_budget_chart"],
+    #     )
 
     @crew
     def crew(self) -> Crew:
@@ -99,5 +101,4 @@ class Part2Crew:
             planning=True,
             planning_llm=ChatOpenAI(model="gpt-4o-mini"),
             output_log_file="output/part_2.log",
-            output_file="output/part_2.md",
         )
