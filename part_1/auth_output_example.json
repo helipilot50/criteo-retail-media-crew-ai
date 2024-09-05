@@ -1,0 +1,6 @@
+{
+  "access_token": "eyJhbGciOiJSUzII ... pG5LGeb4aiuB0EKAhszojHQ",
+  "token_type": "Bearer",
+  "refresh_token": None,
+  "expires_in": 900
+}
