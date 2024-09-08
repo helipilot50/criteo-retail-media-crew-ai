@@ -1,22 +1,10 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama
 from part_1.tools.auth import AuthTool
 from part_1.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 
 import os
-
-# For local testing using ollama. WARNING: Unless you have a powerful GPU, this will be VERY VERY slow.
-# os.environ["OPENAI_API_KE"]='NA' # No API Key required for Ollama
-# ollm = ChatOllama(
-#     model = "llama3.1",
-#     base_url = "http://localhost:11434")
-
-auth = AuthTool()
-auth_response = auth._run()
-token = auth_response["access_token"]
-
 
 @CrewBase
 class Part1Crew:
@@ -34,12 +22,10 @@ class Part1Crew:
         return Agent(
             config=self.agents_config["account_manager"],
             tools=[
-                AccountsTool(token=token),
-                RetailersTool(token=token),
-                BrandsTool(token=token),
+                AccountsTool(),
+                RetailersTool(),
+                BrandsTool(),
             ],
-            # For local testing using ollama"
-            # llm=ollm
         )
 
     """
@@ -90,8 +76,6 @@ class Part1Crew:
             verbose=True,
             memory=True,
             planning=True,
-            # For local testing using ollama"
-            #planning_llm=ollm,
             planning_llm=ChatOpenAI(model="gpt-4o-mini"),
             output_log_file="output/part_1.log",
         )
