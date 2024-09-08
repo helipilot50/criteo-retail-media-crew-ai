@@ -1,39 +1,29 @@
 
 
 
-campaigns:
+campaigns_task:
   description: >
-    Use the account {account_id} to get the campaigns.
+    Get campaigns for account {account_id}.
     Use the pageIndex and pageSize parameters to get all campaigns for the account.
     Do not make more API calls than necessary.
+    Reformat each campaign by removing the 'type' field and remap all fields in 'attributes' to the root level.
   expected_output: >
     A list of campaigns for the account formatted as JSON.
   agent: campaign_manager
 
-campaigns_file:
+
+
+auction_lineitems:
   description: >
-    Write the campaigns to a file using the FileWriterTool.
-    The file name is 'campaigns.json', the directory is 'output' and the content is the list of campaigns formatted in JSON.
-  expected_output: >
-    A list of campaigns for the account formatted as JSON.
-  agent: file_manager
+    Interate through the list of campaigns and for each campaign use the campaign id to get the auction lineitems.
+    If there total items across all pages is zero simply provide an empty list.
+    Use the pageIndex and pageSize parameters to get all lineitems for the campaign.
+    Do not make more API calls than necessary.
+    Reformat each lineitem by removing the 'type' field and remap all fields in 'attributes' to the root level.
+  expected_output: A list of auction lineitems for each campaign formatted as JSON.
+  agent: lineitems_manager
   context:
     - campaigns
-  
-
-# auction_lineitems:
-#   description: >
-#     Interate through the cached campaigns and for each campaign use the campaigh {id} to get the auction lineitems.
-#     If there total items across all pages is zero simply provide an empty list.
-#     Use the pageIndex and pageSize parameters to get all lineitems for the campaign.
-#     Do not make more API calls than necessary.
-#     Using the FileWriter tool, write a file contaning the list of lineitems in JSON format, the directory is 'output', 
-#     the file name is '{campaign name}_auction_lineitems.json' and
-#     the content is the list of auction linitems formated in JSON.
-#   expected_output: A list of auction lineitems for the campaign formatted as JSON.
-#   agent: lineitems_manager
-#   context:
-#     - campaigns
 
 # preferred_lineitems:
 #   description: >

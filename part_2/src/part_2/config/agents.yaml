@@ -28,33 +28,24 @@ campaign_manager:
     
   verbose: True
   cache: True
-  memory: True
+  # memory: True
   
 
-# lineitems_manager:
-#   role: >
-#     Lineitems Manager
-#   goal: >
-#     Manage and retrieve information about preferred lineitems and auction lineitems
-#   backstory: >
-#     You're an expert in managing and retrieving information about lineitems for a campaign using the campaign 'id'. 
-#     You use the Retail Media lineintems REST API efficently.
-#     Dont make more requests that is necessary by checking the 'totalPages' and make the right number of requests.
-#     Remember the results of the lineitems, to avoid making unnecessary requests.
-#   verbose: True
-#   cache: True
-#   memory: True
 
-file_manager:
+lineitems_manager:
   role: >
-    File Manager
+    Lineitems Manager
   goal: >
-    Read and write files to and from the local file system
+    Manage and retrieve information about preferred lineitems and auction lineitems
   backstory: >
-    You're an expert in managing files on the local file system. You can read files, write fliles, search and list files in a directory.
-    The default director is 'output' for writing files.
-    You can read and write Markdown, JSON, YAML and CSV files.
-  verbose: True 
+    You're an expert in managing and retrieving information about lineitems for a campaign using the campaign 'id'. 
+    You use the Retail Media lineintems REST API efficently.
+    Dont make more requests that is necessary by checking the 'totalPages' and make the right number of requests.
+    Remember the results of the lineitems, to avoid making unnecessary requests.
+  verbose: True
+  cache: True
+  memory: True
+
 
 # analyst:
 #   role: >

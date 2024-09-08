@@ -33,15 +33,15 @@ class Part2Crew:
             ],
         )
     
-    # @agent
-    # def lineitems_manager(self) -> Agent:
-    #     return Agent(
-    #         config=self.agents_config["lineitems_manager"],
-    #         tools=[
-    #             AuctionLineitemsTool(),
-    #             PreferredLineitemsTool(),
-    #         ],
-    #     )
+    @agent
+    def lineitems_manager(self) -> Agent:
+        return Agent(
+            config=self.agents_config["lineitems_manager"],
+            tools=[
+                AuctionLineitemsTool(),
+                # PreferredLineitemsTool(),
+            ],
+        )
 
     # @agent
     # def analyst(self) -> Agent:
@@ -50,26 +50,14 @@ class Part2Crew:
     #         tools=[BarChartTool()],
     #     )
     
-    @agent
-    def file_manager(self) -> Agent:
-        return Agent(
-            config=self.agents_config["file_manager"],
-            tools=[FileWriterTool(), FileReadTool(), DirectoryReadTool(), DirectorySearchTool()],
-        )
-
 
     @task
     def campaigns(self) -> Task:
         return Task(
-            config=self.tasks_config["campaigns"],
+            config=self.tasks_config["campaigns_task"],
             output_file="output/campaigns.json",
         )
     
-    @task
-    def campaigns_file(self) -> Task:
-        return Task(
-            config=self.tasks_config["campaigns_file"],
-        )
 
     # @task
     # def preferred_lineitems(self) -> Task:
@@ -77,11 +65,12 @@ class Part2Crew:
     #         config=self.tasks_config["preferred_lineitems"],
     #     )
     
-    # @task
-    # def auction_lineitems(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["auction_lineitems"],
-    #     )
+    @task
+    def auction_lineitems(self) -> Task:
+        return Task(
+            config=self.tasks_config["auction_lineitems"],
+            output_file="output/campaigns_auction_lineitems.json",
+        )
 
     # @task
     # def lineitems_budget_chart(self) -> Task:
