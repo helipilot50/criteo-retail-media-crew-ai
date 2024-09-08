@@ -1,10 +1,13 @@
+import json
 import os
 from functools import reduce
 from collections import defaultdict
+from crewai_tools import FileWriterTool
 
 from part_2.tools.accounts import AccountsTool
 from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
+
 from part_2.tests.utils import (
     attrubtes_only,
     auction,
@@ -12,7 +15,6 @@ from part_2.tests.utils import (
     date,
     preferred,
     short_date,
-    write_data,
 )
 from part_2.tools.charts import BarChartTool
 
@@ -52,6 +54,7 @@ def test_analytics_bar_chart():
     campaigns = CampaignsTool()
     auction_li = AuctionLineitemsTool()
     preferred_li = PreferredLineitemsTool()
+    fileWriter = FileWriterTool()
 
     # accounts
     accounts_api_result = accounts._run()
@@ -98,7 +101,8 @@ def test_analytics_bar_chart():
         }
         for item in reduced_lineitems.items()
     ]
-    write_data(chart_data, "test_lineitems_chart_data.json")
+    fileWriter._run(directory='output', filename='test_lineitems_chart_data.json', content=json.dumps(chart_data), overwrite=True)
+    
 
     file_name = "test_lineitem_bar_chart.png"
     if os.path.exists(f"output/{file_name}"):

@@ -6,12 +6,8 @@ from part_3.tools.analytics import (
     DownloadReportTool,
     ReportStatusTool,
 )
-from part_3.tools.auth import AuthTool
 from part_3.tools.campaigns import CampaignsTool
 
-auth = AuthTool()
-auth_response = auth._run()
-token = auth_response["access_token"]
 
 
 @CrewBase
@@ -25,7 +21,7 @@ class Part3Crew:
     def campaign_manager(self) -> Agent:
         return Agent(
             config=self.agents_config["campaign_manager"],
-            tools=[CampaignsTool(token=token)],
+            tools=[CampaignsTool()],
             verbose=True,
             cache=True,
             memory=True,
@@ -36,9 +32,9 @@ class Part3Crew:
         return Agent(
             config=self.agents_config["campaign_reporter"],
             tools=[
-                CampaignAnalyticsTool(token=token),
-                ReportStatusTool(token=token),
-                DownloadReportTool(token=token),
+                CampaignAnalyticsTool(),
+                ReportStatusTool(),
+                DownloadReportTool(),
             ],
             verbose=True,
             max_iter=2,

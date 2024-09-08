@@ -1,6 +1,5 @@
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.campaigns import CampaignsTool
-from part_3.tests.utils import fetchToken
 from part_3.tests.utils import write_data
 
 from part_3.tools.analytics import CampaignAnalyticsTool, ReportDownloadTool, ReportStatusTool
@@ -9,15 +8,13 @@ import time
 
 
 def test_create_summary_report():
-    token = fetchToken()
-    assert token is not None
 
     # tools
-    accounts = AccountsTool(token=token)
-    campaigns = CampaignsTool(token=token)
-    campaigns_analytics = CampaignAnalyticsTool(token=token)
-    status = ReportStatusTool(token=token)
-    downloader= ReportDownloadTool(token=token)
+    accounts = AccountsTool()
+    campaigns = CampaignsTool()
+    campaigns_analytics = CampaignAnalyticsTool()
+    status = ReportStatusTool()
+    downloader= ReportDownloadTool()
 
     # accounts
     accounts_api_result = accounts._run()

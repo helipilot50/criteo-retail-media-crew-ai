@@ -1,7 +1,7 @@
 from typing import Any
 from crewai_tools import BaseTool
 
-from part_2.tools.auth import get_token
+from part_2.tools.access import get_token
 import requests
 import os
 

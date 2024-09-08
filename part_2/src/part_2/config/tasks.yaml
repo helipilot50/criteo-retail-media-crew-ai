@@ -1,38 +1,25 @@
-accounts:
-  description: >
-    Retrieve a list of accounts available to this user. Use the pageIndex and pageSize parameters to iterate through all accounts.
-    Write a file contaning the list of preferred lineitems in JSON format, the directory is 'output', 
-    the file name is 'accounts_file.json' and
-    the content is the list of accountss formated in JSON.
-  expected_output: >
-    A list of accounts available to this user.
-    
-  agent: account_manager
 
-store_accounts:
+
+
+campaigns:
   description: >
-    Write a file contaning the list of accounts in JSON format, the directory is 'output', 
-    the file name is 'store_accounts_file.txt' and
-    the content is the list of retailers or brands formated as text.
-    Return the written file name
+    Use the account {account_id} to get the campaigns.
+    Use the pageIndex and pageSize parameters to get all campaigns for the account.
+    Do not make more API calls than necessary.
   expected_output: >
-    A fully qualified path name of a file written.
-    
+    A list of campaigns for the account formatted as JSON.
+  agent: campaign_manager
+
+campaigns_file:
+  description: >
+    Write the campaigns to a file using the FileWriterTool.
+    The file name is 'campaigns.json', the directory is 'output' and the content is the list of campaigns formatted in JSON.
+  expected_output: >
+    A list of campaigns for the account formatted as JSON.
   agent: file_manager
-
-# campaigns:
-#   description: >
-#     Iterate through the cached accounts and for each account use the account {id} to get the campaigns.
-#     Use the pageIndex and pageSize parameters to get all campaigns for the account.
-#     Do not make more API calls than necessary.
-#     Using the FileWriter tool, write a file contaning the list of campaigns in JSON format, the directory is 'output', 
-#     the file name is 'campaign_file.json' and
-#     the content is the list of campaigns formated in JSON.
-#   expected_output: >
-#     A list of campaigns for the account formatted as JSON.
-#   agent: campaign_manager
-#   context:
-#     - accounts
+  context:
+    - campaigns
+  
 
 # auction_lineitems:
 #   description: >

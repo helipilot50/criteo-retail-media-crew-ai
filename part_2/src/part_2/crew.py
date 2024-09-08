@@ -1,4 +1,3 @@
-from part_2.tools.calculator_tools import CalculatorTool
 from part_2.tools.charts import BarChartTool, PieChartTool
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
@@ -16,23 +15,23 @@ class Part2Crew:
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
 
-    @agent
-    def account_manager(self) -> Agent:
-        return Agent(
-            config=self.agents_config["account_manager"],
-            tools=[
-                AccountsTool(),
-            ],
-        )
-
     # @agent
-    # def campaign_manager(self) -> Agent:
+    # def account_manager(self) -> Agent:
     #     return Agent(
-    #         config=self.agents_config["campaign_manager"],
+    #         config=self.agents_config["account_manager"],
     #         tools=[
-    #             CampaignsTool()
+    #             AccountsTool(),
     #         ],
     #     )
+
+    @agent
+    def campaign_manager(self) -> Agent:
+        return Agent(
+            config=self.agents_config["campaign_manager"],
+            tools=[
+                CampaignsTool()
+            ],
+        )
     
     # @agent
     # def lineitems_manager(self) -> Agent:
@@ -56,28 +55,21 @@ class Part2Crew:
         return Agent(
             config=self.agents_config["file_manager"],
             tools=[FileWriterTool(), FileReadTool(), DirectoryReadTool(), DirectorySearchTool()],
-            max_iter=30,
-            # max_execution_time=60,
         )
 
-    @task
-    def accounts(self) -> Task:
-        return Task(
-            config=self.tasks_config["accounts"],
-            # output_file="output/accounts.json",
-        )
-    @task
-    def store_accounts(self) -> Task:
-        return Task(
-            config=self.tasks_config["store_accounts"],
-        )
 
-    # @task
-    # def campaigns(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["campaigns"],
-    #         # output_file="output/campaigns.json",
-    #     )
+    @task
+    def campaigns(self) -> Task:
+        return Task(
+            config=self.tasks_config["campaigns"],
+            output_file="output/campaigns.json",
+        )
+    
+    @task
+    def campaigns_file(self) -> Task:
+        return Task(
+            config=self.tasks_config["campaigns_file"],
+        )
 
     # @task
     # def preferred_lineitems(self) -> Task:
@@ -105,7 +97,7 @@ class Part2Crew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            # memory=True,
+            memory=True,
             planning=True,
             planning_llm=ChatOpenAI(model="gpt-4o-mini"),
             output_log_file="output/part_2.log",

@@ -1,4 +1,3 @@
-from part_3.tools.auth import AuthTool
 import os
 import json
 
@@ -18,13 +17,6 @@ def write_data(data, file_name):
         os.remove(file_name)
     with open(file_name, "w") as file:
         file.write(json.dumps(data))
-
-
-def fetchToken():
-    auth = AuthTool()
-    response = auth._run()
-    return response["access_token"]
-
 
 def attrubtes_only(li):
     return li["attributes"]

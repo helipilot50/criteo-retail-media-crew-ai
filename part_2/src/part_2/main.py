@@ -8,10 +8,19 @@ load_dotenv()
 
 
 def run():
+
+    """
+    User inputs the account ID
+    """
+    account_id = input("Account ID: ")
+    print("Running crew for account id: " + account_id )
+
+    inputs = {"account_id": str(account_id)}
+
     """
     Run the crew.
     """
-    Part2Crew().crew().kickoff()
+    Part2Crew().crew().kickoff(inputs=inputs)
 
 
 def train():

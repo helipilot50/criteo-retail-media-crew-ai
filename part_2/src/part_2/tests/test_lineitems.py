@@ -6,7 +6,7 @@ from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
 from crewai_tools import FileWriterTool, FileReadTool, DirectoryReadTool, DirectorySearchTool
 
-fileWriter = FileWriterTool()
+
 
 def test_lineitems():
     
@@ -16,6 +16,7 @@ def test_lineitems():
     campaigns = CampaignsTool()
     auction = AuctionLineitemsTool()
     preferred = PreferredLineitemsTool()
+    fileWriter = FileWriterTool()
 
     # accounts
     accounts_api_result = accounts._run()
