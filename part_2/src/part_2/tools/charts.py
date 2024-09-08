@@ -19,6 +19,13 @@ plot_colors = [
 
 
 class BarChartTool(BaseTool):
+    """
+    Used to create a bar chart using MatPlotLib.
+    Attributes:
+        name (str): The name of the tool.
+        description (str): The description of the tool.
+    """
+
     name: str = "Bar Chart Creator"
     description: str = (
         "Useful to create a bar chart using MatPlotLib. The input to this tool should be a list of categories and a list of values, the title and optionally a file name to save the plot."
@@ -35,6 +42,18 @@ class BarChartTool(BaseTool):
         file_name: Optional[str] = None,
         path: Optional[str] = None,
     ):
+        """
+        Create a bar chart using MatPlotLib.
+        Args:
+            categories (List): The categories to plot.
+            values (List[List[float]]): The values to plot.
+            x_label (str): The label for the x-axis.
+            y_label (str): The label for the y-axis.
+            labels (list[str]): The labels for the plot.
+            title (str): The title of the plot.
+            file_name (Optional[str]): The name of the file to save the plot.
+            path (Optional[str]): The path to save the plot.
+        """
         print("Creating bar chart")
         print("categories", categories)
         print("values", values)
@@ -69,6 +88,13 @@ class BarChartTool(BaseTool):
 
 
 class PieChartTool(BaseTool):
+    """
+    Used to create a pie chart using MatPlotLib.
+    Attributes:
+        name (str): The name of the tool.
+        description (str): The description of the tool.
+    """
+
     name: str = "Create a pie chart"
     description: str = (
         "Useful to create a pie chart using MatPlotLib. The input to this tool should be a list of categories and a list of values, the title and optionally a file name to save the plot."
@@ -80,6 +106,13 @@ class PieChartTool(BaseTool):
         title: str,
         file_name: Optional[str] = None,
     ):
+        """
+        Create a pie chart using MatPlotLib.
+        Args:
+            values (List): The values to plot.
+            title (str): The title of the plot.
+            file_name (Optional[str]): The name of the file to save the plot.
+        """
         # Create pie plot
         plt.pie(values, autopct="%1.1f%%", startangle=140)
         # Add title
