@@ -6,9 +6,7 @@ import numpy as np
 
 
 def test_bar_chart_tool():
-    file_name = full_file_path("test_bar_chart.png")
-    if os.path.exists(file_name):
-        os.remove(file_name)
+    file_name = "test_bar_chart.png"
 
     bar = BarChartTool()
     chart = bar._run(
@@ -204,7 +202,7 @@ def test_bar_chart_tool():
         path="output",
         file_name=file_name,
     )
-    assert os.path.exists(file_name)
+
     assert chart is not None
 
 

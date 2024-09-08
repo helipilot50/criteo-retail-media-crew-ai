@@ -10,8 +10,6 @@ from part_2.tests.utils import (
     auction,
     budget,
     date,
-    fetchToken,
-    full_file_path,
     preferred,
     short_date,
     write_data,
@@ -48,14 +46,12 @@ def reduce_lineitems(auction_lineitems, preferred_lineitems):
 
 
 def test_analytics_bar_chart():
-    token = fetchToken()
-    assert token is not None
 
     # tools
-    accounts = AccountsTool(token=token)
-    campaigns = CampaignsTool(token=token)
-    auction_li = AuctionLineitemsTool(token=token)
-    preferred_li = PreferredLineitemsTool(token=token)
+    accounts = AccountsTool()
+    campaigns = CampaignsTool()
+    auction_li = AuctionLineitemsTool()
+    preferred_li = PreferredLineitemsTool()
 
     # accounts
     accounts_api_result = accounts._run()

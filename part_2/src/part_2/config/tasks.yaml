@@ -1,42 +1,67 @@
 accounts:
   description: >
-    Retrieve a list of accounts available to this user.
+    Retrieve a list of accounts available to this user. Use the pageIndex and pageSize parameters to iterate through all accounts.
+    Write a file contaning the list of preferred lineitems in JSON format, the directory is 'output', 
+    the file name is 'accounts_file.json' and
+    the content is the list of accountss formated in JSON.
   expected_output: >
     A list of accounts available to this user.
+    
   agent: account_manager
 
-campaigns:
+store_accounts:
   description: >
-    Iterate through the {accounts list}, and for each {account} use the {account id} to get the campaigns.
+    Write a file contaning the list of accounts in JSON format, the directory is 'output', 
+    the file name is 'store_accounts_file.txt' and
+    the content is the list of retailers or brands formated as text.
+    Return the written file name
   expected_output: >
-    A list of campaigns for the account formatted as a table in Markdown.
-  agent: campaign_manager
-  context:
-    - accounts
+    A fully qualified path name of a file written.
+    
+  agent: file_manager
 
-auction_lineitems:
-  description: >
-    Iterate through the {campaigns list}, and for each {campaign} use the campaign {id} to get the  list of auction lineitems.
-    If there total items across all pages is zero simply provide an empty list.
-    Do not make more API calls than necessary, check the 'totalPages' field in the response and only make additional calls if necessary.
-    Write a JSON file where then content is  the list of preferred lineitems, the directory is 'output' and the file name is '{campaign name}_auction_lineitems.json'.
-  expected_output: >
-    A list of auction lineitems for the campaign formatted as JSON.
-  agent: campaign_manager
-  context:
-    - campaigns
+# campaigns:
+#   description: >
+#     Iterate through the cached accounts and for each account use the account {id} to get the campaigns.
+#     Use the pageIndex and pageSize parameters to get all campaigns for the account.
+#     Do not make more API calls than necessary.
+#     Using the FileWriter tool, write a file contaning the list of campaigns in JSON format, the directory is 'output', 
+#     the file name is 'campaign_file.json' and
+#     the content is the list of campaigns formated in JSON.
+#   expected_output: >
+#     A list of campaigns for the account formatted as JSON.
+#   agent: campaign_manager
+#   context:
+#     - accounts
 
-preferred_lineitems:
-  description: >
-    Iterate through the {campaigns list}, and for each {campaign} use the campaign {id} to get the list of preferred lineitems. 
-    If there total items across all pages is zero simply provide an empty list.
-    Do not make more API calls than necessary, check the 'totalPages' field in the response and only make additional calls if necessary.
-    Write a JSON file where the contenct is the list of preferred lineitems, the directory is 'output' and the file name is '{campaign name}_preferred_lineitems.json'.
-  expected_output: >
-    A list of preferred lineitems for the campaign formatted as json.
-  agent: campaign_manager
-  context:
-    - campaigns
+# auction_lineitems:
+#   description: >
+#     Interate through the cached campaigns and for each campaign use the campaigh {id} to get the auction lineitems.
+#     If there total items across all pages is zero simply provide an empty list.
+#     Use the pageIndex and pageSize parameters to get all lineitems for the campaign.
+#     Do not make more API calls than necessary.
+#     Using the FileWriter tool, write a file contaning the list of lineitems in JSON format, the directory is 'output', 
+#     the file name is '{campaign name}_auction_lineitems.json' and
+#     the content is the list of auction linitems formated in JSON.
+#   expected_output: A list of auction lineitems for the campaign formatted as JSON.
+#   agent: lineitems_manager
+#   context:
+#     - campaigns
+
+# preferred_lineitems:
+#   description: >
+#     Interate through the cached campaigns and for each campaign use the campaigh {id} to get the preferred lineitems.
+#     If there total items across all pages is zero simply provide an empty list.
+#     Use the pageIndex and pageSize parameters to get all lineitems for the campaign.
+#     Do not make more API calls than necessary.
+#     Write a file contaning the list of preferred lineitems in JSON format, the directory is 'output', 
+#     the file name is '{campaign name}_preferred_lineitems.json' and
+#     the content is the list of preferred linitems formated in JSON.
+#   expected_output: >
+#    A list of preferred lineitems formatted in JSON.
+#   agent: lineitems_manager
+#   context:
+#     - campaigns
 
 # lineitems_budget_chart:
 #   description: >

@@ -1,5 +1,6 @@
 from crewai_tools import BaseTool
 
+from part_2.tools.auth import get_token
 import requests
 import os
 
@@ -21,11 +22,13 @@ class CampaignsTool(BaseTool):
         "Calls the Retail Media  REST API and returns the Campaigns for an account by the  account {id} "
     )
     base_url: str = base_url_env
-    token: str
 
-    def _run(self, accountId: str):
-        headers = {"Authorization": "Bearer " + self.token}
-        response = requests.request(
-            "GET", f"{self.base_url}accounts/{accountId}/campaigns", headers=headers
-        )
+    def _run(self, accountId: str, pageIndex:int=0, pageSize:int=25):
+        headers = {"Authorization": "Bearer " + get_token()}
+        params = {"pageIndex":  pageIndex, "pageSize": pageSize} 
+        response = requests.get(
+            url=f"{self.base_url}accounts/{accountId}/campaigns", 
+            headers=headers,
+            params=params)
+        
         return response.json()

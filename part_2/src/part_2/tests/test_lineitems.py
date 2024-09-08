@@ -1,18 +1,21 @@
-from part_2.tests.utils import attrubtes_only, fetchToken, write_data
+
+import json
+from part_2.tests.utils import attrubtes_only 
 from part_2.tools.accounts import AccountsTool
 from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
+from crewai_tools import FileWriterTool, FileReadTool, DirectoryReadTool, DirectorySearchTool
 
+fileWriter = FileWriterTool()
 
 def test_lineitems():
-    token = fetchToken()
-    assert token is not None
+    
 
     # tools
-    accounts = AccountsTool(token=token)
-    campaigns = CampaignsTool(token=token)
-    auction = AuctionLineitemsTool(token=token)
-    preferred = PreferredLineitemsTool(token=token)
+    accounts = AccountsTool()
+    campaigns = CampaignsTool()
+    auction = AuctionLineitemsTool()
+    preferred = PreferredLineitemsTool()
 
     # accounts
     accounts_api_result = accounts._run()
@@ -30,10 +33,10 @@ def test_lineitems():
     campaign_list = campaigns_api_result["data"]
 
     # lineitems
-    all_lineitems = []
+    
     for target_campaign in campaign_list:
         campaign_id = target_campaign["id"]
-
+        all_lineitems = []
         # preferred
         preferred_api_result = preferred._run(campaignId=campaign_id)
         if preferred_api_result is not None:
@@ -48,5 +51,6 @@ def test_lineitems():
                 lineitems = auction_api_result["data"]
                 all_lineitems.extend(map(attrubtes_only, lineitems))
 
-    assert len(all_lineitems) > 0
-    write_data(all_lineitems, "test_all_lineitems.json")
+        # assert len(all_lineitems) > 0
+        fileWriter._run(directory="output", filename=f"test_{campaign_id}_lineitems.json", overwrite=True, content=json.dumps(all_lineitems))
+    

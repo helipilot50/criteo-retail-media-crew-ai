@@ -20,12 +20,6 @@ def write_data(data, file_name):
         file.write(json.dumps(data))
 
 
-def fetchToken():
-    auth = AuthTool()
-    response = auth._run()
-    return response["access_token"]
-
-
 def attrubtes_only(li):
     return li["attributes"]
 
