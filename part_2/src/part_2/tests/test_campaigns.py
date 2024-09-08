@@ -25,6 +25,6 @@ def test_campaigns():
     assert len(campaigns_api_result["data"]) > 0
     data = campaigns_api_result["data"]
     
-    fileWriter._run(directory='output', filename='test_{account_id}_campaigns.json', content=json.dumps(data), overwrite=True)
+    fileWriter._run(directory='output', filename=f'test_{account_id}_campaigns.json', content=json.dumps(data), overwrite=True)
     
 
