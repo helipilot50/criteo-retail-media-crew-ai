@@ -15,68 +15,80 @@ class Part2Crew:
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
 
-    # @agent
-    # def account_manager(self) -> Agent:
-    #     return Agent(
-    #         config=self.agents_config["account_manager"],
-    #         tools=[
-    #             AccountsTool(),
-    #         ],
-    #     )
-
     @agent
-    def campaign_manager(self) -> Agent:
+    def campaign_reader(self) -> Agent:
         return Agent(
-            config=self.agents_config["campaign_manager"],
+            config=self.agents_config["campaign_reader"],
             tools=[
                 CampaignsTool()
             ],
         )
     
     @agent
-    def lineitems_manager(self) -> Agent:
+    def lineitems_reader(self) -> Agent:
         return Agent(
-            config=self.agents_config["lineitems_manager"],
+            config=self.agents_config["lineitems_reader"],
             tools=[
                 AuctionLineitemsTool(),
-                # PreferredLineitemsTool(),
             ],
         )
 
-    # @agent
-    # def analyst(self) -> Agent:
-    #     return Agent(
-    #         config=self.agents_config["analyst"],
-    #         tools=[BarChartTool()],
-    #     )
+    @agent
+    def lineitem_reducer(self) -> Agent:
+        return Agent(
+            config=self.agents_config["lineitem_reducer"],
+        )
     
+    @agent
+    def visualizer_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config["visualizer_agent"],
+            tools=[
+                BarChartTool(),
+            ],
+        )
 
     @task
-    def campaigns(self) -> Task:
+    def fetch_campaigns_task(self) -> Task:
         return Task(
-            config=self.tasks_config["campaigns_task"],
+            config=self.tasks_config["fetch_campaigns_task"],
             output_file="output/campaigns.json",
+            tools=[
+                CampaignsTool(),
+            ],
+            agent=self.campaign_reader(),
         )
     
 
-    # @task
-    # def preferred_lineitems(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["preferred_lineitems"],
-    #     )
     
     @task
-    def auction_lineitems(self) -> Task:
+    def fetch_auction_lineitems(self) -> Task:
         return Task(
-            config=self.tasks_config["auction_lineitems"],
+            config=self.tasks_config["fetch_auction_lineitems"],
             output_file="output/campaigns_auction_lineitems.json",
+            tools=[
+                AuctionLineitemsTool(),
+            ],
+            agent=self.lineitems_reader(),
         )
+    
+    # @task
+    # def sumarise_monthly_lineitem_budget(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["sumarise_monthly_lineitem_budget"],
+    #         output_file="output/monthly_lineitem_budget.json",
+    #         agent=self.lineitem_reducer(),
+    #     )
 
     # @task
     # def lineitems_budget_chart(self) -> Task:
     #     return Task(
     #         config=self.tasks_config["lineitems_budget_chart"],
-    #     )
+    #         tools=[
+    #             BarChartTool(),
+    #         ],
+    #         agent=self.visualizer_agent(),
+        # )
 
     @crew
     def crew(self) -> Crew:

@@ -1,29 +1,27 @@
 
 
 
-campaigns_task:
+fetch_campaigns_task:
   description: >
-    Get campaigns for account {account_id}.
+    Get a collection campaigns for account {account_id}.
     Use the pageIndex and pageSize parameters to get all campaigns for the account.
     Do not make more API calls than necessary.
-    Reformat each campaign by removing the 'type' field and remap all fields in 'attributes' to the root level.
+    Reformat each campaign by removing the 'type' field, remap the fields 'name', 'budget' and 'budgetSpent' in 'attributes' to the root level, then remove the 'attributes' field.
+    If the budget is not provided, set it to 0.
   expected_output: >
-    A list of campaigns for the account formatted as JSON.
-  agent: campaign_manager
+    A collection of campaigns for the account formatted as JSON.
 
 
 
-auction_lineitems:
+fetch_auction_lineitems:
   description: >
-    Interate through the list of campaigns and for each campaign use the campaign id to get the auction lineitems.
+    for each element in the campaigns collection, fetch the auction lineitems using the campaign id.
     If there total items across all pages is zero simply provide an empty list.
     Use the pageIndex and pageSize parameters to get all lineitems for the campaign.
     Do not make more API calls than necessary.
-    Reformat each lineitem by removing the 'type' field and remap all fields in 'attributes' to the root level.
-  expected_output: A list of auction lineitems for each campaign formatted as JSON.
-  agent: lineitems_manager
-  context:
-    - campaigns
+    Reformat each lineitem by removing the 'type' field and remap the fields 'startDate', 'name', 'budget' to the root level, then delete the 'attributes' field.
+    If the budget is not provided, set it to 0.
+  expected_output: A collection of auction lineitems formatted as JSON.
 
 # preferred_lineitems:
 #   description: >
@@ -40,24 +38,14 @@ auction_lineitems:
 #   context:
 #     - campaigns
 
-# lineitems_budget_chart:
-#   description: >
-#     For each campaign, analyze the preferred and auction lineitems.
-#     step 1. Using auction and preferred lineitems reduce the data to a table of whole month intervals containin the total budget for auction line and the total budget for preferred lineitems, 
-#     for each month. with the output like this example 
-#     [{date: '2021-01-01', auction: 1000.00, preferred: 2000.00},{date: '2021-02-01', auction: 1500.00, preferred: 2500.00}]
-#     step 2. Produce a bar chart for each campaign using the data from step 1, where the x-axis is the date and the y-axis is the total budget, 
-#     the file name is the campaign name and its ID and the path is 'output',
-#     the chart title is the campaign name and its ID,
-#     the categories ar the date,
-#     the values are the auction and preferred values.
-#     step 3. Sum the the number of auction lineitems and preferred lineitems for all campaigns and output as a table.
-
-#   expected_output: >
-#     A bar chart for each campaign where the dates is the categories and the values auction and preferred. The tile is the campaign name and ID. The file_name is the campaign name and ID.  
-#     A table showing the campaign name, campaign id and the count of preferred and auction lineitems.
-#   agent: analyst
-#   context:
-#     - preferred_lineitems
-#     - auction_lineitems
-#     - campaigns
+sumarise_monthly_lineitem_budget:
+  description: >
+    Summarize the detailed data from the second API into a meaningful format.
+  expected_output: >
+    A summary of the data collected from the APIs.
+    
+lineitems_budget_chart:
+  description: >
+    Create a bar chart from the summarized lineitem data.
+  expected_output: >
+    A bar chart image.
