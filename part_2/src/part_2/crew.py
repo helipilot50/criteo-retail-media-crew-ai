@@ -1,25 +1,18 @@
 import os
-from part_2.tools.charts import BarChartTool, PieChartTool
+from part_2.tools.charts import BarChartTool
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from langchain_openai import ChatOpenAI
-from part_2.tools.accounts import AccountsTool
 from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
-from crewai_tools import (
-    FileWriterTool,
-    FileReadTool,
-    DirectoryReadTool,
-    DirectorySearchTool,
-)
+
 
 # only if you use Azure
-from langchain_openai import AzureChatOpenAI
+from langchain.chat_models.azure_openai import AzureChatOpenAI
 
-azure_llm = AzureChatOpenAI(
-    model_name=os.environ["OPENAI_MODEL_NAME"],
-    deployment_name=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
+llm = AzureChatOpenAI(
+    model="gpt-4o", deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"]
 )
+
 # end Azure
 
 
@@ -30,13 +23,23 @@ class Part2Crew:
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
 
+    # @agent
+    # def local_expert(self) -> Agent:
+    #     return Agent(
+    #         role="Local Expert",
+    #         goal="Provide insights about the city",
+    #         backstory="A knowledgeable local guide.",
+    #         verbose=True,
+    #         llm=llm,
+    #     )
+
     @agent
     def campaign_reader(self) -> Agent:
         return Agent(
             config=self.agents_config["campaign_reader"],
             tools=[CampaignsTool()],
             # Azure
-            llm=azure_llm,
+            llm=llm,
         )
 
     @agent
@@ -47,7 +50,7 @@ class Part2Crew:
                 AuctionLineitemsTool(),
             ],
             # Azure
-            llm=azure_llm,
+            llm=llm,
         )
 
     @agent
@@ -55,7 +58,7 @@ class Part2Crew:
         return Agent(
             config=self.agents_config["lineitem_reducer"],
             # Azure
-            llm=azure_llm,
+            llm=llm,
         )
 
     @agent
@@ -66,8 +69,17 @@ class Part2Crew:
                 BarChartTool(),
             ],
             # Azure
-            llm=azure_llm,
+            llm=llm,
         )
+
+    # @task
+    # def attractions_research(self) -> Task:
+    #     return Task(
+    #         description="What are the best places to visit in Paris?",
+    #         agent=self.local_expert(),
+    #         expected_output="A list of top tourist attractions.",
+    #         output_file="output/tourist_attractions.txt",
+    #     )
 
     @task
     def fetch_campaigns_task(self) -> Task:
@@ -91,24 +103,6 @@ class Part2Crew:
             agent=self.lineitems_reader(),
         )
 
-    # @task
-    # def sumarise_monthly_lineitem_budget(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["sumarise_monthly_lineitem_budget"],
-    #         output_file="output/monthly_lineitem_budget.json",
-    #         agent=self.lineitem_reducer(),
-    #     )
-
-    # @task
-    # def lineitems_budget_chart(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["lineitems_budget_chart"],
-    #         tools=[
-    #             BarChartTool(),
-    #         ],
-    #         agent=self.visualizer_agent(),
-    # )
-
     @crew
     def crew(self) -> Crew:
         """Creates the Part 2 crew"""
@@ -117,8 +111,7 @@ class Part2Crew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            memory=True,
             planning=True,
-            planning_llm=azure_llm,  # Azure
+            planning_llm=llm,  # Azure
             output_log_file="output/part_2.log",
         )

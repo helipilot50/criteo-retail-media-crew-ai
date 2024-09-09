@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+from part_2.azure_example import AzureExample
 from part_2.crew import Part2Crew
 
 from dotenv import load_dotenv
@@ -8,19 +9,21 @@ load_dotenv()
 
 
 def run():
-
     """
     User inputs the account ID
     """
     account_id = input("Account ID: ")
-    print("Running crew for account id: " + account_id )
+    print("Running crew for account id: " + account_id)
 
     inputs = {"account_id": str(account_id)}
 
     """
     Run the crew.
     """
-    Part2Crew().crew().kickoff(inputs=inputs)
+    if account_id == "azure":
+        AzureExample().crew().kickoff()
+    else:
+        Part2Crew().crew().kickoff(inputs=inputs)
 
 
 def train():

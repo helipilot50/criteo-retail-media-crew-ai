@@ -7,7 +7,7 @@
 **/output/**/*.png
 **/output/**/*.jpg
 **/output/**/*.jpeg
-
+**/output/**/*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
