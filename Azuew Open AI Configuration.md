@@ -30,3 +30,9 @@ azure_agent = Agent(
   llm=azure_llm
 )
 ```
+
+## References
+
+- [Azure OpenAI service documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
+- [Models](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models)
+- [FAQ](https://learn.microsoft.com/en-us/azure/ai-services/openai/faq)
