@@ -23,16 +23,6 @@ class Part2Crew:
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
 
-    # @agent
-    # def local_expert(self) -> Agent:
-    #     return Agent(
-    #         role="Local Expert",
-    #         goal="Provide insights about the city",
-    #         backstory="A knowledgeable local guide.",
-    #         verbose=True,
-    #         llm=llm,
-    #     )
-
     @agent
     def campaign_reader(self) -> Agent:
         return Agent(
@@ -71,15 +61,6 @@ class Part2Crew:
             # Azure
             llm=llm,
         )
-
-    # @task
-    # def attractions_research(self) -> Task:
-    #     return Task(
-    #         description="What are the best places to visit in Paris?",
-    #         agent=self.local_expert(),
-    #         expected_output="A list of top tourist attractions.",
-    #         output_file="output/tourist_attractions.txt",
-    #     )
 
     @task
     def fetch_campaigns_task(self) -> Task:
