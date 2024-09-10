@@ -1,20 +1,45 @@
+from datetime import date, datetime
 import os
 from part_2.tools.charts import BarChartTool
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from part_2.tools.campaigns import CampaignsTool
 from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
-
+from pydantic import BaseModel, Field
+from typing import List
 
 # only if you use Azure
 from langchain.chat_models.azure_openai import AzureChatOpenAI
 
+
 llm = AzureChatOpenAI(
-    model="gpt-4o", deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"]
+    model=os.environ["OPENAI_MODEL_NAME"], 
+    deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"]
 )
 
 # end Azure
 
+class Campaign(BaseModel):
+    """Campaign model"""
+    id: str = Field(..., description="ID of the campaign")
+    name: str = Field(..., description="Name of the campaign")
+    budget: float = Field(..., description="Budget of the campaign")
+    budgetSpent: float = Field(..., description="Budget spent of the campaign")
+class CampaignList(BaseModel):
+    campaigns: List[Campaign] = Field(..., description="List of campaigns")
+
+class Lineitem(BaseModel):
+    """Lineitem model"""
+    id: str = Field(..., description="ID of the Lineitem")
+    campaignId: str = Field(..., description="ID of the campaign ownin this Lineitem")
+    startDate: date = Field(..., description="Start date of the Lineitem")
+    name: str = Field(..., description="Name of the Lineitem")
+    budget: float = Field(..., description="Budget of the Lineitem")
+    status: str = Field(..., description="Status of the Lineitem")
+    createdAt: datetime = Field(..., description="Creation date of the Lineitem")
+    
+class LineitemList(BaseModel):
+    lineitems: List[Lineitem] = Field(..., description="List of Lineitems")
 
 @CrewBase
 class Part2Crew:
@@ -71,6 +96,7 @@ class Part2Crew:
                 CampaignsTool(),
             ],
             agent=self.campaign_reader(),
+            output_json=CampaignList,
         )
 
     @task
@@ -82,6 +108,7 @@ class Part2Crew:
                 AuctionLineitemsTool(),
             ],
             agent=self.lineitems_reader(),
+            output_json=LineitemList,
         )
 
     @crew
