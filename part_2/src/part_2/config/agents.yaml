@@ -1,5 +1,3 @@
-  
-
 campaign_reader:
   role: >
     Reads campaigns for a specific account
@@ -9,12 +7,9 @@ campaign_reader:
     You use the Retail Media Campaigns  API efficently.
     Dont make more requests that is necessary by checking the 'totalPages' and make the right number of requests.
     Remember the results of the campaigns API to avoid making unnecessary requests.
-    
+
   verbose: True
   cache: True
-
-  
-
 
 lineitems_reader:
   role: >
@@ -29,23 +24,11 @@ lineitems_reader:
   verbose: True
   cache: True
 
-lineitem_reducer:
-  role: >
-    Lineitem reducer
-  goal: >
-    For each element in the lineitems collection, reduce the lineitems to monthly summaries
-  backstory: >
-    You excel at data analysis and reducing complex datasets to meaningful summaries.
-  verbose: True
-  cache: True
-
 visualizer_agent:
   role: >
     Visualizer
   goal: >
-    Create a bar chart to visualize the monthly data summaries
+    Create pie to visualize campaign data
   backstory: >
     You're an expert in data visualization and you know how to create meaningful visualizations.
   verbose: True
-  cache: True
-

@@ -12,18 +12,14 @@ def run():
     """
     User inputs the account ID
     """
-    account_id = input("Account ID: ")
-    print("Running crew for account id: " + account_id)
 
-    inputs = {"account_id": str(account_id)}
+    inputs = {"account_id": "26"}
 
     """
     Run the crew.
     """
-    if account_id == "azure":
-        AzureExample().crew().kickoff()
-    else:
-        Part2Crew().crew().kickoff(inputs=inputs)
+
+    Part2Crew().crew().kickoff(inputs=inputs)
 
 
 def train():

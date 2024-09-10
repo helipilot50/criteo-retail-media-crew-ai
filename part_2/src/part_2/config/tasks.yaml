@@ -1,52 +1,21 @@
-
-
-
 fetch_campaigns_task:
   description: >
     Get a collection campaigns for account {account_id}.
     Use the pageIndex and pageSize parameters to get all campaigns for the account.
+    If the budget is not provided  or is zero, ignore the campaign.
+    Use the pageIndex and pageSize parameters to get all lineitems for the campaign.
     Do not make more API calls than necessary.
     Reformat each campaign by removing the 'type' field, remap the fields 'name', 'budget' and 'budgetSpent' in 'attributes' to the root level, then remove the 'attributes' field.
     If the budget is not provided, set it to 0.
   expected_output: >
     A collection of campaigns for the account formatted as JSON.
 
-
-
-fetch_auction_lineitems:
+campaigns_budget_pie_chart:
   description: >
-    for each element in the campaigns collection, fetch the auction lineitems using the campaign id.
-    If there total items across all pages is zero simply provide an empty list.
-    Use the pageIndex and pageSize parameters to get all lineitems for the campaign.
-    Do not make more API calls than necessary.
-    Reformat each lineitem by:
-    1. removing the 'type' field 
-    2. move the fields 'campaignId', 'startDate', 'name', 'budget', 'status' to the root level.
-    3. delete the 'attributes' field.
-    If the budget is not provided, set it to 0.
-  expected_output: A collection of auction lineitems formatted as JSON.
-
-preferred_lineitems:
-  description: >
-    for each element in the campaigns collection, fetch the preferred lineitems using the campaign id.
-    If there total items across all pages is zero simply provide an empty list.
-    Use the pageIndex and pageSize parameters to get all lineitems for the campaign.
-    Do not make more API calls than necessary.
-    Reformat each lineitem by:
-    1. removing the 'type' field 
-    2. move the fields 'campaignId', 'startDate', 'name', 'budget', 'status' to the root level.
-    3. delete the 'attributes' field.If the budget is not provided, set it to 0.
+    Create a pie chart from the data in the campaigns collection.
+    The 'values' should be the sum of the 'budget' field for each campaign.
+    The 'labels' should be the 'name' field for each campaign.
+    The 'title' should be 'Campaign Budgets'.
+    The 'file_name' should be 'output/campaign_budget_pie_chart.png'.
   expected_output: >
-   A collection of preferred lineitems formatted as JSON.
-
-sumarise_monthly_lineitem_budget:
-  description: >
-    Summarize the detailed data from the second API into a meaningful format.
-  expected_output: >
-    A summary of the data collected from the APIs.
-    
-lineitems_budget_chart:
-  description: >
-    Create a bar chart from the summarized lineitem data.
-  expected_output: >
-    A bar chart image.
+    A pie chart image.
