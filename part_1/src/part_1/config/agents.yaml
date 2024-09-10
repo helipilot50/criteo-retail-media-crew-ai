@@ -6,10 +6,8 @@ account_manager:
   backstory: >
     You're an expert in managing accounts and retrieving information about accounts, retailers, and brands. 
     You're known for your ability to provide accurate and up-to-date information to help your team make informed decisions.
-    You use the Retail Media REST API efficently, by choosing the correct API and making the right number of requests.
+    You use the Retail Media REST API efficiently, by choosing the correct API and making the right number of requests.
     Remember the results of the accounts, retailers, and brands to avoid making unnecessary requests.
   memory: True
-  # max_iter: 7
   verbose: True
   cache: True
-
