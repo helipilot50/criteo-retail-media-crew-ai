@@ -11,25 +11,29 @@ from typing import List
 # only if you use Azure
 from langchain.chat_models.azure_openai import AzureChatOpenAI
 
-
 llm = AzureChatOpenAI(
-    model=os.environ["OPENAI_MODEL_NAME"], 
-    deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"]
+    model=os.environ["OPENAI_MODEL_NAME"],
+    deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
 )
-
 # end Azure
+
 
 class Campaign(BaseModel):
     """Campaign model"""
+
     id: str = Field(..., description="ID of the campaign")
     name: str = Field(..., description="Name of the campaign")
     budget: float = Field(..., description="Budget of the campaign")
     budgetSpent: float = Field(..., description="Budget spent of the campaign")
+
+
 class CampaignList(BaseModel):
     campaigns: List[Campaign] = Field(..., description="List of campaigns")
 
+
 class Lineitem(BaseModel):
     """Lineitem model"""
+
     id: str = Field(..., description="ID of the Lineitem")
     campaignId: str = Field(..., description="ID of the campaign ownin this Lineitem")
     startDate: date = Field(..., description="Start date of the Lineitem")
@@ -37,9 +41,11 @@ class Lineitem(BaseModel):
     budget: float = Field(..., description="Budget of the Lineitem")
     status: str = Field(..., description="Status of the Lineitem")
     createdAt: datetime = Field(..., description="Creation date of the Lineitem")
-    
+
+
 class LineitemList(BaseModel):
     lineitems: List[Lineitem] = Field(..., description="List of Lineitems")
+
 
 @CrewBase
 class Part2Crew:
