@@ -12,8 +12,8 @@ def run():
     """
     User inputs the account ID
     """
-
-    inputs = {"account_id": "26"}
+    account_id = input("Enter the account ID: ")
+    inputs = {"account_id": account_id}
 
     """
     Run the crew.

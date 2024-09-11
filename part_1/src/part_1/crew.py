@@ -6,7 +6,7 @@ from part_1.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 import os
 
 # only if you use Azure
-from langchain.chat_models.azure_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI
 
 llm = AzureChatOpenAI(
     model=os.environ["OPENAI_MODEL_NAME"],

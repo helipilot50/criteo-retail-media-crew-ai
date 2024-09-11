@@ -51,17 +51,14 @@ This command initializes the part_3 Crew, assembling the agents and assigning th
 
 This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
 
-## Understanding Your Crew
+## References
 
-The part_3 Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
+Reference materials used to create this example:
 
-## Support
-
-For support, questions, or feedback regarding the Part3 Crew or crewAI.
-
-- Visit our [documentation](https://docs.crewai.com)
-- Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
-- [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with our docs](https://chatg.pt/DWjSBZn)
-
-Let's create wonders together with the power and simplicity of crewAI.
+- Criteo Retail Media API [documentation](https://developers.criteo.com/retail-media/docs/welcome-to-criteo)
+- CrewAI [documentation](https://docs.crewai.com)
+- CrewAI [GitHub repository](https://github.com/joaomdmoura/crewai)
+- Pydantic [documentation](https://docs.pydantic.dev/latest/)
+- Poetry [documentation](https://python-poetry.org/docs/)
+- ChainLit [Medium article](https://medium.com/@pratyush.talent/using-human-as-tool-with-crewai-in-chainlit-da063dea0e31) and [documentation](https://docs.chainlit.io/get-started/overview)
+- ANother chainglit [article](https://krishankantsinghal.medium.com/supercharge-your-conversational-ai-integrating-chainlit-and-crewai-for-powerful-interactions-ca8a50ec1851)

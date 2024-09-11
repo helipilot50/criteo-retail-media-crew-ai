@@ -16,7 +16,7 @@ from part_2.tools.charts import BarChartTool, PieChartTool
 from part_2.tools.campaigns import CampaignsTool
 
 # only if you use Azure
-from langchain.chat_models.azure_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI
 
 llm = AzureChatOpenAI(
     model=os.environ["OPENAI_MODEL_NAME"],

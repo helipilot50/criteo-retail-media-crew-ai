@@ -1,14 +1,22 @@
+import os
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from langchain_openai import ChatOpenAI
 from part_3.tools.analytics import (
     CampaignAnalyticsTool,
-    DownloadReportTool,
+    ReportDownloadTool,
     ReportStatusTool,
 )
 from part_3.tools.campaigns import CampaignsTool
 
+# only if you use Azure
+from langchain_openai import AzureChatOpenAI
 
+llm = AzureChatOpenAI(
+    model=os.environ["OPENAI_MODEL_NAME"],
+    deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
+)
+# end Azure
 
 @CrewBase
 class Part3Crew:
@@ -25,6 +33,7 @@ class Part3Crew:
             verbose=True,
             cache=True,
             memory=True,
+            llm=llm,
         )
 
     @agent
@@ -34,12 +43,13 @@ class Part3Crew:
             tools=[
                 CampaignAnalyticsTool(),
                 ReportStatusTool(),
-                DownloadReportTool(),
+                ReportDownloadTool(),
             ],
             verbose=True,
             max_iter=2,
             max_rpm=5,
             memory=True,
+            llm=llm,
         )
 
     # @agent
@@ -62,6 +72,8 @@ class Part3Crew:
             config=self.tasks_config["campaigns"],
             cache=True,
             output_file="output/campaign_ids.json",
+            agent=self.campaign_manager(),
+            human_input=True,
         )
 
     @task
