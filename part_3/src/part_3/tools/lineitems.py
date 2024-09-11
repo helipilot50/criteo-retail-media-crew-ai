@@ -23,12 +23,12 @@ class PreferredLineitemsTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, campaignId: str, pageIndex:int=0, pageSize:int=25):
+    def _run(self, campaignId: str, pageIndex: int = 0, pageSize: int = 25):
         """
         Fetches the Retail Media preferred Lineitems for campaign by {campaignId} and returns relevant results
         """
         headers = {"Authorization": "Bearer " + get_token()}
-        params = {"pageIndex":  pageIndex, "pageSize": pageSize} 
+        params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
             url=f"{self.base_url}campaigns/{campaignId}/preferred-line-items",
             headers=headers,
@@ -53,16 +53,16 @@ class AuctionLineitemsTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, campaignId: str, pageIndex:int=0, pageSize:int=25):
+    def _run(self, campaignId: str, pageIndex: int = 0, pageSize: int = 25):
         """
         Fetches the Retail Media auction Lineitems for campaign by {campaignId} and returns relevant results.
         """
         headers = {"Authorization": "Bearer " + get_token()}
-        params = {"pageIndex":  pageIndex, "pageSize": pageSize} 
+        params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
             url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
             headers=headers,
-            params=params,  
+            params=params,
         )
         return response.json()
 
@@ -83,15 +83,72 @@ class AccountLineitemsTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, accountId: str, pageIndex:int=0, pageSize:int=25):
+    def _run(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
         """
         Fetches the Retail Media account Lineitems for account by {accountId} and returns relevant results.
         """
         headers = {"Authorization": "Bearer " + get_token()}
-        params = {"pageIndex":  pageIndex, "pageSize": pageSize} 
+        params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
-            url=f"{self.base_url}accounts/{accountId}/line-items", 
+            url=f"{self.base_url}accounts/{accountId}/line-items",
             headers=headers,
-            params=params
+            params=params,
+        )
+        return response.json()
+
+
+class NewAuctionLineitemTool(BaseTool):
+    """
+    Onsite Sponsored Products Line Items
+    Used to create a Retail Media Auction Lineitem and return relevant results.
+    Attributes:
+        name (str): The name of the tool.
+        description (str): The description of the tool.
+        base_url (str): The base URL of the API.
+    """
+
+    name: str = "Retail Media New Auction Lineitem API Caller"
+    description: str = (
+        "Calls the Retail Media  REST API and creates a auction Lineitem for a campaign by the campaign {id}"
+    )
+    base_url: str = base_url_env
+
+    def _run(self, campaignId: str, lineitem: dict):
+        """
+        Creates a Retail Media Auction Lineitem for campaign by {campaignId} and returns relevant results.
+        """
+        headers = {"Authorization": "Bearer " + get_token()}
+        response = requests.post(
+            url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
+            headers=headers,
+            json=lineitem,
+        )
+        return response.json()
+
+
+class NewPreferredLineitemTool(BaseTool):
+    """
+    Used to create a Retail Media Preferred Lineitem and return relevant results.
+    Attributes:
+        name (str): The name of the tool.
+        description (str): The description of the tool.
+        base_url (str): The base URL of the API.
+    """
+
+    name: str = "Retail Media New Preferred Lineitem API Caller"
+    description: str = (
+        "Calls the Retail Media  REST API and creates a preferred Lineitem for a campaign by the campaign {id}"
+    )
+    base_url: str = base_url_env
+
+    def _run(self, campaignId: str, lineitem: dict):
+        """
+        Creates a Retail Media  Preferred Lineitem for campaign by {campaignId} and returns relevant results.
+        """
+        headers = {"Authorization": "Bearer " + get_token()}
+        response = requests.post(
+            url=f"{self.base_url}campaigns/{campaignId}/preferred-line-items",
+            headers=headers,
+            json=lineitem,
         )
         return response.json()
