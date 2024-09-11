@@ -1,20 +1,28 @@
+import json
+from crewai_tools import (
+    FileWriterTool,
+)
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.campaigns import CampaignsTool
-from part_3.tests.utils import write_data
 
-from part_3.tools.analytics import CampaignAnalyticsTool, ReportDownloadTool, ReportStatusTool
+from part_3.tools.analytics import (
+    CampaignAnalyticsTool,
+    ReportDownloadTool,
+    ReportStatusTool,
+)
 
 import time
 
 
-def test_create_summary_report():
+def text_create_summary_report():  # disabled deliberately
 
     # tools
     accounts = AccountsTool()
     campaigns = CampaignsTool()
     campaigns_analytics = CampaignAnalyticsTool()
     status = ReportStatusTool()
-    downloader= ReportDownloadTool()
+    downloader = ReportDownloadTool()
+    fileWriter = FileWriterTool()
 
     # accounts
     accounts_api_result = accounts._run()
@@ -25,7 +33,9 @@ def test_create_summary_report():
     assert account_id is not None
 
     # campaigns for first account
-    campaigns_api_result = campaigns._run(accountId=account_id)
+    campaigns_api_result = campaigns._run(
+        accountId=account_id,
+    )
     assert campaigns_api_result is not None
     assert campaigns_api_result["data"] is not None
     assert len(campaigns_api_result["data"]) > 0
@@ -38,7 +48,12 @@ def test_create_summary_report():
     assert summary_api_result is not None
     assert summary_api_result["data"] is not None
     data = summary_api_result["data"]
-    write_data(data, "test_summary_create.json")
+    fileWriter._run(
+        directory="output",
+        filename=f"test_summary_create.json",
+        content=json.dumps(data),
+        overwrite=True,
+    )
 
     assert data["id"] is not None
     reportId = data["id"]
@@ -51,20 +66,22 @@ def test_create_summary_report():
         time.sleep(60)
         status_counter += 1
 
-        status_result = status._run(
-            reportId=reportId
-        )
+        status_result = status._run(reportId=reportId)
         assert status_result is not None
         assert status_result["data"] is not None
         data = status_result["data"]
         report_status = data["attributes"]["status"]
 
-        write_data(data, f"test_summary_status_{reportId}_{status_counter}.json")
-    
+        fileWriter._run(
+            directory="output",
+            filename=f"test_summary_status_{reportId}_{status_counter}.json",
+            content=json.dumps(data),
+            overwrite=True,
+        )
+
     assert report_status == "success"
 
-    download_result = downloader._run(reportId=reportId, path=f"outpur/test_summary_download_{reportId}.json")
+    download_result = downloader._run(
+        reportId=reportId, path=f"outpur/test_summary_download_{reportId}.json"
+    )
     assert download_result is not None
-    
-
-

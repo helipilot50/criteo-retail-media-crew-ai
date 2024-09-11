@@ -1,6 +1,6 @@
 from crewai_tools import BaseTool
 
-from part_2.tools.access import get_token
+from part_3.tools.access import get_token
 import requests
 import os
 
@@ -14,7 +14,6 @@ class PreferredLineitemsTool(BaseTool):
         name (str): The name of the tool.
         description (str): The description of the tool.
         base_url (str): The base URL of the API.
-        token (str): The token for authorization
     """
 
     name: str = "Retail Media preferred Lineitems  API Caller"
@@ -44,7 +43,6 @@ class AuctionLineitemsTool(BaseTool):
         name (str): The name of the tool.
         description (str): The description of the tool.
         base_url (str): The base URL of the API.
-        token (str): The token for authorization
     """
 
     name: str = "Retail Media auction Lineitems API Caller"
@@ -74,7 +72,6 @@ class AccountLineitemsTool(BaseTool):
         name (str): The name of the tool.
         description (str): The description of the tool.
         base_url (str): The base URL of the API.
-        token (str): The token for authorization
     """
 
     name: str = "Retail Media Account Lineitems API Caller"
@@ -150,5 +147,62 @@ class NewPreferredLineitemTool(BaseTool):
             url=f"{self.base_url}campaigns/{campaignId}/preferred-line-items",
             headers=headers,
             json=lineitem,
+        )
+        return response.json()
+
+
+class NewOpenAuctionLineitemTool(BaseTool):
+    """
+    Used to create a Retail Media Open Auction Lineitem and return relevant results.
+    Attributes:
+        name (str): The name of the tool.
+        description (str): The description of the tool.
+        base_url (str): The base URL of the API.
+    """
+
+    name: str = "Retail Media New Open Auction Lineitem API Caller"
+    description: str = (
+        "Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id"
+    )
+    base_url: str = base_url_env
+
+    def _run(self, campaignId: str, lineitem: dict):
+        """
+        Creates a Retail Media  Open Auction Lineitem for campaign by the campaign id and returns relevant results.
+        """
+        headers = {"Authorization": "Bearer " + get_token()}
+        response = requests.post(
+            url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
+            headers=headers,
+            json=lineitem,
+        )
+        return response.json()
+
+
+class PromotedProducts(BaseTool):
+    """
+    Used to fetch the Retail Media Promoted Products  for a Lineitem and return relevant results.
+    Attributes:
+        name (str): The name of the tool.
+        description (str): The description of the tool.
+        base_url (str): The base URL of the API.
+    """
+
+    name: str = "Retail Media Promoted Products API Caller"
+    description: str = (
+        "Calls the Retail Media  REST API and returns the Promoted Products for a lineitem using the lineitem id"
+    )
+    base_url: str = base_url_env
+
+    def _run(self, lineitemId: str, pageIndex: int = 0, pageSize: int = 25):
+        """
+        Fetches the Retail Media Promoted Products on the Lineitem.
+        """
+        headers = {"Authorization": "Bearer " + get_token()}
+        params = {"pageIndex": pageIndex, "pageSize": pageSize}
+        response = requests.get(
+            url=f"{self.base_url}line-items/{lineitemId}/products",
+            headers=headers,
+            params=params,
         )
         return response.json()

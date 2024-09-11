@@ -1,6 +1,7 @@
 from typing import List
 from crewai_tools import BaseTool
 
+from part_3.tools.access import get_token
 import requests
 import os
 import json
@@ -29,21 +30,20 @@ class CampaignAnalyticsTool(BaseTool):
         "Calls the Retail Media  REST API and returns a report for the requested campaign id and date range"
     )
     base_url: str = base_url_env
-    token: str
 
     def _run(self, campaignIds: List[str], startDate: str, endDate: str):
-        # print("campaignIds", campaignIds)
-        # print("startDate", startDate)
-        # print("endDate", endDate)
+        print("campaignIds", campaignIds)
+        print("startDate", startDate)
+        print("endDate", endDate)
         url = f"{self.base_url}reports/campaigns"
         # https://api.criteo.com/2024-01/retail-media/reports/campaigns
-        # print("url", url)
-        # print("token", self.token)
         headers = {
-            "Authorization": "Bearer " + self.token,
+            "Authorization": "Bearer " + get_token(),
             "Content-Type": "application/json",
-            "accept": "application/json"}
-        payload = {"data" : {
+            "accept": "application/json",
+        }
+        payload = {
+            "data": {
                 "type": "RetailMediaReportRequest",
                 "attributes": {
                     "ids": campaignIds,
@@ -60,9 +60,9 @@ class CampaignAnalyticsTool(BaseTool):
             url,
             headers=headers,
             # json=json.dumps(payload),
-            json=payload
+            json=payload,
         )
-        
+
         # print("response", response)
         response_as_json = response.json()
         # print("response_as_json", response_as_json )
@@ -76,24 +76,23 @@ class LineitemAnalyticsTool(BaseTool):
         "Calls the Retail Media  REST API and returns the analytic for the requested lineitems"
     )
     base_url: str = base_url_env
-    token: str
 
     def _run(self, lineitemIds: List[str], startDate: str, endDate: str):
-        headers = {"Authorization": "Bearer " + self.token}
-        data= {
-                "type": "RetailMediaReportRequest",
-                "attributes": {
-                    "id": lineitemIds,
-                    "metrics": ["impressions"],
-                    "dimensions": ["date"],
-                    "reportType": "summary",
-                    "startDate": startDate,
-                    "endDate": endDate,
-                    "timeZone": "America/New_York",
-                    "campaignType": "sponsoredProducts",
-                    "salesChannel": "offline",
-                },
-            }
+        headers = {"Authorization": "Bearer " + get_token()}
+        data = {
+            "type": "RetailMediaReportRequest",
+            "attributes": {
+                "id": lineitemIds,
+                "metrics": ["impressions"],
+                "dimensions": ["date"],
+                "reportType": "summary",
+                "startDate": startDate,
+                "endDate": endDate,
+                "timeZone": "America/New_York",
+                "campaignType": "sponsoredProducts",
+                "salesChannel": "offline",
+            },
+        }
         response = requests.request(
             "POST",
             f"{self.base_url}reports/line-items",
@@ -110,10 +109,9 @@ class ReportStatusTool(BaseTool):
         "Calls the Retail Media  REST API and returns the status for the report using reportId"
     )
     base_url: str = base_url_env
-    token: str
 
     def _run(self, reportId: str):
-        headers = {"Authorization": "Bearer " + self.token}
+        headers = {"Authorization": "Bearer " + get_token()}
 
         response = requests.get(
             f"{self.base_url}reports/{reportId}/status",
@@ -125,13 +123,14 @@ class ReportStatusTool(BaseTool):
 
 class ReportDownloadTool(BaseTool):
     name: str = "Retail Media report download API Caller"
-    description: str = "Calls the Retail Media  REST API to download a report using reportId"
+    description: str = (
+        "Calls the Retail Media  REST API to download a report using reportId"
+    )
     base_url: str = base_url_env
-    token: str
 
     def _run(self, reportId: str, path: str):
 
-        headers = {"Authorization": "Bearer " + self.token}
+        headers = {"Authorization": "Bearer " + get_token}
         response = requests.request(
             "GET",
             f"{self.base_url}reports/{reportId}/output",

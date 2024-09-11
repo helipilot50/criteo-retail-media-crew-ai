@@ -1,23 +1,34 @@
-from part_3.tests.utils import  write_data
+import json
 from part_3.tools.accounts import AccountsTool, BrandsTool, RetailersTool
+from crewai_tools import (
+    FileWriterTool,
+    FileReadTool,
+    DirectoryReadTool,
+    DirectorySearchTool,
+)
 
 
 def test_accounts():
 
-
     accounts = AccountsTool()
+    fileWriter = FileWriterTool()
     accounts_api_result = accounts._run()
     assert accounts_api_result is not None
     assert accounts_api_result["data"] is not None
     assert len(accounts_api_result["data"]) > 0
     data = accounts_api_result["data"]
-    write_data(data, "test_accounts.json")
+    fileWriter._run(
+        directory="output",
+        filename=f"test_accounts.json",
+        overwrite=True,
+        content=json.dumps(data),
+    )
 
 
 def test_accounts_brands():
 
-
     accounts = AccountsTool()
+    fileWriter = FileWriterTool()
     accounts_api_result = accounts._run()
     assert accounts_api_result is not None
     assert accounts_api_result["data"] is not None
@@ -32,13 +43,20 @@ def test_accounts_brands():
     assert brands_api_result["data"] is not None
     assert len(brands_api_result["data"]) > 0
     data = brands_api_result["data"]
-    write_data(data, "test_account_brands.json")
+    fileWriter._run(
+        directory="output",
+        filename=f"test_account_{account_id}_brands.json",
+        overwrite=True,
+        content=json.dumps(data),
+    )
 
 
 def test_accounts_retailers():
 
-
     accounts = AccountsTool()
+    fileWriter = FileWriterTool()
+    retailers = RetailersTool()
+
     accounts_api_result = accounts._run()
     assert accounts_api_result is not None
     assert accounts_api_result["data"] is not None
@@ -47,10 +65,14 @@ def test_accounts_retailers():
     account_id = accounts_api_result["data"][0]["id"]
     assert account_id is not None
 
-    retailers = RetailersTool()
     retailers_api_result = retailers._run(accountId=account_id)
     assert retailers_api_result is not None
     assert retailers_api_result["data"] is not None
     assert len(retailers_api_result["data"]) > 0
     data = retailers_api_result["data"]
-    write_data(data, "test_account_retailers.json")
+    fileWriter._run(
+        directory="output",
+        filename=f"test_account_{account_id}_retailers.json",
+        overwrite=True,
+        content=json.dumps(data),
+    )

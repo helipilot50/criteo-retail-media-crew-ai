@@ -1,11 +1,11 @@
 from typing import Any
 from crewai_tools import BaseTool
 
-from part_2.tools.access import get_token
+from part_3.tools.access import get_token
 import requests
 import os
 
-base_url_env = os.environ['RETAIL_MEDIA_API_URL']
+base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
 
 class AccountsTool(BaseTool):
@@ -19,22 +19,23 @@ class AccountsTool(BaseTool):
     Methods:
         _run(): Fetches the Retail Media accounts and returns the relevant results.
     """
+
     name: str = "Retail Media Accounts API Caller"
-    description: str = "Calls the Retail Media  REST API and returns the Accounts accessable to the account manager"
-    base_url:str = base_url_env
-    
-    def _run(self, pageIndex:int=0, pageSize:int=25):
+    description: str = (
+        "Calls the Retail Media  REST API and returns the Accounts accessable to the account manager"
+    )
+    base_url: str = base_url_env
+
+    def _run(self, pageIndex: int = 0, pageSize: int = 25):
         """Useful to fetch my Retail Media acounts and return relevant results"""
 
-        url = self.base_url + 'accounts'
-        authHeader:str = "Bearer " + get_token()
-        headers = {
-            "Authorization": authHeader
-        }
-        params = {"pageIndex":  pageIndex, "pageSize": pageSize}
+        url = self.base_url + "accounts"
+        authHeader: str = "Bearer " + get_token()
+        headers = {"Authorization": authHeader}
+        params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(url=url, headers=headers, params=params)
         return response.json()
-    
+
 
 class BrandsTool(BaseTool):
     """
@@ -47,19 +48,24 @@ class BrandsTool(BaseTool):
     Methods:
         _run(accountId: str) -> dict: Calls the API and returns the Brands accessible to the specified account.
     """
+
     name: str = "Retail Media Brands API Caller"
-    description: str = "Calls the Retail Media REST API and returns the Brands accessable to the account manager."
-    base_url:str = base_url_env
-    
-    def _run(self, accountId:str, pageIndex:int=0, pageSize:int=25):
-        headers =  {
-            'Authorization': 'Bearer ' + get_token()
-        } 
-        params = {"pageIndex":  pageIndex, "pageSize": pageSize}
-        response = requests.get(url=f"{self.base_url}accounts/{accountId}/brands", headers=headers, params=params)
+    description: str = (
+        "Calls the Retail Media REST API and returns the Brands accessable to the account manager."
+    )
+    base_url: str = base_url_env
+
+    def _run(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
+        headers = {"Authorization": "Bearer " + get_token()}
+        params = {"pageIndex": pageIndex, "pageSize": pageSize}
+        response = requests.get(
+            url=f"{self.base_url}accounts/{accountId}/brands",
+            headers=headers,
+            params=params,
+        )
         return response.json()
- 
-    
+
+
 class RetailersTool(BaseTool):
     """
     Calls the Retail Media REST API and returns the Retailer accessible to the account manager.
@@ -71,15 +77,19 @@ class RetailersTool(BaseTool):
     Methods:
         _run(accountId: str) -> dict: Calls the Retail Media REST API to retrieve the retailers accessible to the account manager.
     """
+
     name: str = "Retail Media Retailers API Caller"
-    description: str = "Calls the Retail Media REST API and returns the Retailer  accessable to the account manager."
-    base_url:str = base_url_env
-    
-    def _run(self, accountId:str, pageIndex:int=0, pageSize:int=25):
-        headers =  {
-            'Authorization': 'Bearer ' + get_token()
-        }   
-        params = {"pageIndex":  pageIndex, "pageSize": pageSize} 
-        response = requests.get(url=f"{self.base_url}accounts/{accountId}/retailers", headers=headers, params=params)
+    description: str = (
+        "Calls the Retail Media REST API and returns the Retailer  accessable to the account manager."
+    )
+    base_url: str = base_url_env
+
+    def _run(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
+        headers = {"Authorization": "Bearer " + get_token()}
+        params = {"pageIndex": pageIndex, "pageSize": pageSize}
+        response = requests.get(
+            url=f"{self.base_url}accounts/{accountId}/retailers",
+            headers=headers,
+            params=params,
+        )
         return response.json()
-    
