@@ -26,4 +26,5 @@ A simple example of CrewAI using tools to call Retail Media APIs for:
 - Accounts
 - Brands
 - Retailers
+  
 It is an introduction that demonstrates the technology needed and a basic project setup
