@@ -1,4 +1,5 @@
 # Criteo Relail Media API and CrewAI
+![](images/crewai-criteo-transparent.png)
 
 This is the companion code to Medium articles than explain how to use CrewAI with Criteo's Retail Media API
 
