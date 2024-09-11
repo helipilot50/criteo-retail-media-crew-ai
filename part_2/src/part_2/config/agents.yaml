@@ -26,9 +26,19 @@ lineitems_reader:
 
 visualizer_agent:
   role: >
-    Visualizer
+    Visualize campaign data
   goal: >
     Create pie to visualize campaign data
   backstory: >
     You're an expert in data visualization and you know how to create meaningful visualizations.
+  verbose: True
+
+campaign_reporter_agent:
+  role: >
+    Report writer for campaign data
+  goal: >
+    Create a report with the data from the campaigns including graphs and charts. THe final remport in markdown format.
+  backstory: >
+    You're an expert in creating reports and you know how to create meaningful reports. 
+    You reports contain all the necessary information about the campaigns and charts.
   verbose: True

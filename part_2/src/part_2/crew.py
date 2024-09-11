@@ -1,12 +1,19 @@
 from datetime import date, datetime
 import os
-from part_2.tools.charts import BarChartTool, PieChartTool
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from part_2.tools.campaigns import CampaignsTool
-from part_2.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
+from crewai_tools import (
+    FileWriterTool,
+    FileReadTool,
+    DirectoryReadTool,
+    DirectorySearchTool,
+)
+
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
+
+from part_2.tools.charts import BarChartTool, PieChartTool
+from part_2.tools.campaigns import CampaignsTool
 
 # only if you use Azure
 from langchain.chat_models.azure_openai import AzureChatOpenAI
@@ -25,10 +32,14 @@ class Campaign(BaseModel):
     name: str = Field(..., description="Name of the campaign")
     budget: float = Field(..., description="Budget of the campaign")
     budgetSpent: float = Field(..., description="Budget spent of the campaign")
+    startDate: str = Field(..., description="Start date of the campaign")
+    status: str = Field(..., description="Status of the campaign")
+    type: str = Field(..., description="Type of the campaign")
 
 
 class CampaignList(BaseModel):
-    campaigns: List[Campaign] = Field(..., description="List of campaigns")
+    campaigns: List[Campaign] = Field(..., description="Campaigns collection")
+    totalItems: int = Field(..., description="Total items in the collection")
 
 
 @CrewBase
@@ -51,9 +62,16 @@ class Part2Crew:
     def visualizer_agent(self) -> Agent:
         return Agent(
             config=self.agents_config["visualizer_agent"],
-            tools=[
-                PieChartTool(),
-            ],
+            tools=[PieChartTool(), BarChartTool()],
+            # Azure
+            llm=llm,
+        )
+
+    @agent
+    def campaign_reporter_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config["campaign_reporter_agent"],
+            tools=[DirectoryReadTool(), FileReadTool()],
             # Azure
             llm=llm,
         )
@@ -61,8 +79,8 @@ class Part2Crew:
     @task
     def fetch_campaigns_task(self) -> Task:
         return Task(
-            config=self.tasks_config["fetch_campaigns_task"],
-            output_file="output/campaigns.json",
+            config=self.tasks_config["fetch_campaigns_with_budget_task"],
+            output_file="output/campaigns_with_budget.json",
             tools=[
                 CampaignsTool(),
             ],
@@ -78,7 +96,20 @@ class Part2Crew:
                 PieChartTool(),
             ],
             agent=self.visualizer_agent(),
+            context=[self.fetch_campaigns_task()],
+        )
+
+    @task
+    def campaigns_report(self) -> Task:
+        return Task(
+            config=self.tasks_config["campaigns_report"],
+            output_file="output/campaigns_report.md",
+            agent=self.campaign_reporter_agent(),
             asynch=True,
+            context=[
+                self.fetch_campaigns_task(),
+                self.campaigns_budget_pie_chart(),
+            ],  # context improves consistency
         )
 
     @crew

@@ -1,50 +1,57 @@
-# Part2 Crew
+# Part 2 Crew
 
-Welcome to the Part2 Crew project, powered by [crewAI](https://crewai.com). This template is designed to help you set up a multi-agent AI system with ease, leveraging the powerful and flexible framework provided by crewAI. Our goal is to enable your agents to collaborate effectively on complex tasks, maximizing their collective intelligence and capabilities.
+Welcome to the Part2 Crew project, powered by [crewAI](https://crewai.com).
+
+This part creates a Crew to:
+
+1. Revrive campaigns that have a budget
+2. Create a pie chart with using the campaign budget infromation
+3. Create a report about the campaigns budget, including the chart
 
 ## Installation
 
-Ensure you have Python >=3.12 <=3.13 installed on your system. This project uses [Poetry](https://python-poetry.org/) for dependency management and package handling, offering a seamless setup and execution experience.
+Ensure you have Python >=3.12 <=3.13 installed on your system. This part uses [Poetry](https://python-poetry.org/) for dependency management and package handling, offering a seamless setup and execution experience.
 
 First, if you haven't already, install Poetry:
 
 ```bash
 pip install poetry
+or
+pipx install poetry
 ```
 
-Next, navigate to your project directory and install the dependencies:
+## Clone the repository
 
-1. First lock the dependencies and then install them:
+The reporitory is hosted in GitHub, use this command to clone the repo:
+
+```
+git clone https://github.com/helipilot50/criteo-retail-media-crew-ai.git
+```
+
+Navigate to the repo and change directory to `part_1`
+
+```
+cd part_2
+```
+
+Next, install the dependencies:
 
 ```bash
-poetry lock
+poetry install --no-root
 ```
 
-```bash
-poetry install
+and finally invoke the shell
+
+```
+poetry shell
 ```
 
-### Customizing
-
-**Add your `OPENAI_API_KEY` into the `.env` file**
-
-- Modify `src/part_2/config/agents.yaml` to define your agents
-- Modify `src/part_2/config/tasks.yaml` to define your tasks
-- Modify `src/part_2/crew.py` to add your own logic, tools and specific args
-- Modify `src/part_2/main.py` to add custom inputs for your agents and tasks
-
-## Running the Project
+## Running Part 2
 
 To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
 
 ```bash
 $ crewai run
-```
-
-or
-
-```bash
-poetry run
 ```
 
 This command initializes the part_2 Crew, assembling the agents and assigning them tasks as defined in your configuration.
@@ -55,13 +62,31 @@ This example, unmodified, will run the create a `report.md` file with the output
 
 The part_2 Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
 
-## Support
+### Agents
 
-For support, questions, or feedback regarding the Part2 Crew or crewAI.
+- **campaign_reader** - Reads campaigns for a specific account
+- **visualizer_agent** - Visualize campaign data
+- **campaign_reporter_agent** - Report writer for campaign data
 
-- Visit our [documentation](https://docs.crewai.com)
-- Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
-- [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with our docs](https://chatg.pt/DWjSBZn)
+### Tasks
 
-Let's create wonders together with the power and simplicity of crewAI.
+- **fetch_campaigns_with_budget_task** - Gets a collection campaigns for a specific account {account_id}.
+  Use the pageIndex and pageSize parameters to get all campaigns for the account, and ignore the campaign if the budget is not provided or is less than 1.
+- **campaigns_budget_pie_chart** - Creates a pie chart from the budget data in the campaigns collection.
+- **campaigns_report** - Creates a report in Markdown format, with the data from the campaigns collection. It has a table with the campaign name, start date, budget, and budgetSpent and a pie chart of the campaign budgets.
+
+### Tools
+
+Tools are used by agens and tasks to acomplish work or use knowledge that the LLM models _are not trained for_, such as proprietary information. In this case, to access Criteo's APIs and use MatPlotLib to draw charts.
+
+The custom tools for this part are are located in the `tools` directory.
+
+## References
+
+Reference materials used to create this example:
+
+- Criteo Retail Media API [documentation](https://developers.criteo.com/retail-media/docs/welcome-to-criteo)
+- CrewAI [documentation](https://docs.crewai.com)
+- CrewAI [GitHub repository](https://github.com/joaomdmoura/crewai)
+- Pydantic [documentation](https://docs.pydantic.dev/latest/)
+- Poetry [documentation](https://python-poetry.org/docs/)

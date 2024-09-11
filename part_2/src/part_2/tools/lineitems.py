@@ -109,13 +109,13 @@ class NewAuctionLineitemTool(BaseTool):
 
     name: str = "Retail Media New Auction Lineitem API Caller"
     description: str = (
-        "Calls the Retail Media  REST API and creates a Lineitem for a campaign by the campaign {id}"
+        "Calls the Retail Media  REST API and creates a auction Lineitem for a campaign by the campaign {id}"
     )
     base_url: str = base_url_env
 
     def _run(self, campaignId: str, lineitem: dict):
         """
-        Creates a Retail Media Lineitem for campaign by {campaignId} and returns relevant results.
+        Creates a Retail Media Auction Lineitem for campaign by {campaignId} and returns relevant results.
         """
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.post(
@@ -137,7 +137,7 @@ class NewPreferredLineitemTool(BaseTool):
 
     name: str = "Retail Media New Preferred Lineitem API Caller"
     description: str = (
-        "Calls the Retail Media  REST API and creates a Lineitem for a campaign by the campaign {id}"
+        "Calls the Retail Media  REST API and creates a preferred Lineitem for a campaign by the campaign {id}"
     )
     base_url: str = base_url_env
 

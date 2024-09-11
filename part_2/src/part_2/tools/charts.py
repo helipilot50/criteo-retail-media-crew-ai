@@ -107,15 +107,21 @@ class PieChartTool(BaseTool):
         values: List,
         labels: List[str],
         title: str,
-        file_name: Optional[str] = None,
+        file_name: str = None,
+        path: Optional[str] = None,
     ):
         """
         Create a pie chart using MatPlotLib.
         Args:
             values (List): The values to plot.
             title (str): The title of the plot.
-            file_name (Optional[str]): The name of the file to save the plot.
+            file_name (str): The name of the file to save the plot.
         """
+        full_file_name = ""
+        if path:
+            full_file_name = path + "/"
+        full_file_name = full_file_name + file_name
+
         plt.clf()
         # Create pie plot
         plt.pie(values, labels=labels, autopct="%1.1f%%", startangle=140)
@@ -123,6 +129,5 @@ class PieChartTool(BaseTool):
         plt.title(title)
         plt.legend(labels, loc="best")
         # Save plot
-        if file_name:
-            plt.savefig(file_name)
+        plt.savefig(full_file_name)
         return f"Pie chart created: {title}"

@@ -208,10 +208,11 @@ def test_bar_chart_tool():
 
 def test_pie_chart_tool():
 
-    file_name = full_file_path("test_pie_chart.png")
+    file_name = "test_pie_chart.png"
+    path = "output"
 
-    if os.path.exists(file_name):
-        os.remove(file_name)
+    if os.path.exists(f"{path}/{file_name}"):
+        os.remove(f"{path}/{file_name}")
 
     pie = PieChartTool()
     chart = pie._run(
@@ -219,6 +220,7 @@ def test_pie_chart_tool():
         labels=["cats", "dogs", "snakes"],
         title="Test Pie Chart",
         file_name=file_name,
+        path=path,
     )
-    # assert os.path.exists(file_name)
-    # assert chart is not None
+    assert os.path.exists(f"{path}/{file_name}")
+    assert chart is not None
