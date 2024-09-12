@@ -32,6 +32,6 @@ def test_campaigns():
     fileWriter._run(
         directory="output",
         filename=f"test_{account_id}_campaigns.json",
-        content=json.dumps(data),
+        content=json.dumps(data, indent=2),
         overwrite=True,
     )

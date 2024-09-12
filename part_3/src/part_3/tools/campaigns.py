@@ -55,7 +55,9 @@ class NewCampaignTool(BaseTool):
         response = requests.post(
             url=f"{self.base_url}accounts/{accountId}/campaigns",
             headers=headers,
-            json=campaign,
+            json={
+                "data": {"type": "RetailMediaCampaign", "attributes": campaign},
+            },
         )
 
         return response.json()

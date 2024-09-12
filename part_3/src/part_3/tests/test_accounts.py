@@ -21,7 +21,7 @@ def test_accounts():
         directory="output",
         filename=f"test_accounts.json",
         overwrite=True,
-        content=json.dumps(data),
+        content=json.dumps(data, indent=2),
     )
 
 
@@ -47,7 +47,7 @@ def test_accounts_brands():
         directory="output",
         filename=f"test_account_{account_id}_brands.json",
         overwrite=True,
-        content=json.dumps(data),
+        content=json.dumps(data, indent=2),
     )
 
 
@@ -74,5 +74,5 @@ def test_accounts_retailers():
         directory="output",
         filename=f"test_account_{account_id}_retailers.json",
         overwrite=True,
-        content=json.dumps(data),
+        content=json.dumps(data, indent=2),
     )
