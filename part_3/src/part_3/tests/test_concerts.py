@@ -39,6 +39,7 @@ def test_artist_campaign():
     assert concerts_api_result["data"] is not None
 
     concerts = concerts_api_result["data"]
+    assert len(concerts) > 0
 
     # write the concerts to a file
     fileWriter._run(
