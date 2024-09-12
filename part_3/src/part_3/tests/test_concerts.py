@@ -1,12 +1,19 @@
 import json
+import os
 import time
+from functools import reduce
+from collections import defaultdict
 from crewai_tools import FileWriterTool
 from crewai_tools import (
     FileWriterTool,
+    FileReadTool,
+    DirectoryReadTool,
+    DirectorySearchTool,
 )
 
 from part_3.tools.accounts import AccountsTool, RetailersTool
-from part_3.tools.campaigns import CampaignTool, NewCampaignTool
+from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
+from part_3.tools.entertainment import ConcertsForArtistTool
 from part_3.tools.lineitems import (
     AuctionLineitemsTool,
     NewAuctionLineitemTool,
@@ -14,13 +21,34 @@ from part_3.tools.lineitems import (
 from datetime import datetime, timedelta
 
 
-def test_new_campaign():
+def test_artist_campaign():
     # tools
-    newCampaign = NewCampaignTool()
-    accounts = AccountsTool()
-    campaign = CampaignTool()
+    concerts = ConcertsForArtistTool()
     fileWriter = FileWriterTool()
+    accounts = AccountsTool()
+    newAuctionLineitem = NewAuctionLineitemTool()
+    campaignLineitems = AuctionLineitemsTool()
+    newCampaign = NewCampaignTool()
+    retailers = RetailersTool()
 
+    artistName = "Ed Sheran"
+
+    # fetch concerts for the artist
+    concerts_api_result = concerts._run(artistName=artistName, page=1)
+    assert concerts_api_result is not None
+    assert concerts_api_result["data"] is not None
+
+    concerts = concerts_api_result["data"]
+
+    # write the concerts to a file
+    fileWriter._run(
+        directory="output",
+        filename=f"test_concerts_{artistName}.json",
+        overwrite=True,
+        content=json.dumps(concerts_api_result, indent=2),
+    )
+
+    # create a new campaign for the artist
     # fetch accounts for the user
     accounts_api_result = accounts._run()
     assert accounts_api_result is not None
@@ -32,18 +60,23 @@ def test_new_campaign():
     # create a new campaign
     currentdate = time.strftime("%Y-%m-%d")
     currenttime = time.strftime("%H:%M:%S")
-    campaign_name = "CrewAI Test Campaign " + currentdate + " " + currenttime
+    campaign_name = f"CrewAI Test Campaign for {artistName} {currentdate} {currenttime}"
 
-    # calculate the end date as 2 months after the start date
+    # calculate the start date as today
     start_date = datetime.strptime(currentdate, "%Y-%m-%d")
-    end_date = start_date + timedelta(days=60)
-    end_date_str = end_date.strftime("%Y-%m-%d")
+    # calculate the end date as last concert date
+    end_date = max(concerts, key=lambda x: x["endDate"])
+
+    # print(f"The latest event is {latest_event['name']} on {latest_event['date'].strftime('%Y-%m-%d')}")
+
+    # end_date = start_date + timedelta(days=60)
+    # end_date_str = end_date.strftime("%Y-%m-%d")
 
     campaign_attributes = {
         "name": campaign_name,
         "accountId": account_id,
         "startDate": currentdate,
-        "endDate": end_date_str,
+        "endDate": end_date,
         "budget": 1000,
         "monthlyPacing": 500,
         "dailyBudget": 10,
@@ -65,6 +98,7 @@ def test_new_campaign():
     data = campaign_api_result["data"]
     assert campaign_api_result["data"]["id"] is not None
     new_campaign_id = campaign_api_result["data"]["id"]
+    new_campaign = campaign_api_result["data"]
 
     fileWriter._run(
         directory="output",
@@ -73,23 +107,7 @@ def test_new_campaign():
         content=json.dumps(data, indent=2),
     )
 
-    campaign_result_check = campaign._run(campaignId=new_campaign_id)
-    assert campaign_result_check is not None
-    assert campaign_result_check["data"] is not None
-    check_data = campaign_result_check["data"]
-    assert check_data["id"] == new_campaign_id
-    return check_data
-
-
-def test_new_lineitems_5():
-    # tools
-    fileWriter = FileWriterTool()
-    new_auction_lineitem = NewAuctionLineitemTool()
-    campaign_lineitems = AuctionLineitemsTool()
-    retailers = RetailersTool()
-
-    new_campaign = test_new_campaign()
-
+    # create a new auction line items for the campaign
     retailer_list = retailers._run(accountId=new_campaign["attributes"]["accountId"])[
         "data"
     ]
@@ -101,28 +119,29 @@ def test_new_lineitems_5():
     new_campaign_id = new_campaign["id"]
 
     currentdate = time.strftime("%Y-%m-%d")
-    # create 5 new auction lineitems
-    for i in range(5):
-        # calculate the end date as 2 months after the start date
-        start_date = datetime.strptime(currentdate, "%Y-%m-%d")
-        end_date = start_date + timedelta(days=60)
-        end_date_str = end_date.strftime("%Y-%m-%d")
-        lineitem_name = f"Lineitem {i+1} for Campaign {new_campaign_id}"
+
+    i = 0
+    # create new auction lineitems based on the concert locations
+    for concert in concerts:
+
+        start_date = concert["endDate"] - timedelta(days=30)
+
         lineitem_attributes = {
-            "name": lineitem_name,
+            "name": concert["description"],
             "campaignId": new_campaign_id,
             "status": "paused",
             "targetRetailerId": retailer_list[i]["id"],
             "budget": 50,
-            "startDate": currentdate,
-            "endDate": end_date_str,
+            "startDate": start_date,
+            "endDate": concert["endDate"],
             "bidStrategy": "conversion",
             "targetBid": 1.0,
         }
-        lineitem_api_result = new_auction_lineitem._run(
+        lineitem_api_result = newAuctionLineitem._run(
             campaignId=new_campaign_id, lineitem=lineitem_attributes
         )
         assert lineitem_api_result is not None
+        i += 1
         # fileWriter._run(
         #     directory="output",
         #     filename=f"test_lineitem_api_result_{i}.json",
@@ -142,14 +161,14 @@ def test_new_lineitems_5():
         #     content=json.dumps(lineitem_data, indent=2),
         # )
 
-    new_lneitems = campaign_lineitems._run(campaignId=new_campaign_id)
+    new_lneitems = campaignLineitems._run(campaignId=new_campaign_id)
     assert new_lneitems is not None
     assert new_lneitems["data"] is not None
     assert len(new_lneitems["data"]) == 5
 
     fileWriter._run(
         directory="output",
-        filename=f"test_new_campaign_{new_campaign_id}_lineitems.json",
+        filename=f"test_concert_campaign_{new_campaign_id}_lineitems.json",
         overwrite=True,
         content=json.dumps(new_lneitems["data"], indent=2),
     )
