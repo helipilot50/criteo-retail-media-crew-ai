@@ -118,7 +118,12 @@ class NewAuctionLineitemTool(BaseTool):
         response = requests.post(
             url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
             headers=headers,
-            json=lineitem,
+            json={
+                "data": {
+                    "type": "NewLineitems",
+                    "attributes": lineitem,
+                }
+            },
         )
         return response.json()
 

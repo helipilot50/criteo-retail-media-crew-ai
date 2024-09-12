@@ -7,7 +7,7 @@ from part_3.tools.analytics import (
     ReportDownloadTool,
     ReportStatusTool,
 )
-from part_3.tools.campaigns import CampaignsTool
+from part_3.tools.campaigns import AccountsCampaignsTool
 
 # only if you use Azure
 from langchain_openai import AzureChatOpenAI
@@ -17,6 +17,7 @@ llm = AzureChatOpenAI(
     deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
 )
 # end Azure
+
 
 @CrewBase
 class Part3Crew:
@@ -29,7 +30,7 @@ class Part3Crew:
     def campaign_manager(self) -> Agent:
         return Agent(
             config=self.agents_config["campaign_manager"],
-            tools=[CampaignsTool()],
+            tools=[AccountsCampaignsTool()],
             verbose=True,
             cache=True,
             memory=True,

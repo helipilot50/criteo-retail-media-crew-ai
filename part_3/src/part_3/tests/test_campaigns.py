@@ -1,6 +1,6 @@
 import json
 from part_3.tools.accounts import AccountsTool
-from part_3.tools.campaigns import CampaignsTool
+from part_3.tools.campaigns import AccountsCampaignsTool
 from crewai_tools import (
     FileWriterTool,
     FileReadTool,
@@ -12,7 +12,7 @@ from crewai_tools import (
 def test_campaigns():
     # tools
     accounts = AccountsTool()
-    campaigns = CampaignsTool()
+    campaigns = AccountsCampaignsTool()
     fileWriter = FileWriterTool()
 
     accounts_api_result = accounts._run()

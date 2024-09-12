@@ -3,7 +3,7 @@ from crewai_tools import (
     FileWriterTool,
 )
 from part_3.tools.accounts import AccountsTool
-from part_3.tools.campaigns import CampaignsTool
+from part_3.tools.campaigns import AccountsCampaignsTool
 
 from part_3.tools.analytics import (
     CampaignAnalyticsTool,
@@ -18,7 +18,7 @@ def text_create_summary_report():  # disabled deliberately
 
     # tools
     accounts = AccountsTool()
-    campaigns = CampaignsTool()
+    campaigns = AccountsCampaignsTool()
     campaigns_analytics = CampaignAnalyticsTool()
     status = ReportStatusTool()
     downloader = ReportDownloadTool()

@@ -11,7 +11,7 @@ from crewai_tools import (
 )
 
 from part_3.tools.accounts import AccountsTool
-from part_3.tools.campaigns import CampaignsTool
+from part_3.tools.campaigns import AccountsCampaignsTool
 from part_3.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
 
 from part_3.tests.utils import (
@@ -57,7 +57,7 @@ def test_analytics_bar_chart():
 
     # tools
     accounts = AccountsTool()
-    campaigns = CampaignsTool()
+    campaigns = AccountsCampaignsTool()
     auction_li = AuctionLineitemsTool()
     preferred_li = PreferredLineitemsTool()
     fileWriter = FileWriterTool()

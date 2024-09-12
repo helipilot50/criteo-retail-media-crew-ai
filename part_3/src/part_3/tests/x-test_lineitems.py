@@ -1,7 +1,7 @@
 import json
 from part_3.tests.utils import attrubtes_only
 from part_3.tools.accounts import AccountsTool
-from part_3.tools.campaigns import CampaignsTool
+from part_3.tools.campaigns import AccountsCampaignsTool
 from part_3.tools.lineitems import AuctionLineitemsTool, PreferredLineitemsTool
 from crewai_tools import (
     FileWriterTool,
@@ -15,7 +15,7 @@ def test_lineitems():
 
     # tools
     accounts = AccountsTool()
-    campaigns = CampaignsTool()
+    campaigns = AccountsCampaignsTool()
     auction = AuctionLineitemsTool()
     preferred = PreferredLineitemsTool()
     fileWriter = FileWriterTool()
