@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 from uuid import UUID
 import panel as pn
 
-avators = {"Writer":"https://cdn-icons-png.flaticon.com/512/320/320336.png",
+avators = {"Campaign Manager":"https://cdn-icons-png.flaticon.com/512/320/320336.png",
             "Reviewer":"https://cdn-icons-png.freepik.com/512/9408/9408201.png"}
 
 class PanelHandler(BaseCallbackHandler):
@@ -17,7 +17,7 @@ class PanelHandler(BaseCallbackHandler):
     ) -> None:
         """Print out that we are entering a chain."""
 
-        self.instance.send(inputs['input'], user="assistant", respond=False)
+        self.instance.send(inputs['input'], user=self.agent_name, respond=False)
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         """Print out that we finished a chain."""

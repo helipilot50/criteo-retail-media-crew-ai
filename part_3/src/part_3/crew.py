@@ -33,7 +33,7 @@ class Part3Crew:
     @agent
     def campaign_manager(self) -> Agent:
         config=self.agents_config["campaign_manager"]
-        callback_handler = PanelHandler("cats", self.instance)
+        callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
             config=config,
             tools=[AccountsCampaignsTool()],

@@ -1,8 +1,8 @@
 
 campaign_manager:
-  name: Entertainment Campaign Manager
+  name: Campaign Manager
   role: >
-    Entertainment Campaign Manager
+    Campaign Manager for Entertainment events
   goal: >
     Manage and mainten retail media campaigns for Entertainment events
   backstory: >
