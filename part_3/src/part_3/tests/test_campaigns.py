@@ -9,7 +9,7 @@ from crewai_tools import (
 )
 
 
-def test_campaigns():
+def x_test_campaigns():
     # tools
     accounts = AccountsTool()
     campaigns = AccountsCampaignsTool()

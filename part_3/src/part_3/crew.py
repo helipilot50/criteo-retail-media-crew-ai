@@ -8,9 +8,11 @@ from part_3.tools.analytics import (
     ReportStatusTool,
 )
 from part_3.tools.campaigns import AccountsCampaignsTool
+from part_3.streamlit_handler import StreamlitHandler
 
 # only if you use Azure
 from langchain_openai import AzureChatOpenAI
+from part_3.tools.human import StreamlitHumanTool
 
 llm = AzureChatOpenAI(
     model=os.environ["OPENAI_MODEL_NAME"],
@@ -28,30 +30,18 @@ class Part3Crew:
 
     @agent
     def campaign_manager(self) -> Agent:
+        config=self.agents_config["campaign_manager"],
         return Agent(
-            config=self.agents_config["campaign_manager"],
-            tools=[AccountsCampaignsTool()],
+            config=config,
+            tools=[AccountsCampaignsTool(), StreamlitHumanTool()],
+            callbacks=[StreamlitHandler(config["name"])],
             verbose=True,
             cache=True,
             memory=True,
             llm=llm,
         )
 
-    @agent
-    def campaign_reporter(self) -> Agent:
-        return Agent(
-            config=self.agents_config["campaign_reporter"],
-            tools=[
-                CampaignAnalyticsTool(),
-                ReportStatusTool(),
-                ReportDownloadTool(),
-            ],
-            verbose=True,
-            max_iter=2,
-            max_rpm=5,
-            memory=True,
-            llm=llm,
-        )
+
 
     # @agent
     # def researcher(self) -> Agent:

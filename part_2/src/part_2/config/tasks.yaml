@@ -3,9 +3,9 @@ fetch_campaigns_with_budget_task:
     Get a collection campaigns for account {account_id}.
     Use the pageIndex and pageSize parameters to get all campaigns for the account.
     Do not make more API calls than necessary.
-
     Reformat each campaign by removing the 'type' field, remap the fields  in 'attributes' to the root level, then remove the 'attributes' field.
-    do not use "```json" or "```" in the output.
+    If the budget field is missing, set it to 0.0,
+    Do not use "```json" or "```" in the output.
   expected_output: >
     A collection of campaigns for the account formatted as JSON.
 

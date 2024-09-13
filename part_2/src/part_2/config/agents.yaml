@@ -1,4 +1,5 @@
-campaign_reader:
+campaign_manager:
+  name: Campaign Manager
   role: >
     Reads campaigns for a specific account
   goal: >

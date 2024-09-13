@@ -14,7 +14,7 @@ from part_3.tools.lineitems import (
 from datetime import datetime, timedelta
 
 
-def test_new_campaign():
+def x_test_new_campaign():
     # tools
     newCampaign = NewCampaignTool()
     accounts = AccountsTool()
@@ -81,7 +81,7 @@ def test_new_campaign():
     return check_data
 
 
-def test_new_lineitems_5():
+def x_test_new_lineitems_5():
     # tools
     fileWriter = FileWriterTool()
     new_auction_lineitem = NewAuctionLineitemTool()

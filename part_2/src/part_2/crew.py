@@ -6,11 +6,11 @@ from crewai_tools import (
     FileWriterTool,
     FileReadTool,
     DirectoryReadTool,
-    DirectorySearchTool,
 )
 
 from pydantic import BaseModel, Field
 from typing import List, Optional
+
 
 from part_2.tools.charts import BarChartTool, PieChartTool
 from part_2.tools.campaigns import CampaignsTool
@@ -50,27 +50,32 @@ class Part2Crew:
     tasks_config = "config/tasks.yaml"
 
     @agent
-    def campaign_reader(self) -> Agent:
+    def campaign_manager(self) -> Agent:
+        config = self.agents_config["campaign_manager"]
         return Agent(
-            config=self.agents_config["campaign_reader"],
+            config=config,
             tools=[CampaignsTool()],
             # Azure
             llm=llm,
+            
         )
 
     @agent
     def visualizer_agent(self) -> Agent:
+        config = self.agents_config["visualizer_agent"]
         return Agent(
-            config=self.agents_config["visualizer_agent"],
+            config=config,
             tools=[PieChartTool(), BarChartTool()],
             # Azure
             llm=llm,
+            
         )
 
     @agent
     def campaign_reporter_agent(self) -> Agent:
+        config = self.agents_config["campaign_reporter_agent"]
         return Agent(
-            config=self.agents_config["campaign_reporter_agent"],
+            config=config,
             tools=[DirectoryReadTool(), FileReadTool()],
             # Azure
             llm=llm,
@@ -84,7 +89,7 @@ class Part2Crew:
             tools=[
                 CampaignsTool(),
             ],
-            agent=self.campaign_reader(),
+            agent=self.campaign_manager(),
             output_json=CampaignList,
         )
 
@@ -96,7 +101,7 @@ class Part2Crew:
                 PieChartTool(),
             ],
             agent=self.visualizer_agent(),
-            context=[self.fetch_campaigns_task()],
+            context=[self.fetch_campaigns_task()], # context improves consistency
         )
 
     @task
@@ -106,10 +111,10 @@ class Part2Crew:
             output_file="output/campaigns_report.md",
             agent=self.campaign_reporter_agent(),
             asynch=True,
-            context=[
+            context=[ # context improves consistency
                 self.fetch_campaigns_task(),
                 self.campaigns_budget_pie_chart(),
-            ],  # context improves consistency
+            ],  
         )
 
     @crew
