@@ -1,5 +1,5 @@
 import json
-from part_3.tools.accounts import AccountsTool, BrandsTool, RetailersTool
+from part_3.tools.accounts import AccountsTool, BalancesTool, BrandsTool, RetailersTool
 from crewai_tools import (
     FileWriterTool,
     FileReadTool,
@@ -76,3 +76,27 @@ def test_accounts_retailers():
         overwrite=True,
         content=json.dumps(data, indent=2),
     )
+
+def test_accounts_balances():
+    accounts = AccountsTool()
+    fileWriter = FileWriterTool()
+    balances = BalancesTool()
+
+    accounts_api_result = accounts._run()
+    assert accounts_api_result is not None
+    assert accounts_api_result["data"] is not None
+    assert len(accounts_api_result["data"]) > 0
+    account_id = accounts_api_result["data"][0]["id"]
+    assert account_id is not None
+
+    balances_api_result = balances._run(accountId=account_id)
+    assert balances_api_result is not None
+    assert balances_api_result["data"] is not None
+    data = balances_api_result["data"]
+    fileWriter._run(
+        directory="output",
+        filename=f"test_account_{account_id}_balances.json",
+        overwrite=True,
+        content=json.dumps(data, indent=2),
+    )
+

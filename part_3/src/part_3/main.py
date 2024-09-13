@@ -2,7 +2,8 @@
 import sys
 from part_3.crew import Part3Crew
 
-
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def run():

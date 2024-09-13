@@ -93,3 +93,29 @@ class RetailersTool(BaseTool):
             params=params,
         )
         return response.json()
+
+class BalancesTool(BaseTool):
+    """
+    Calls the Retail Media REST API and returns the balances for the account.
+    Attributes:
+        name (str): The name of the BalancesTool.
+        description (str): The description of the BalancesTool.
+        base_url (str): The base URL for the Retail Media REST API.
+        token (str): The token for authorization.
+    Methods:
+        _run(accountId: str) -> dict: Calls the Retail Media REST API to retrieve the balances for the account.
+    """
+
+    name: str = "Retail Media Balances API Caller"
+    description: str = (
+        "Calls the Retail Media REST API and returns the balances for the account."
+    )
+    base_url: str = base_url_env
+
+    def _run(self, accountId: str):
+        headers = {"Authorization": "Bearer " + get_token()}
+        response = requests.get(
+            url=f"{self.base_url}accounts/{accountId}/balances",
+            headers=headers,
+        )
+        return response.json()

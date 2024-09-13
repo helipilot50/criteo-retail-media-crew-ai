@@ -1,0 +1,46 @@
+@startuml
+
+hide empty members
+
+class Account{
+
+}
+
+class Retailer {
+
+}
+
+class Brand{
+
+}
+
+class Balance{
+
+}
+
+class PromotedProduct{
+
+}
+
+class Lineitem{
+
+}
+
+class Campaign{
+
+}
+
+Account - "0..*" Retailer
+Account -- "0..*" Brand
+Account -- "0..*" Balance
+
+Account "1" -- "0..*" Campaign
+
+Campaign"*" -- "0..*" Balance
+Campaign "*" -- "0..*" Brand
+
+Campaign "1" - "0..*" Lineitem
+
+Lineitem "*"-- "0..*" PromotedProduct
+Lineitem "*" -u- "1" Retailer
+@enduml

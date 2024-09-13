@@ -22,19 +22,10 @@ from part_3.tools.lineitems import (
 from datetime import datetime, timedelta
 
 def find_first_last_event(collection: List[Any]) -> Any:
-    # Convert startDate to datetime objects for accurate comparison
-    # for obj in collection:
-        # print("obj --> ", obj)
-        # obj["startDate"] = datetime.strptime(obj["startDate"], '%Y-%m-%d')
-        # obj["endDate"] = datetime.strptime(obj["endDate"], '%Y-%m-%d')
     
     # Find the object with the latest startDate
     latest_object = max(collection, key=lambda x: x["endDate"])
     earliest_object = min(collection, key=lambda x: x["startDate"])
-    
-    # Convert the startDate back to string format if needed
-    # latest_object["endDate"] = latest_object["endDate"].strftime('%Y-%m-%d')
-    # earliest_object["startDate"] = earliest_object["startDate"].strftime('%Y-%m-%d')
     
     return { "first": earliest_object, "last": latest_object }
 
@@ -57,7 +48,7 @@ def test_concert_dates():
     assert first_last_event is not None
     assert "first" in first_last_event
     assert "last" in first_last_event
-    print("first_last_event --> ", first_last_event)
+    # print("first_last_event --> ", first_last_event)
     
 
 
@@ -200,12 +191,12 @@ def test_concert_campaign():
             assert lineitem_data["id"] is not None
             lineitem_id = lineitem_data["id"]
 
-            fileWriter._run(
-                directory="output",
-                filename=f"test_new_venue_lineitem_{lineitem_id}.json",
-                overwrite=True,
-                content=json.dumps(lineitem_data, indent=2),
-            )
+            # fileWriter._run(
+            #     directory="output",
+            #     filename=f"test_new_venue_lineitem_{lineitem_id}.json",
+            #     overwrite=True,
+            #     content=json.dumps(lineitem_data, indent=2),
+            # )
         except Exception as e:
             print("error --> ", e)
 
