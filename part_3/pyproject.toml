@@ -16,7 +16,6 @@ run_crew = "part_3.main:run"
 train = "part_3.main:train"
 replay = "part_3.main:replay"
 test = "part_3.main:test"
-ui = "panel_ui:main"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.2"
