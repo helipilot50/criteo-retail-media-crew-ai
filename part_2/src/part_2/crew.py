@@ -55,8 +55,7 @@ class Part2Crew:
         return Agent(
             config=config,
             tools=[CampaignsTool()],
-            # Azure
-            llm=llm,
+            llm=llm, # Azure
             
         )
 
@@ -66,8 +65,7 @@ class Part2Crew:
         return Agent(
             config=config,
             tools=[PieChartTool(), BarChartTool()],
-            # Azure
-            llm=llm,
+            llm=llm, # Azure
             
         )
 
@@ -77,15 +75,14 @@ class Part2Crew:
         return Agent(
             config=config,
             tools=[DirectoryReadTool(), FileReadTool()],
-            # Azure
-            llm=llm,
+            llm=llm, # Azure
         )
 
     @task
     def fetch_campaigns_task(self) -> Task:
         return Task(
-            config=self.tasks_config["fetch_campaigns_with_budget_task"],
-            output_file="output/campaigns_with_budget.json",
+            config=self.tasks_config["fetch_campaigns_task"],
+            output_file="output/campaigns.json",
             tools=[
                 CampaignsTool(),
             ],

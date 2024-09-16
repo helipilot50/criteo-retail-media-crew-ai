@@ -24,7 +24,8 @@ def test_campaigns():
     assert campaigns_api_result["data"] is not None
     assert len(campaigns_api_result["data"]) > 0
     data = campaigns_api_result["data"]
+    data = { "total":len(data),"campaigns": data }
     
-    fileWriter._run(directory='output', filename=f'test_{account_id}_campaigns.json', content=json.dumps(data), overwrite=True)
+    fileWriter._run(directory='output', filename=f'test_{account_id}_campaigns.json', content=json.dumps(data, indent=2), overwrite=True)
     
 

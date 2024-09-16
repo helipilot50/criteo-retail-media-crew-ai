@@ -42,7 +42,7 @@ def test_lineitems():
         preferred_api_result = preferred._run(campaignId=campaign_id)
         if preferred_api_result is not None:
             if "data" in preferred_api_result and len(preferred_api_result["data"]) > 0:
-                lineitems = auction_api_result["data"]
+                lineitems = preferred_api_result["data"]
                 all_lineitems.extend(map(attrubtes_only, lineitems))
 
         # auction
@@ -52,6 +52,7 @@ def test_lineitems():
                 lineitems = auction_api_result["data"]
                 all_lineitems.extend(map(attrubtes_only, lineitems))
 
-        # assert len(all_lineitems) > 0
-        fileWriter._run(directory="output", filename=f"test_{campaign_id}_lineitems.json", overwrite=True, content=json.dumps(all_lineitems))
+        if len(all_lineitems) > 0:
+            with_count = { "total":len(all_lineitems),"lineitems": all_lineitems }
+            fileWriter._run(directory="output", filename=f"test_{campaign_id}_lineitems.json", overwrite=True, content=json.dumps(with_count, indent=2))
     

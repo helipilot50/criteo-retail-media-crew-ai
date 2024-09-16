@@ -81,7 +81,7 @@ def test_analytics_bar_chart():
         preferred_api_result = preferred_li._run(campaignId=campaign_id)
         if preferred_api_result is not None:
             if "data" in preferred_api_result and len(preferred_api_result["data"]) > 0:
-                lineitems = auction_api_result["data"]
+                lineitems = preferred_api_result["data"]
                 preferred_lineitems.extend(map(attrubtes_only, lineitems))
 
         # auction

@@ -12,7 +12,7 @@ def test_accounts():
     assert accounts_api_result["data"] is not None
     assert len(accounts_api_result["data"]) > 0
     data = accounts_api_result["data"]
-    fileWriter._run(directory="output", filename=f"test_accounts.json", overwrite=True, content=json.dumps(data))
+    fileWriter._run(directory="output", filename=f"test_accounts.json", overwrite=True, content=json.dumps(data, indent=2))
     
 
 
@@ -35,7 +35,7 @@ def test_accounts_brands():
     assert brands_api_result["data"] is not None
     assert len(brands_api_result["data"]) > 0
     data = brands_api_result["data"]
-    fileWriter._run(directory="output", filename=f"test_account_{account_id}_brands.json", overwrite=True, content=json.dumps(data))
+    fileWriter._run(directory="output", filename=f"test_account_{account_id}_brands.json", overwrite=True, content=json.dumps(data, indent=2))
     
 
 
@@ -59,5 +59,5 @@ def test_accounts_retailers():
     assert retailers_api_result["data"] is not None
     assert len(retailers_api_result["data"]) > 0
     data = retailers_api_result["data"]
-    fileWriter._run(directory="output", filename=f"test_account_{account_id}_retailers.json", overwrite=True, content=json.dumps(data))
+    fileWriter._run(directory="output", filename=f"test_account_{account_id}_retailers.json", overwrite=True, content=json.dumps(data, indent=2))
     

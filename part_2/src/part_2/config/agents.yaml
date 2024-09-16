@@ -3,27 +3,15 @@ campaign_manager:
   role: >
     Reads campaigns for a specific account
   goal: >
-    Fetch a collection of retail media campaigns
+    A collection of retail media campaigns
   backstory: >
     You use the Retail Media Campaigns  API efficently.
     Dont make more requests that is necessary by checking the 'totalPages' and make the right number of requests.
     Remember the results of the campaigns API to avoid making unnecessary requests.
-
+  memory: True
   verbose: True
   cache: True
 
-lineitems_reader:
-  role: >
-    Reads lineitems for a specific campaign
-  goal: >
-    For each element int the campaigns collection, fetch a collection of lineitems
-  backstory: >
-    You're an expert in reading information about lineitems for a campaign using the campaign id. 
-    You use the Retail Media lineintems API efficently.
-    Dont make more requests that is necessary by checking the 'totalPages' and make the right number of requests.
-    Remember the results of the lineitems, to avoid making unnecessary requests.
-  verbose: True
-  cache: True
 
 visualizer_agent:
   role: >

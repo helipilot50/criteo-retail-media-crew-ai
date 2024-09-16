@@ -1,4 +1,4 @@
-fetch_campaigns_with_budget_task:
+fetch_campaigns_task:
   description: >
     Get a collection campaigns for account {account_id}.
     Use the pageIndex and pageSize parameters to get all campaigns for the account.
@@ -23,7 +23,7 @@ campaigns_report:
   description: >
     Create a report in Markdown format, with the data from the campaigns collection.
     The report should show a table with the campaign name, start date, budget, and budgetSpent.
-    The report should include a pie chart of the campaign budgets. Us only the file name of the pie chart, do not include the path.
+    The report should include a pie chart of the campaign budgets. Use only the file name of the pie chart, do not include the path.
     The 'title' should be Campaign Budget Report for Account {account_id}.
     do not use "```markdown" or "```" in the markdown file.
   expected_output: >
