@@ -1,11 +1,18 @@
 
 campaigns:
   description: >
-    Use the {accountId} and use it to get a list of campaigns.
-    ask the human if this is a valid account id.
+    Use the account id and use it to get a list of campaigns.
     
   expected_output: >
     A list of campaign ids for the account as a JSON array. Do not include the whold campaign object. Only the campaign Id.
+  
+
+ask_for_tour_name:
+  description: >
+    Ask the human for the tour name.
+    
+  expected_output: >
+    a string that is the tour name.
   
 
 

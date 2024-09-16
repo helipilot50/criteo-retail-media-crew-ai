@@ -43,7 +43,15 @@ class Part3Crew:
             memory=True,
             llm=llm,
         )
-
+    @task 
+    def ask_for_tour_name(self) -> Task:
+        return Task(
+            config=self.tasks_config["ask_for_tour_name"],
+            cache=True,
+            output_file="output/ask_for_tour_name.txt",
+            agent=self.campaign_manager(),
+            human_input=True,
+        )
 
     @task
     def campaigns(self) -> Task:

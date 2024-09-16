@@ -37,14 +37,9 @@ poetry install
 
 To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
 
-```bash
-$ crewai run
-```
-
-or
 
 ```bash
-poetry run part_3
+panel serve src/part_3/ui_main.py --autoreload
 ```
 
 This command initializes the part_3 Crew, assembling the agents and assigning them tasks as defined in your configuration.
@@ -61,4 +56,5 @@ Reference materials used to create this example:
 - Pydantic [documentation](https://docs.pydantic.dev/latest/)
 - Poetry [documentation](https://python-poetry.org/docs/)
 - ChainLit [Medium article](https://medium.com/@pratyush.talent/using-human-as-tool-with-crewai-in-chainlit-da063dea0e31) and [documentation](https://docs.chainlit.io/get-started/overview)
-- ANother chainglit [article](https://krishankantsinghal.medium.com/supercharge-your-conversational-ai-integrating-chainlit-and-crewai-for-powerful-interactions-ca8a50ec1851)
+- Another chainglit [article](https://krishankantsinghal.medium.com/supercharge-your-conversational-ai-integrating-chainlit-and-crewai-for-powerful-interactions-ca8a50ec1851)
+- [How to create an interactive ui for crewai](https://medium.com/gitconnected/how-to-create-an-interactive-ui-for-crewai-applications-e4d3fae0dbf8)
