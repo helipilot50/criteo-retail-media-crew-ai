@@ -21,35 +21,32 @@ from part_3.tools.lineitems import (
 )
 from datetime import datetime, timedelta
 
+
 def find_first_last_event(collection: List[Any]) -> Any:
-    
+
     # Find the object with the latest startDate
     latest_object = max(collection, key=lambda x: x["endDate"])
     earliest_object = min(collection, key=lambda x: x["startDate"])
-    
-    return { "first": earliest_object, "last": latest_object }
+
+    return {"first": earliest_object, "last": latest_object}
+
 
 def test_concert_dates():
     fileReader = FileReadTool()
-    # directory = DirectoryReadTool()
-    # files_in_dir = directory._run(directory="./tests")
-    # assert files_in_dir is not None
-    # assert len(files_in_dir) > 0
-    # print("files_in_dir --> ", files_in_dir)
-    concerts = fileReader._run(
-        file_path="./tests/entertainment_response.json",
+
+    concerts_file = fileReader._run(
+        file_path="./data/ed_sheeran_entertainment_venues.json",
     )
-    assert concerts is not None
+    assert concerts_file is not None
+
+    concerts = json.loads(concerts_file)
     # print("concerts --> ", concerts)
-    concerts = json.loads(concerts)
-    assert "data" in concerts
-    assert len(concerts["data"]) > 0
-    first_last_event = find_first_last_event(concerts["data"])
+    assert len(concerts) > 0
+    first_last_event = find_first_last_event(concerts)
     assert first_last_event is not None
     assert "first" in first_last_event
     assert "last" in first_last_event
     # print("first_last_event --> ", first_last_event)
-    
 
 
 def test_concert_campaign():
@@ -66,29 +63,28 @@ def test_concert_campaign():
     artistName = "Ed Sheran"
 
     # fetch concerts for the artist
-    concerts_api_result = concerts._run(artistName=artistName, page=1)
-    assert concerts_api_result is not None
-    assert concerts_api_result["data"] is not None
+    # concerts_api_result = concerts._run(artistName=artistName, page=1)
+    # assert concerts_api_result is not None
+    # assert concerts_api_result["data"] is not None
 
-    concerts = concerts_api_result["data"]
-    if len(concerts) > 0:
-        # write the concerts to a file
-        fileWriter._run(
-            directory="output",
-            filename=f"test_concerts_{artistName}.json",
-            overwrite=True,
-            content=json.dumps(concerts_api_result, indent=2),
-        )
-    else:
-        print("using dummy data")
-        concerts_file = fileReader._run(
-            file_path="./tests/entertainment_response.json",
-        )
-        assert concerts_file is not None
-        concerts_file = json.loads(concerts_file)
-        assert "data" in concerts_file
-        concerts = concerts_file["data"]
-
+    # concerts = concerts_api_result["data"]
+    # if len(concerts) > 0:
+    #     # write the concerts to a file
+    #     fileWriter._run(
+    #         directory="output",
+    #         filename=f"test_concerts_{artistName}.json",
+    #         overwrite=True,
+    #         content=json.dumps(concerts_api_result, indent=2),
+    #     )
+    # else:
+    print("using dummy data")
+    concerts_file = fileReader._run(
+        file_path="./data/ed_sheeran_entertainment_venues.json",
+    )
+    assert concerts_file is not None
+    # print("concerts_file --> ", concerts_file)
+    concerts = json.loads(concerts_file)
+    # print("concerts --> ", concerts)
 
     # create a new campaign for the artist
     # fetch accounts for the user
@@ -104,7 +100,9 @@ def test_concert_campaign():
     current_date_str = current_datetime.strftime("%Y-%m-%d")
     current_date_8601 = current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
     currenttime = time.strftime("%H:%M:%S")
-    campaign_name = f"CrewAI Test Campaign for {artistName} {current_date_str} {currenttime}"
+    campaign_name = (
+        f"CrewAI Test Campaign for {artistName} {current_date_str} {currenttime}"
+    )
 
     # calculate the start date as today
     start_date = datetime.strptime(current_date_str, "%Y-%m-%d")
@@ -143,7 +141,7 @@ def test_concert_campaign():
 
     fileWriter._run(
         directory="output",
-        filename=f"test_new_concert_campaign_{new_campaign_id}.json",
+        filename=f"test_{new_campaign_id}_new_concert_campaign_.json",
         overwrite=True,
         content=json.dumps(data, indent=2),
     )
@@ -191,12 +189,12 @@ def test_concert_campaign():
             assert lineitem_data["id"] is not None
             lineitem_id = lineitem_data["id"]
 
-            # fileWriter._run(
-            #     directory="output",
-            #     filename=f"test_new_venue_lineitem_{lineitem_id}.json",
-            #     overwrite=True,
-            #     content=json.dumps(lineitem_data, indent=2),
-            # )
+            fileWriter._run(
+                directory="output",
+                filename=f"test_{new_campaign_id}_new_venue_lineitem_{lineitem_id}.json",
+                overwrite=True,
+                content=json.dumps(lineitem_data, indent=2),
+            )
         except Exception as e:
             print("error --> ", e)
 
@@ -205,11 +203,8 @@ def test_concert_campaign():
     assert new_lneitems["data"] is not None
     fileWriter._run(
         directory="output",
-        filename=f"test_concert_campaign_{new_campaign_id}_lineitems.json",
+        filename=f"test_{new_campaign_id}_concert_campaign_lineitems.json",
         overwrite=True,
         content=json.dumps(new_lneitems["data"], indent=2),
     )
     assert len(new_lneitems["data"]) > 0
-
-    
-    
