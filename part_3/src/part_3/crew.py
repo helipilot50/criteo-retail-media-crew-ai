@@ -13,6 +13,7 @@ from part_3.tools.campaigns import AccountsCampaignsTool
 
 # only if you use Azure
 from langchain_openai import AzureChatOpenAI
+
 llm = AzureChatOpenAI(
     model=os.environ["OPENAI_MODEL_NAME"],
     deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
@@ -30,43 +31,72 @@ class Part3Crew:
     def __init__(self, instance) -> None:
         self.instance = instance
 
+    # @agent
+    # def campaign_manager(self) -> Agent:
+    #     config = self.agents_config["campaign_manager"]
+    #     callback_handler = PanelHandler(config["name"], self.instance)
+    #     return Agent(
+    #         config=config,
+    #         tools=[AccountsCampaignsTool()],
+    #         callbacks=[callback_handler],
+    #         verbose=True,
+    #         cache=True,
+    #         memory=True,
+    #         llm=llm,
+    #     )
+
     @agent
-    def campaign_manager(self) -> Agent:
-        config=self.agents_config["campaign_manager"]
+    def demographics_agent(self) -> Agent:
+        config = self.agents_config["demographics_agent"]
         callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
             config=config,
-            tools=[AccountsCampaignsTool()],
             callbacks=[callback_handler],
             verbose=True,
             cache=True,
             memory=True,
             llm=llm,
         )
-    @task 
+
+    @agent
+    def concert_venue_agent(self) -> Agent:
+        config = self.agents_config["concert_venue_agent"]
+        return Agent(
+            config=config,
+            verbose=True,
+            cache=True,
+            memory=True,
+            llm=llm,
+        )
+
+    @task
     def ask_for_tour_name(self) -> Task:
         return Task(
             config=self.tasks_config["ask_for_tour_name"],
             cache=True,
-            output_file="output/ask_for_tour_name.txt",
-            agent=self.campaign_manager(),
+            output_file="output/artist_name.txt",
+            agent=self.demographics_agent(),
             human_input=True,
         )
 
     @task
-    def campaigns(self) -> Task:
+    def research_demographics(self) -> Task:
         return Task(
-            config=self.tasks_config["campaigns"],
+            config=self.tasks_config["research_demographics"],
             cache=True,
-            output_file="output/campaign_ids.json",
-            agent=self.campaign_manager(),
-            human_input=True,
+            output_file="output/research_demographics.json",
+            parameters={"cats": "cats"},
+            agent=self.demographics_agent(),
         )
 
-
-
-
-
+    @task
+    def find_concert_venues(self) -> Task:
+        return Task(
+            config=self.tasks_config["find_concert_venues"],
+            cache=True,
+            output_file="output/concert_venues.json",
+            agent=self.concert_venue_agent(),
+        )
 
     @crew
     def crew(self) -> Crew:
@@ -77,7 +107,7 @@ class Part3Crew:
             process=Process.sequential,
             verbose=True,
             planning=True,
-            planning_llm=llm,  # Azurepanel serve app.pypanel serve app.py
+            planning_llm=llm,  # Azure
             output_log_file="output/part_3.log",
             output_file="output/part_3.md",
         )

@@ -1,37 +1,31 @@
 campaigns:
   description: >
-    Use the account id and use it to get a list of campaigns.
+    Use the account number of {account_id} to get a list of campaigns.
 
   expected_output: >
     A list of campaign ids for the account as a JSON array. Do not include the whold campaign object. Only the campaign Id.
 
 ask_for_tour_name:
   description: >
-    Ask the human for the tour name.
+    Ask the human for the artist_name.
 
   expected_output: >
-    a string that is the tour name.
+    a string that is the artist_name.
 
 research_demographics:
   description: >
-    Use the artist name to get the demographics for the artist.
+    Use the artist_name to get the demographics for the artist.
     You will need to use the Web and Social media to obtain your data.
-    theoutput shold be like this example:
-    Ed Sheeran’s fan base is quite diverse and spans across various demographics:
-
-    Age:
-      Primary Audience: Predominantly youth, especially within the age range of 15-25 years1.
-      Broader Appeal: His music also resonates with people of all ages, including teenagers and middle-aged individuals2.
-    Gender:
-      Majority Female: A significant portion of his fan base is female1.
-      Male Fans: He also has a considerable number of male fans1.
-    Geographic Distribution:
-      Global Reach: Ed Sheeran’s music is popular worldwide, transcending cultural and geographic boundaries2.
-    Psychographics:
-      Emotional Connection: Fans are drawn to his relatable lyrics and authentic storytelling, which evoke deep emotions2.
-      Versatility: His ability to blend different genres attracts a wide variety of listeners2.
-    Engagement:
-      Concerts and Social Media: Ed Sheeran engages with his fans through live performances and active social media presence, further strengthening his connection with them2.
 
   expected_output: >
-    A structured object with the demographics for the artist.
+    A JSON object with the social media demographics for the artist.
+
+find_concert_venues:
+  description: >
+    Use the artist_name to find the concerts and venues for 2025, indluding international venues.
+    Include the seating capacity of each venue.
+    Include the data of each concert.
+    You will need to use the Web and Social media to obtain your data.
+
+  expected_output: >
+    A JSON array concerts, dates, venues and their searing capacity for the artist.

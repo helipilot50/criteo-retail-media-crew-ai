@@ -19,3 +19,13 @@ demographics_agent:
   backstory: >
     You're an expert researching the demographics for an entertainment artist
     You use the Web and Social media to obtain your data.
+
+concert_venue_agent:
+  name: Concert Venue Agent
+  role: >
+    Concert Venue Agent for Entertainment events
+  goal: >
+    Find the venues for a specific entertainer
+  backstory: >
+    You're an expert in finding the concert venue for an entertainment artist
+    You use the Web and Social media to obtain your data.
