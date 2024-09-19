@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-inputs = {"account_id": "4", "artist_name": "tom jones", "year": "2025"}
+inputs = {"account_id": "4", "artist_name": "taylor swift", "year": "2025"}
 
 
 def run():
@@ -21,7 +21,7 @@ def train():
     Train the crew for a given number of iterations.
     """
     try:
-        Part3Crew().crew().train(
+        Part3Crew(inputs=inputs).crew().train(
             n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs
         )
 
@@ -34,7 +34,7 @@ def replay():
     Replay the crew execution from a specific task.
     """
     try:
-        Part3Crew().crew().replay(task_id=sys.argv[1])
+        Part3Crew(inputs=inputs).crew().replay(task_id=sys.argv[1])
 
     except Exception as e:
         raise Exception(f"An error occurred while replaying the crew: {e}")
@@ -46,7 +46,7 @@ def test():
     """
     inputs = {"account id": "26"}
     try:
-        Part3Crew().crew().test(
+        Part3Crew(inputs=inputs).crew().test(
             n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs
         )
 

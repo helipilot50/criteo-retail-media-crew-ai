@@ -100,7 +100,7 @@ class Part3Crew:
     def account(self) -> Task:
         return Task(
             config=self.tasks_config["account"],
-            output_file="output/account.json",
+            output_file=f"output/{self.artist_name}_account.json",
             agent=self.campaign_manager(),
             tools=[AccountsTool()],
         )
@@ -139,25 +139,25 @@ class Part3Crew:
             output_file=f"output/{self.artist_name}_budget.json",
             agent=self.campaign_budget_agent(),
             context=[self.research_demographics(), self.find_concert_venues()],
-            human_input=True,
+            # human_input=True,
         )
 
-    # @task
-    # def create_campaign(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["create_campaign"],
-    #         cache=True,
-    #         output_file="output/campaign.json",
-    #         agent=self.campaign_manager(),
-    #         context={"budget": "output/budget.json"},
-    #         context=[
-    #             self.formulate_budget(),
-    #             self.ask_for_tour_name(),
-    #             self.research_demographics(),
-    #             self.find_concert_venues(),
-    #         ],
-    #         human_input=True,
-    #     )
+    @task
+    def create_campaign(self) -> Task:
+        return Task(
+            config=self.tasks_config["create_campaign"],
+            cache=True,
+            output_file=f"output/{self.artist_name}_campaign.json",
+            agent=self.campaign_manager(),
+
+            context=[
+                self.formulate_budget(),
+
+                self.research_demographics(),
+                self.find_concert_venues(),
+            ],
+            # human_input=True,
+        )
 
     # @task
     # def create_lineitems_for_campaign(self) -> Task:

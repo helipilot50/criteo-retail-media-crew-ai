@@ -59,7 +59,7 @@ summary:
     Provide a summary of the campaign.
     Include:
     1. the Account name
-    2. the campaign name, the campaign start date, the campaign end date and total budget.
+    2. the campaign: id, name, start date, end date, total budget.
     3. A table  with these columns: venue, concert date, seating capacity, budget amount.
     4. A summary of the demographics for the artist.
 
