@@ -29,6 +29,11 @@ class Part3Crew:
     # def __init__(self, instance) -> None:
     #     self.instance = instance
 
+    def __init__(self, inputs: dict) -> Any:
+        self.account_id = inputs["account_id"]
+        self.artist_name = inputs["artist_name"]
+        self.year = inputs["year"]
+
     @agent
     def campaign_manager(self) -> Agent:
         config = self.agents_config["campaign_manager"]
@@ -113,7 +118,7 @@ class Part3Crew:
     def research_demographics(self) -> Task:
         return Task(
             config=self.tasks_config["research_demographics"],
-            output_file="output/research_demographics.json",
+            output_file=f"output/{self.artist_name}_research_demographics.json",
             parameters={"cats": "cats"},
             agent=self.demographics_agent(),
         )
@@ -122,7 +127,7 @@ class Part3Crew:
     def find_concert_venues(self) -> Task:
         return Task(
             config=self.tasks_config["find_concert_venues"],
-            output_file="output/concert_venues.json",
+            output_file=f"output/{self.artist_name}_concert_venues.json",
             agent=self.concert_venue_agent(),
             tools=[InternetSearch()],
         )
@@ -131,7 +136,7 @@ class Part3Crew:
     def formulate_budget(self) -> Task:
         return Task(
             config=self.tasks_config["formulate_budget"],
-            output_file="output/budget.json",
+            output_file=f"output/{self.artist_name}_budget.json",
             agent=self.campaign_budget_agent(),
             context=[self.research_demographics(), self.find_concert_venues()],
             human_input=True,
@@ -169,7 +174,7 @@ class Part3Crew:
     def summary_task(self) -> Task:
         return Task(
             config=self.tasks_config["summary"],
-            output_file="output/summary.md",
+            output_file=f"output/{self.artist_name}_summary.md",
             agent=self.summary_agent(),
             context=[
                 self.account(),

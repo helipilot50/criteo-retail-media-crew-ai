@@ -13,7 +13,7 @@ def run():
     """
     Run the crew.
     """
-    Part3Crew().crew().kickoff(inputs=inputs)
+    Part3Crew(inputs=inputs).crew().kickoff(inputs=inputs)
 
 
 def train():
