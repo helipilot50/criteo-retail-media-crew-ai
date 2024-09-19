@@ -1,3 +1,9 @@
+account:
+  description: >
+    Use the account number of {account_id} to get the account details.
+  expected_output: >
+    A JSON object with the account details.
+
 campaigns:
   description: >
     Use the account number of {account_id} to get a list of campaigns.
@@ -5,16 +11,9 @@ campaigns:
   expected_output: >
     A list of campaign ids for the account as a JSON array. Do not include the whold campaign object. Only the campaign Id.
 
-ask_for_tour_name:
-  description: >
-    Ask the human for the artist_name.
-
-  expected_output: >
-    a string that is the artist_name.
-
 research_demographics:
   description: >
-    Use the artist_name to get the demographics for the artist.
+    Use the {artist_name} to get the demographics for the artist.
     You will need to use the Web and Social media to obtain your data.
 
   expected_output: >
@@ -22,17 +21,17 @@ research_demographics:
 
 find_concert_venues:
   description: >
-    Use the artist_name to find the concerts and venues for 2025, indluding international venues.
+    Use the {artist_name} to find the concerts and venues for {year}, indluding international venues.
     Include the seating capacity of each venue.
     Include the data of each concert.
     You will need to use the Web and Social media to obtain your data.
 
   expected_output: >
-    A JSON array concerts, dates, venues and their searing capacity for the artist.
+    A JSON array of concerts, dates, venues and their searing capacity for the artist.
 
 formulate_budget:
   description: >
-    Formulate an advertising budget for an online advertising campaign using the artist_name, the location of the venues and their seating capacity.
+    Formulate an advertising budget for an online advertising campaign using the {artist_name}, the location of the venues and their seating capacity.
     Provide a total budget for the advertising campaign.
     For each concert, formulate a budget amount based on the venue and geographic location. These values should be based on the seating capacity of the venue and the location of the venue.
     Ask the human if they would like to proceed with the budget.
@@ -42,8 +41,8 @@ formulate_budget:
 
 create_campaign:
   description: >
-    Use the artist_name, the budget, the demographics, and the venues to create a campaign.
-    The campaign should be for the artist_name, the date of the first concert and the date of the last concert.
+    Use the {artist_name}, the budget and the demographics to create a campaign.
+    The campaign should be for the {artist_name}, the date of the first concert and the date of the last concert.
     Formulate the campaign structure to match the Retail Media campaign structure.
     The start date of the campaign should be 60 days before the first concert.
     The end date of the campaign should be the date of the last concert.
@@ -53,3 +52,15 @@ create_campaign:
 
   expected_output: >
     A JSON object with the campaign details.
+
+summary:
+  description: >
+    Provide a summary of the campaign.
+    Include:
+    1. the Account name
+    2. the campaign name, the campaign start date, the campaign end date and total budget.
+    3. A table  with these columns: venue, concert date, seating capacity, budget amount.
+    4. A summary of the demographics for the artist.
+
+  expected_output: >
+    A summary in markdown format.

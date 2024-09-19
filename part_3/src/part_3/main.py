@@ -3,24 +3,24 @@ import sys
 from part_3.crew import Part3Crew
 
 from dotenv import load_dotenv
+
 load_dotenv()
+
+inputs = {"account_id": "4", "artist_name": "Taylor Swift", "year": "2025"}
 
 
 def run():
     """
     Run the crew.
     """
-    inputs = {"accountId": "26", "startDate": "2023-01-01", "endDate": "2023-01-31"}
+    inputs = {"account_id": "4", "artist_name": "Taylor Swift", "year": "2025"}
     Part3Crew().crew().kickoff(inputs=inputs)
-
-    
 
 
 def train():
     """
     Train the crew for a given number of iterations.
     """
-    inputs = {"account id": "26"}
     try:
         Part3Crew().crew().train(
             n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs
@@ -53,4 +53,3 @@ def test():
 
     except Exception as e:
         raise Exception(f"An error occurred while replaying the crew: {e}")
-

@@ -4,12 +4,9 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 
 from part_3.handlers.panel import PanelHandler
-from part_3.tools.analytics import (
-    CampaignAnalyticsTool,
-    ReportDownloadTool,
-    ReportStatusTool,
-)
+from part_3.tools.accounts import AccountsTool
 from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
+from part_3.tools.search import InternetSearch, SearchTools
 
 # only if you use Azure
 from langchain_openai import AzureChatOpenAI
@@ -29,13 +26,13 @@ class Part3Crew:
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
 
-    def __init__(self, instance) -> None:
-        self.instance = instance
+    # def __init__(self, instance) -> None:
+    #     self.instance = instance
 
     @agent
     def campaign_manager(self) -> Agent:
         config = self.agents_config["campaign_manager"]
-        callback_handler = PanelHandler(config["name"], self.instance)
+        # callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
             config=config,
             # tools=[
@@ -45,62 +42,77 @@ class Part3Crew:
             #     NewAuctionLineitemTool(),
             #     AuctionLineitemsTool()
             #     ],
-            callbacks=[callback_handler],
+            # callbacks=[callback_handler],
             verbose=True,
-            cache=True,
-            memory=True,
             llm=llm,
         )
 
     @agent
     def demographics_agent(self) -> Agent:
         config = self.agents_config["demographics_agent"]
-        callback_handler = PanelHandler(config["name"], self.instance)
+        # callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
             config=config,
-            callbacks=[callback_handler],
+            # callbacks=[callback_handler],
             verbose=True,
-            cache=True,
-            memory=True,
             llm=llm,
         )
 
     @agent
     def concert_venue_agent(self) -> Agent:
         config = self.agents_config["concert_venue_agent"]
+        # callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
             config=config,
+            # callbacks=[callback_handler],
             verbose=True,
-            cache=True,
-            memory=True,
             llm=llm,
         )
+
     @agent
     def campaign_budget_agent(self) -> Agent:
         config = self.agents_config["campaign_budget_agent"]
+        # callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
             config=config,
+            # callbacks=[callback_handler],
             verbose=True,
-            cache=True,
-            memory=True,
+            llm=llm,
+        )
+
+    @agent
+    def summary_agent(self) -> Agent:
+        config = self.agents_config["summary_agent"]
+        # callback_handler = PanelHandler(config["name"], self.instance)
+        return Agent(
+            config=config,
+            # callbacks=[callback_handler],
+            verbose=True,
             llm=llm,
         )
 
     @task
-    def ask_for_tour_name(self) -> Task:
+    def account(self) -> Task:
         return Task(
-            config=self.tasks_config["ask_for_tour_name"],
-            cache=True,
-            output_file="output/artist_name.txt",
-            agent=self.demographics_agent(),
-            human_input=True,
+            config=self.tasks_config["account"],
+            output_file="output/account.json",
+            agent=self.campaign_manager(),
+            tools=[AccountsTool()],
         )
+
+    # @task
+    # def ask_for_artist_name(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["ask_for_artist_name"],
+    #         output_file="output/artist_name.txt",
+    #         agent=self.demographics_agent(),
+    #         human_input=True,
+    #     )
 
     @task
     def research_demographics(self) -> Task:
         return Task(
             config=self.tasks_config["research_demographics"],
-            cache=True,
             output_file="output/research_demographics.json",
             parameters={"cats": "cats"},
             agent=self.demographics_agent(),
@@ -110,22 +122,21 @@ class Part3Crew:
     def find_concert_venues(self) -> Task:
         return Task(
             config=self.tasks_config["find_concert_venues"],
-            cache=True,
             output_file="output/concert_venues.json",
             agent=self.concert_venue_agent(),
+            tools=[InternetSearch()],
         )
-    
+
     @task
     def formulate_budget(self) -> Task:
         return Task(
             config=self.tasks_config["formulate_budget"],
-            cache=True,
             output_file="output/budget.json",
             agent=self.campaign_budget_agent(),
             context=[self.research_demographics(), self.find_concert_venues()],
             human_input=True,
         )
-     
+
     # @task
     # def create_campaign(self) -> Task:
     #     return Task(
@@ -134,10 +145,15 @@ class Part3Crew:
     #         output_file="output/campaign.json",
     #         agent=self.campaign_manager(),
     #         context={"budget": "output/budget.json"},
-    #         context=[self.formulate_budget(), self.ask_for_tour_name(), self.research_demographics(), self.find_concert_venues()],
+    #         context=[
+    #             self.formulate_budget(),
+    #             self.ask_for_tour_name(),
+    #             self.research_demographics(),
+    #             self.find_concert_venues(),
+    #         ],
     #         human_input=True,
     #     )
-    
+
     # @task
     # def create_lineitems_for_campaign(self) -> Task:
     #     return Task(
@@ -148,6 +164,22 @@ class Part3Crew:
     #         context=[self.formulate_budget(), self.ask_for_tour_name(), self.find_concert_venues()],
     #         human_input=True,
     #     )
+
+    @task
+    def summary_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["summary"],
+            output_file="output/summary.md",
+            agent=self.summary_agent(),
+            context=[
+                self.account(),
+                self.research_demographics(),
+                self.find_concert_venues(),
+                self.formulate_budget(),
+                # self.create_campaign(),
+                # self.create_lineitems_for_campaign(),
+            ],
+        )
 
     @crew
     def crew(self) -> Crew:

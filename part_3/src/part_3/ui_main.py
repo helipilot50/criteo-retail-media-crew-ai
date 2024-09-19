@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import panel as pn
+import datetime as dt
 from crewai.agents import CrewAgentExecutor
 import threading
 import time
@@ -38,12 +39,12 @@ def custom_ask_human(self, final_answer: dict) -> str:
 
 
 # def StartCrew(prompt:str):
-def StartCrew(account_id: str):
+def StartCrew(account_id: str, artist_name: str, year: str):
     CrewAgentExecutor._ask_human_input = custom_ask_human
 
     global chat_interface
 
-    inputs = {"account_id": account_id}
+    inputs = {"account_id": account_id, "artist_name": artist_name, "year": year}
 
     result = Part3Crew(instance=chat_interface).crew().kickoff(inputs=inputs)
     chat_interface.send(
@@ -51,7 +52,7 @@ def StartCrew(account_id: str):
     )
 
 
-def initiate_chat(account_id: str):
+def initiate_chat(account_id: str, artist_name: str, year: str):
 
     global initiate_chat_task_created
     # Indicate that the task has been created
@@ -59,11 +60,13 @@ def initiate_chat(account_id: str):
 
     print("--- initiate_chat ---")
     print("account_id: ", account_id)
+    print("artist_name: ", artist_name)
+    print("year: ", year)
 
-    StartCrew(account_id)
+    StartCrew(account_id, artist_name, year)
 
 
-def callback(input: str, user: str, whatt:any):
+def callback(input: str, user: str, whatt: any):
 
     global initiate_chat_task_created
     global user_input
@@ -95,12 +98,36 @@ def main():
         when asked, please enter the account ID 
         """
     )
-    chat_interface.append(text_widget)
-    chat_interface.send(
-        "Are you ready to begin? Enter the account ID", user="System", respond=False
+    account_input = pn.widgets.TextInput(
+        name="Account ID:", placeholder="account ID here..."
+    )
+    artist_name_input = pn.widgets.TextInput(
+        name="Artist Name:", placeholder="artist name here..."
     )
 
-    chat_interface.servable()
+    go_button = pn.widgets.Button(name="Go", button_type="primary")
+    year_input = pn.widgets.TextInput(name="Year:", placeholder="year here...")
+    chat_interface.append(text_widget)
+    chat_interface.append(account_input)
+    chat_interface.append(artist_name_input)
+    chat_interface.append(year_input)
+    chat_interface.append(go_button)
+
+    def on_go_click(event):
+        account_id = account_input.value
+        artist_name = artist_name_input.value
+        year = year_input.value
+        print("--- on_go_click ---", event)
+        print("account_id: ", account_id)
+        print("artist_name: ", artist_name)
+        print("year: ", year)
+        # initiate_chat(account_id, artist_name, year)
+
+    go_button.on_click(on_go_click)
+    # chat_interface.send("Enter the account ID", user="System", respond=True)
+
+    # chat_interface.servable()
+    chat_interface.show()
 
 
 main()

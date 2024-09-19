@@ -4,6 +4,7 @@ import os
 
 from langchain.tools import tool
 from langchain_community.document_loaders import WebBaseLoader
+from crewai_tools import BaseTool
 
 
 class SearchTools:
@@ -65,5 +66,9 @@ class SearchTools:
         return f"Search results for '{query}':\n\n" + "\n".join(string)
 
 
-if __name__ == "__main__":
-    print(SearchTools.open_page("https://www.python.org/"))
+class InternetSearch(BaseTool):
+    name: str = "Search the internet"
+    description: str = "Search the internet for information."
+
+    def _run(self, query: str):
+        return SearchTools().search_internet(query)
