@@ -63,7 +63,7 @@ def initiate_chat(account_id: str):
     StartCrew(account_id)
 
 
-def callback(input: str, user: str):
+def callback(input: str, user: str, whatt:any):
 
     global initiate_chat_task_created
     global user_input
@@ -71,6 +71,7 @@ def callback(input: str, user: str):
     print("--- callback ---")
     print("input: ", input)
     print("user: ", user)
+    # print("whatt: ", whatt)
 
     if not initiate_chat_task_created:
         thread = threading.Thread(target=initiate_chat, args=(input))

@@ -9,10 +9,11 @@ from part_3.tools.analytics import (
     ReportDownloadTool,
     ReportStatusTool,
 )
-from part_3.tools.campaigns import AccountsCampaignsTool
+from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
 
 # only if you use Azure
 from langchain_openai import AzureChatOpenAI
+from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 
 llm = AzureChatOpenAI(
     model=os.environ["OPENAI_MODEL_NAME"],
@@ -31,19 +32,25 @@ class Part3Crew:
     def __init__(self, instance) -> None:
         self.instance = instance
 
-    # @agent
-    # def campaign_manager(self) -> Agent:
-    #     config = self.agents_config["campaign_manager"]
-    #     callback_handler = PanelHandler(config["name"], self.instance)
-    #     return Agent(
-    #         config=config,
-    #         tools=[AccountsCampaignsTool()],
-    #         callbacks=[callback_handler],
-    #         verbose=True,
-    #         cache=True,
-    #         memory=True,
-    #         llm=llm,
-    #     )
+    @agent
+    def campaign_manager(self) -> Agent:
+        config = self.agents_config["campaign_manager"]
+        callback_handler = PanelHandler(config["name"], self.instance)
+        return Agent(
+            config=config,
+            # tools=[
+            #     AccountsCampaignsTool(),
+            #     CampaignTool(),
+            #     NewCampaignTool(),
+            #     NewAuctionLineitemTool(),
+            #     AuctionLineitemsTool()
+            #     ],
+            callbacks=[callback_handler],
+            verbose=True,
+            cache=True,
+            memory=True,
+            llm=llm,
+        )
 
     @agent
     def demographics_agent(self) -> Agent:
@@ -61,6 +68,16 @@ class Part3Crew:
     @agent
     def concert_venue_agent(self) -> Agent:
         config = self.agents_config["concert_venue_agent"]
+        return Agent(
+            config=config,
+            verbose=True,
+            cache=True,
+            memory=True,
+            llm=llm,
+        )
+    @agent
+    def campaign_budget_agent(self) -> Agent:
+        config = self.agents_config["campaign_budget_agent"]
         return Agent(
             config=config,
             verbose=True,
@@ -97,6 +114,40 @@ class Part3Crew:
             output_file="output/concert_venues.json",
             agent=self.concert_venue_agent(),
         )
+    
+    @task
+    def formulate_budget(self) -> Task:
+        return Task(
+            config=self.tasks_config["formulate_budget"],
+            cache=True,
+            output_file="output/budget.json",
+            agent=self.campaign_budget_agent(),
+            context=[self.research_demographics(), self.find_concert_venues()],
+            human_input=True,
+        )
+    
+    # @task
+    # def create_campaign(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["create_campaign"],
+    #         cache=True,
+    #         output_file="output/campaign.json",
+    #         agent=self.campaign_manager(),
+    #         context={"budget": "output/budget.json"},
+    #         context=[self.formulate_budget(), self.ask_for_tour_name(), self.research_demographics(), self.find_concert_venues()],
+    #         human_input=True,
+    #     )
+    
+    # @task
+    # def create_lineitems_for_campaign(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["create_lineitems_for_campaign"],
+    #         cache=True,
+    #         output_file="output/lineitem_for_campaign.json",
+    #         agent=self.campaign_manager(),
+    #         context=[self.formulate_budget(), self.ask_for_tour_name(), self.find_concert_venues()],
+    #         human_input=True,
+    #     )
 
     @crew
     def crew(self) -> Crew:

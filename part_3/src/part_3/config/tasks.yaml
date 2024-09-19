@@ -29,3 +29,28 @@ find_concert_venues:
 
   expected_output: >
     A JSON array concerts, dates, venues and their searing capacity for the artist.
+
+formulate_budget:
+  description: >
+    Use the artist_name, the lovation of the venues and their seating capacity to formulate a budget for the campaign.
+    Include the cost of the campaign, the cost of the venue, the cost of the concert, and the cost of the media.
+    Provide a total budget for the campaign.
+    Provide a budget amount for concert based on the venue and geographic location. These values should be based on the seating capacity of the venue and the location of the venue.
+    Ask the human if they would like to proceed with the budget.
+
+  expected_output: >
+    A JSON object with the budget for the campaign.
+
+create_campaign:
+  description: >
+    Use the artist_name, the budget, the demographics, and the venues to create a campaign.
+    The campaign should be for the artist_name, the date of the first concert and the date of the last concert.
+    Formulate the campaign structure to match the Retail Media campaign structure.
+    The start date of the campaign should be 60 days before the first concert.
+    The end date of the campaign should be the date of the last concert.
+    The budget should be the total budget for the campaign.
+    Include the campaign name, the campaign start date, the campaign end date, the campaign budget, the campaign demographics, the campaign venues, and the campaign media.
+    The
+
+  expected_output: >
+    A JSON object with the campaign details.
