@@ -125,7 +125,7 @@ class Part3Crew:
             context=[self.research_demographics(), self.find_concert_venues()],
             human_input=True,
         )
-    
+     
     # @task
     # def create_campaign(self) -> Task:
     #     return Task(

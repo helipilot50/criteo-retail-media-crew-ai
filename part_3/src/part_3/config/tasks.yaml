@@ -32,10 +32,9 @@ find_concert_venues:
 
 formulate_budget:
   description: >
-    Use the artist_name, the lovation of the venues and their seating capacity to formulate a budget for the campaign.
-    Include the cost of the campaign, the cost of the venue, the cost of the concert, and the cost of the media.
-    Provide a total budget for the campaign.
-    Provide a budget amount for concert based on the venue and geographic location. These values should be based on the seating capacity of the venue and the location of the venue.
+    Formulate an advertising budget for an online advertising campaign using the artist_name, the location of the venues and their seating capacity.
+    Provide a total budget for the advertising campaign.
+    For each concert, formulate a budget amount based on the venue and geographic location. These values should be based on the seating capacity of the venue and the location of the venue.
     Ask the human if they would like to proceed with the budget.
 
   expected_output: >
