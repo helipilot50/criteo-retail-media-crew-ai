@@ -34,6 +34,7 @@ formulate_budget:
     Formulate an advertising budget for an online advertising campaign using the {artist_name}, the location of the venues and their seating capacity.
     Provide a total budget for the advertising campaign.
     For each concert, formulate a budget amount based on the venue and geographic location. These values should be based on the seating capacity of the venue and the location of the venue.
+    Express the budget in USD.
     Ask the human if they would like to proceed with the budget.
 
   expected_output: >

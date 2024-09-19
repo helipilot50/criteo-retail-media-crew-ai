@@ -6,14 +6,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-inputs = {"account_id": "4", "artist_name": "Taylor Swift", "year": "2025"}
+inputs = {"account_id": "4", "artist_name": "tom jones", "year": "2025"}
 
 
 def run():
     """
     Run the crew.
     """
-    inputs = {"account_id": "4", "artist_name": "Taylor Swift", "year": "2025"}
     Part3Crew().crew().kickoff(inputs=inputs)
 
 
