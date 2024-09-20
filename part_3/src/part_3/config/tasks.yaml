@@ -54,6 +54,18 @@ create_campaign:
   expected_output: >
     A JSON object with the campaign details.
 
+create_lineitems:
+  description: >
+    Use the campaign details to create line items for the campaign.
+    For each concert, create a line item, with the following attributes:
+      name: {artist_name} - {venue} - {concert_date}
+      budget: budget amount for the concert
+      startDate: 90 days before the concert date
+      endDate: 1 day concert date
+
+  expected_output: >
+    A JSON array of line items for the campaign.
+
 summary:
   description: >
     Provide a summary of the campaign.
