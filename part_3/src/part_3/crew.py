@@ -96,15 +96,6 @@ class Part3Crew:
             llm=llm,
         )
 
-    @task
-    def account(self) -> Task:
-        return Task(
-            config=self.tasks_config["account"],
-            output_file=f"output/{self.artist_name}_account.json",
-            agent=self.campaign_manager(),
-            tools=[AccountsTool()],
-        )
-
     # @task
     # def ask_for_artist_name(self) -> Task:
     #     return Task(
@@ -121,6 +112,7 @@ class Part3Crew:
             output_file=f"output/{self.artist_name}_research_demographics.json",
             parameters={"cats": "cats"},
             agent=self.demographics_agent(),
+            async_=True,
         )
 
     @task
@@ -129,7 +121,7 @@ class Part3Crew:
             config=self.tasks_config["find_concert_venues"],
             output_file=f"output/{self.artist_name}_concert_venues.json",
             agent=self.concert_venue_agent(),
-            tools=[InternetSearch()],
+            # tools=[InternetSearch()],
         )
 
     @task
@@ -138,8 +130,16 @@ class Part3Crew:
             config=self.tasks_config["formulate_budget"],
             output_file=f"output/{self.artist_name}_budget.json",
             agent=self.campaign_budget_agent(),
-            context=[self.research_demographics(), self.find_concert_venues()],
-            # human_input=True,
+            context=[self.find_concert_venues()],
+        )
+
+    @task
+    def account(self) -> Task:
+        return Task(
+            config=self.tasks_config["account"],
+            output_file=f"output/{self.artist_name}_account.json",
+            agent=self.campaign_manager(),
+            tools=[AccountsTool()],
         )
 
     @task
@@ -149,10 +149,8 @@ class Part3Crew:
             cache=True,
             output_file=f"output/{self.artist_name}_campaign.json",
             agent=self.campaign_manager(),
-
             context=[
                 self.formulate_budget(),
-
                 self.research_demographics(),
                 self.find_concert_venues(),
             ],
@@ -160,14 +158,18 @@ class Part3Crew:
         )
 
     # @task
-    # def create_lineitems_for_campaign(self) -> Task:
+    # def create_lineitems(self) -> Task:
     #     return Task(
-    #         config=self.tasks_config["create_lineitems_for_campaign"],
+    #         config=self.tasks_config["create_lineitems"],
     #         cache=True,
-    #         output_file="output/lineitem_for_campaign.json",
+    #         output_file=f"output/{self.artist_name}_lineitems.json",
     #         agent=self.campaign_manager(),
-    #         context=[self.formulate_budget(), self.ask_for_tour_name(), self.find_concert_venues()],
-    #         human_input=True,
+    #         context=[
+    #             self.formulate_budget(),
+    #             self.find_concert_venues(),
+    #             self.create_campaign(),
+    #         ],
+    #         # human_input=True,
     #     )
 
     @task
@@ -181,8 +183,8 @@ class Part3Crew:
                 self.research_demographics(),
                 self.find_concert_venues(),
                 self.formulate_budget(),
-                # self.create_campaign(),
-                # self.create_lineitems_for_campaign(),
+                self.create_campaign(),
+                # self.create_lineitems(),
             ],
         )
 
