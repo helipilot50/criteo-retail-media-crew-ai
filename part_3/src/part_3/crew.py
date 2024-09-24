@@ -192,7 +192,7 @@ class Part3Crew:
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
-            process=Process.sequential,
+            process=Process.hierarchical,
             verbose=True,
             planning=True,
             planning_llm=llm,  # Azure
