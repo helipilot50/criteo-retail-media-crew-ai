@@ -6,11 +6,13 @@ from crewai.project import CrewBase, agent, crew, task
 from part_3.handlers.panel import PanelHandler
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
+from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.search import InternetSearch, SearchTools
 
-# only if you use Azure
+
+# uncomment only if you use Azure
 from langchain_openai import AzureChatOpenAI
-from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
+
 
 llm = AzureChatOpenAI(
     model=os.environ["OPENAI_MODEL_NAME"],
@@ -154,23 +156,25 @@ class Part3Crew:
                 self.research_demographics(),
                 self.find_concert_venues(),
             ],
-            # human_input=True,
+            tools=[NewCampaignTool()],
+            human_input=True,
         )
 
-    # @task
-    # def create_lineitems(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["create_lineitems"],
-    #         cache=True,
-    #         output_file=f"output/{self.artist_name}_lineitems.json",
-    #         agent=self.campaign_manager(),
-    #         context=[
-    #             self.formulate_budget(),
-    #             self.find_concert_venues(),
-    #             self.create_campaign(),
-    #         ],
-    #         # human_input=True,
-    #     )
+    @task
+    def create_lineitems(self) -> Task:
+        return Task(
+            config=self.tasks_config["create_lineitems"],
+            cache=True,
+            output_file=f"output/{self.artist_name}_lineitems.json",
+            agent=self.campaign_manager(),
+            context=[
+                self.formulate_budget(),
+                self.find_concert_venues(),
+                self.create_campaign(),
+            ],
+            tools=[NewAuctionLineitemTool(),AuctionLineitemsTool()],
+            human_input=True,
+        )
 
     @task
     def summary_task(self) -> Task:
@@ -191,10 +195,14 @@ class Part3Crew:
     @crew
     def crew(self) -> Crew:
         """Creates the Part 3 crew"""
+        print("Artist name", self.artist_name)
+        print("Year", self.year)
+        print("Account Id", self.account_id)
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
             process=Process.hierarchical,
+            manager_llm=llm,
             verbose=True,
             planning=True,
             planning_llm=llm,  # Azure

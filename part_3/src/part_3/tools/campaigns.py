@@ -67,7 +67,25 @@ class NewCampaignTool(BaseTool):
 
     name: str = "Retail Media New Campaign API Caller"
     description: str = (
-        "Calls the Retail Media  REST API and creates a campaign for an account by the  account {id}"
+        """Calls the Retail Media  REST API and creates a campaign for an account by the  account {id}
+        Example input for new Campaign:
+        {
+            "name": "Taylor Swift Concert Tour 2025",
+            "accountId": "4",
+            "startDate": "2025-01-01",
+            "endDate": "2025-12-31",
+            "budget": 1280000,
+            "monthlyPacing": 500,
+            "dailyBudget": 10,
+            "isAutoDailyPacing": False,
+            "dailyPacing": 10,
+            "type": "auction",
+            "clickAttributionWindow": "30D",
+            "viewAttributionWindow": "None",
+            "clickAttributionScope": "sameSkuCategory",
+            "viewAttributionScope": "sameSkuCategory",
+        }
+        """
     )
     base_url: str = base_url_env
     # accounts/{accountId}/campaigns
@@ -81,5 +99,5 @@ class NewCampaignTool(BaseTool):
                 "data": {"type": "Lineitem", "attributes": campaign},
             },
         )
-
+        print("New campaign:", response.json())
         return response.json()

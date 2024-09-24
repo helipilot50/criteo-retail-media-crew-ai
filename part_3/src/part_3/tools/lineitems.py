@@ -167,7 +167,21 @@ class NewOpenAuctionLineitemTool(BaseTool):
 
     name: str = "Retail Media New Open Auction Lineitem API Caller"
     description: str = (
-        "Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id"
+        """
+        Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id.
+        Example input data for a new lineitem:
+        {
+            "name": Taylor Swift 2025 - AccorHotels Arena Paris- 2025-05-20,
+            "campaignId": "626444481539563520",
+            "status": "paused",
+            "targetRetailerId": "1106",
+            "budget": 50,
+            "startDate": "2025-10-1",
+            "endDate": "2025-12-31",
+            "bidStrategy": "conversion",
+            "targetBid": 1.0,
+        }
+        """
     )
     base_url: str = base_url_env
 
