@@ -1,5 +1,6 @@
 from crewai_tools import BaseTool
 
+from part_3.tests.utils import attrubtes_only
 from part_3.tools.access import get_token
 import requests
 import os
@@ -125,6 +126,10 @@ class NewAuctionLineitemTool(BaseTool):
                 }
             },
         )
+        if response.status_code != 200:
+            raise Exception(f"Failed to create new auction lineitem: {response.json()}")
+        if "data" in response.json():
+            return attrubtes_only(response.json()["data"])
         return response.json()
 
 
@@ -153,6 +158,10 @@ class NewPreferredLineitemTool(BaseTool):
             headers=headers,
             json=lineitem,
         )
+        if response.status_code != 200:
+            raise Exception(f"Failed to create new preferred lineitem: {response.json()}")
+        if "data" in response.json():
+            return attrubtes_only(response.json()["data"])
         return response.json()
 
 
@@ -195,7 +204,13 @@ class NewOpenAuctionLineitemTool(BaseTool):
             headers=headers,
             json=lineitem,
         )
-        return response.json()
+        new_lineitem = response.json()
+        if response.status_code != 200:
+            raise Exception(f"Failed to create new open auction lineitem: {new_lineitem}")
+       
+        if "data" in new_lineitem:
+            return attrubtes_only(new_lineitem["data"])
+        return new_lineitem
 
 
 class PromotedProducts(BaseTool):
@@ -224,4 +239,10 @@ class PromotedProducts(BaseTool):
             headers=headers,
             params=params,
         )
+        if response.status_code != 200:
+            raise Exception(
+                f"Failed to fetch Promoted Products, Error: {response.status_code} - {response.text}, {response.url}"
+            )
+        if "data" in response.json():
+            return attrubtes_only(response.json()["data"])
         return response.json()

@@ -43,47 +43,47 @@ formulate_budget:
 create_campaign:
   description: >
     Use Retail Media API to create the campaign with:
-     The {artist_name}, the budget and the demographics to create a campaign.
-     The campaign name shouult contain the {artist_name}, the {year}, the date of the first concert and the date of the last concert.
-     Formulate the campaign structure to match the Retail Media campaign structure.
+     The {artist_name}, the budget to create a campaign.
+     The campaign name is the {artist_name}, the {year}, the date of the first concert and the date of the last concert.
+     
      The start date of the campaign should be 60 days before the first concert.
      The end date of the campaign should be the date of the last concert.
-     The budget should be the total budget for the campaign.
+     The budget is the total budget calculated.
      Include the campaign name, the campaign start date, the campaign end date, the campaign budget, the campaign demographics, the campaign venues, and the campaign media.
-    Example campaign inout data: {{"name": "Taylor Swift Concert Tour 2025",
-            "accountId": "4",
+    Formulate the campaign structure to match the following example.
+    Example campaign input data:
+            "name": "{artist_name} Concert Tour {year}",
             "startDate": "2025-01-01",
             "endDate": "2025-12-31",
             "budget": 1280000,
             "monthlyPacing": 500,
             "dailyBudget": 10,
-            "isAutoDailyPacing": False,
+            "isAutoDailyPacing": false,
             "dailyPacing": 10,
             "type": "auction",
             "clickAttributionWindow": "30D",
             "viewAttributionWindow": "None",
             "clickAttributionScope": "sameSkuCategory",
             "viewAttributionScope": "sameSkuCategory",
-        }}
-    The expected output is the campaign returned from the Retail Media API
+        
+    do not add any fields not in the example input data.
+    output the new campaign from the Retail Media API.
     
-    
-
   expected_output: >
     A JSON object with the campaign details.
 
 create_lineitems:
   description: >
-    Use the campaign details to create line items for the campaign.
+    Use the new campaign id to create line items for the campaign.
     For each concert, create a line item, with the following attributes:
       name: {artist_name} {year} - venue, city, country - concert date
       budget: budget amount for the concert
       startDate: 90 days before the concert date
       endDate: 1 day concert date
-      campaignId: the campaign id
+      campaignId: new campaign id
       Example input data for a new lineitem: {{
             "name": Taylor Swift 2025 - AccorHotels Arena, Paris, France - 2025-05-20,
-            "campaignId": "626444481539563520",
+            "campaignId": new campaign id,
             "status": "paused",
             "targetRetailerId": "1106",
             "budget": 50,
@@ -103,9 +103,9 @@ summary:
   description: >
     Provide a summary of the campaign.
     Include:
-    1. the Account name
-    2. the campaign: id, name, start date, end date, total budget.
-    3. A table  with these columns: venue, concert date, seating capacity, budget amount, lineitem id, lineitem startDate and lineitem endDate
+    1. the account: name, contact, email using the {account_id}
+    2. the new campaign: id, name, start date, end date, total budget.
+    3. the new auction lineitems as a table with these columns: venue, concert date, seating capacity, budget amount, lineitem id, lineitem startDate and lineitem endDate
     4. A summary of the demographics for the artist.
 
   expected_output: >

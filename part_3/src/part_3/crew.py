@@ -97,15 +97,16 @@ class Part3Crew:
             verbose=True,
             llm=llm,
         )
-
-    # @task
-    # def ask_for_artist_name(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["ask_for_artist_name"],
-    #         output_file="output/artist_name.txt",
-    #         agent=self.demographics_agent(),
-    #         human_input=True,
-    #     )
+    @agent
+    def linitem_manager(self) -> Agent:
+        config = self.agents_config["linitem_manager"]
+        # callback_handler = PanelHandler(config["name"], self.instance)
+        return Agent(
+            config=config,
+            # callbacks=[callback_handler],
+            verbose=True,
+            llm=llm,
+        )
 
     @task
     def research_demographics(self) -> Task:
@@ -123,7 +124,7 @@ class Part3Crew:
             config=self.tasks_config["find_concert_venues"],
             output_file=f"output/{self.artist_name}_concert_venues.json",
             agent=self.concert_venue_agent(),
-            # tools=[InternetSearch()],
+            tools=[InternetSearch()],
         )
 
     @task
@@ -153,11 +154,9 @@ class Part3Crew:
             agent=self.campaign_manager(),
             context=[
                 self.formulate_budget(),
-                self.research_demographics(),
-                self.find_concert_venues(),
             ],
             tools=[NewCampaignTool()],
-            human_input=True,
+            # human_input=True,
         )
 
     @task
@@ -166,14 +165,14 @@ class Part3Crew:
             config=self.tasks_config["create_lineitems"],
             cache=True,
             output_file=f"output/{self.artist_name}_lineitems.json",
-            agent=self.campaign_manager(),
+            agent=self.linitem_manager(),
             context=[
                 self.formulate_budget(),
                 self.find_concert_venues(),
                 self.create_campaign(),
             ],
             tools=[NewAuctionLineitemTool(),AuctionLineitemsTool()],
-            human_input=True,
+            # human_input=True,
         )
 
     @task
@@ -188,7 +187,7 @@ class Part3Crew:
                 self.find_concert_venues(),
                 self.formulate_budget(),
                 self.create_campaign(),
-                # self.create_lineitems(),
+                self.create_lineitems(),
             ],
         )
 
@@ -204,8 +203,9 @@ class Part3Crew:
             process=Process.hierarchical,
             manager_llm=llm,
             verbose=True,
+            # memory=True, causes weird python error with sqllite.py line 88
             planning=True,
             planning_llm=llm,  # Azure
-            output_log_file="output/part_3.log",
-            output_file="output/part_3.md",
+            output_log_file=f"output/{self.artist_name}_part_3.log",
+            output_file=f"output/{self.artist_name}_part_3.md",
         )

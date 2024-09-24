@@ -2,6 +2,7 @@ from typing import Any
 from crewai_tools import BaseTool
 
 from part_3.tools.access import get_token
+from part_3.tools.utils import attrubtes_only
 import requests
 import os
 
@@ -34,6 +35,14 @@ class AccountsTool(BaseTool):
         headers = {"Authorization": authHeader}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(url=url, headers=headers, params=params)
+        if response.status_code != 200:
+            raise Exception(
+                f"Failed to fetch Accounts, Error: {response.status_code} - {response.text}, {response.url}"
+            )
+        if "data" in response.json():
+            return attrubtes_only(response.json()["data"])
+        
+        
         return response.json()
 
 
@@ -63,6 +72,13 @@ class BrandsTool(BaseTool):
             headers=headers,
             params=params,
         )
+        if response.status_code != 200:
+            raise Exception(
+                f"Failed to fetch Brands, Error: {response.status_code} - {response.text}, {response.url}"
+            )
+        if "data" in response.json():
+            return attrubtes_only(response.json()["data"])
+        
         return response.json()
 
 
@@ -92,6 +108,13 @@ class RetailersTool(BaseTool):
             headers=headers,
             params=params,
         )
+        if response.status_code != 200:
+            raise Exception(
+                f"Failed to fetch Retailers, Error: {response.status_code} - {response.text}, {response.url}"
+            )
+        if "data" in response.json():
+            return attrubtes_only(response.json()["data"])
+        
         return response.json()
 
 class BalancesTool(BaseTool):
@@ -118,4 +141,12 @@ class BalancesTool(BaseTool):
             url=f"{self.base_url}accounts/{accountId}/balances",
             headers=headers,
         )
+        if response.status_code != 200:
+            raise Exception(
+                f"Failed to fetch Balances, Error: {response.status_code} - {response.text}, {response.url}"
+            )
+        if "data" in response.json():
+            print("account:",response.json()["data"])
+            return attrubtes_only(response.json()["data"])
+        
         return response.json()

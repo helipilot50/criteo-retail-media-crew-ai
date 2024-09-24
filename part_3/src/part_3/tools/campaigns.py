@@ -1,5 +1,6 @@
 from crewai_tools import BaseTool
 
+from part_3.tests.utils import attrubtes_only
 from part_3.tools.access import get_token
 import requests
 import os
@@ -67,11 +68,10 @@ class NewCampaignTool(BaseTool):
 
     name: str = "Retail Media New Campaign API Caller"
     description: str = (
-        """Calls the Retail Media  REST API and creates a campaign for an account by the  account {id}
+        """Calls the Retail Media  REST API and creates a campaign for an account by the  {account_id}
         Example input for new Campaign:
         {
-            "name": "Taylor Swift Concert Tour 2025",
-            "accountId": "4",
+            "name": "{artist_name} Concert Tour {year}",
             "startDate": "2025-01-01",
             "endDate": "2025-12-31",
             "budget": 1280000,
@@ -99,5 +99,11 @@ class NewCampaignTool(BaseTool):
                 "data": {"type": "Lineitem", "attributes": campaign},
             },
         )
-        print("New campaign:", response.json())
-        return response.json()
+        
+        if response.status_code != 200:
+            raise Exception(f"Failed to create new campaign: {response.json()}")
+        if "data" not in response.json():
+            raise Exception(f"Failed to create new campaign: {response.json()}")
+        new_campaign = attrubtes_only(response.json()["data"])
+        print(f"New campaign created: {new_campaign}")
+        return new_campaign
