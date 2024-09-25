@@ -4,7 +4,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 
 from part_3.handlers.panel import PanelHandler
-from part_3.tools.accounts import AccountsTool
+from part_3.tools.accounts import AccountsTool, BrandsTool, RetailersTool
 from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
 from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.search import InternetSearch, SearchTools
@@ -37,19 +37,27 @@ class Part3Crew:
         self.year = inputs["year"]
 
     @agent
+    def account_manager(self) -> Agent:
+        return Agent(
+            config=self.agents_config["account_manager"],
+            tools=[
+                AccountsTool(),
+                RetailersTool(),
+                BrandsTool(),
+            ],
+            llm=llm,
+        )
+
+    @agent
     def campaign_manager(self) -> Agent:
         config = self.agents_config["campaign_manager"]
-        # callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
             config=config,
             # tools=[
             #     AccountsCampaignsTool(),
             #     CampaignTool(),
             #     NewCampaignTool(),
-            #     NewAuctionLineitemTool(),
-            #     AuctionLineitemsTool()
-            #     ],
-            # callbacks=[callback_handler],
+            # ],
             verbose=True,
             llm=llm,
         )
@@ -97,6 +105,7 @@ class Part3Crew:
             verbose=True,
             llm=llm,
         )
+
     @agent
     def linitem_manager(self) -> Agent:
         config = self.agents_config["linitem_manager"]
@@ -141,8 +150,9 @@ class Part3Crew:
         return Task(
             config=self.tasks_config["account"],
             output_file=f"output/{self.artist_name}_account.json",
-            agent=self.campaign_manager(),
+            agent=self.account_manager(),
             tools=[AccountsTool()],
+            asynch=True,
         )
 
     @task
@@ -155,7 +165,7 @@ class Part3Crew:
             context=[
                 self.formulate_budget(),
             ],
-            tools=[NewCampaignTool()],
+            tools=[NewCampaignTool(), CampaignTool()],
             # human_input=True,
         )
 
@@ -171,7 +181,7 @@ class Part3Crew:
                 self.find_concert_venues(),
                 self.create_campaign(),
             ],
-            tools=[NewAuctionLineitemTool(),AuctionLineitemsTool()],
+            tools=[NewAuctionLineitemTool(), AuctionLineitemsTool()],
             # human_input=True,
         )
 

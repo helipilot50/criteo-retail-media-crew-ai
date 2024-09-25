@@ -1,5 +1,6 @@
+from typing import Optional
 from crewai_tools import BaseTool
-
+from pydantic import BaseModel
 from part_3.tests.utils import attrubtes_only
 from part_3.tools.access import get_token
 import requests
@@ -36,7 +37,7 @@ class AccountsCampaignsTool(BaseTool):
         return response.json()
 
 
-class CampaignTool:
+class CampaignTool(BaseTool):
     """
     operations on a single campaign
     """
@@ -55,6 +56,23 @@ class CampaignTool:
         )
 
         return response.json()
+
+
+class NewCampaign(BaseModel):
+    name: str
+    accountId: str
+    startDate: str
+    endDate: str
+    budget: float
+    monthlyPacing: float
+    dailyBudget: float
+    isAutoDailyPacing: bool
+    dailyPacing: float
+    type: str
+    clickAttributionWindow: str
+    viewAttributionWindow: Optional[str]
+    clickAttributionScope: str
+    viewAttributionScope: str
 
 
 class NewCampaignTool(BaseTool):
@@ -88,18 +106,17 @@ class NewCampaignTool(BaseTool):
         """
     )
     base_url: str = base_url_env
-    # accounts/{accountId}/campaigns
 
-    def _run(self, accountId: str, campaign: dict):
+    def _run(self, accountId: str, campaign: NewCampaign):
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.post(
             url=f"{self.base_url}accounts/{accountId}/campaigns",
             headers=headers,
             json={
-                "data": {"type": "Lineitem", "attributes": campaign},
+                "data": {"type": "NewCampaign", "attributes": campaign},
             },
         )
-        
+
         if response.status_code != 200:
             raise Exception(f"Failed to create new campaign: {response.json()}")
         if "data" not in response.json():
