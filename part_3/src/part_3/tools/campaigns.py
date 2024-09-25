@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 from crewai_tools import BaseTool
 from pydantic import BaseModel
@@ -19,7 +20,7 @@ class AccountsCampaignsTool(BaseTool):
         token (str): The token for authorization.
     """
 
-    name: str = "Retail Media Campaigns API Caller"
+    name: str = "Retail Media Campaigns API"
     description: str = (
         "Calls the Retail Media  REST API and returns the Campaigns for an account by the  account {id} "
     )
@@ -42,7 +43,7 @@ class CampaignTool(BaseTool):
     operations on a single campaign
     """
 
-    name: str = "Retail Media Single Campaign API Caller"
+    name: str = "Retail Media Single Campaign API"
     description: str = (
         "Calls the Retail Media  REST API and returns a single Campaign by the  campaign {id} "
     )
@@ -58,23 +59,6 @@ class CampaignTool(BaseTool):
         return response.json()
 
 
-class NewCampaign(BaseModel):
-    name: str
-    accountId: str
-    startDate: str
-    endDate: str
-    budget: float
-    monthlyPacing: float
-    dailyBudget: float
-    isAutoDailyPacing: bool
-    dailyPacing: float
-    type: str
-    clickAttributionWindow: str
-    viewAttributionWindow: Optional[str]
-    clickAttributionScope: str
-    viewAttributionScope: str
-
-
 class NewCampaignTool(BaseTool):
     """
     Used to create a Retail Media campaign and return relevant results.
@@ -84,7 +68,7 @@ class NewCampaignTool(BaseTool):
         base_url (str): The base URL of the API.
     """
 
-    name: str = "Retail Media New Campaign API Caller"
+    name: str = "Retail Media New Campaign API"
     description: str = (
         """Calls the Retail Media  REST API and creates a campaign for an account by the  {account_id}
         Example input for new Campaign:
@@ -107,7 +91,7 @@ class NewCampaignTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, accountId: str, campaign: NewCampaign):
+    def _run(self, accountId: str, campaign: dict):
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.post(
             url=f"{self.base_url}accounts/{accountId}/campaigns",
@@ -117,10 +101,4 @@ class NewCampaignTool(BaseTool):
             },
         )
 
-        if response.status_code != 200:
-            raise Exception(f"Failed to create new campaign: {response.json()}")
-        if "data" not in response.json():
-            raise Exception(f"Failed to create new campaign: {response.json()}")
-        new_campaign = attrubtes_only(response.json()["data"])
-        print(f"New campaign created: {new_campaign}")
-        return new_campaign
+        return response.json()

@@ -2,7 +2,6 @@ from typing import Any
 from crewai_tools import BaseTool
 
 from part_3.tools.access import get_token
-from part_3.tools.utils import attrubtes_only, flattern
 import requests
 import os
 
