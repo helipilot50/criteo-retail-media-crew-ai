@@ -1,7 +1,9 @@
 from crewai_tools import BaseTool
 
-from part_3.models.lineitem import AuctionLineitem, NewAuctionLineitem
-from part_3.tests.utils import attrubtes_only
+from part_3.models.lineitem import (
+    AuctionLineitem,
+    NewAuctionLineitem,
+)
 from part_3.tools.access import get_token
 from part_3.tools.utils import flatten
 import requests
@@ -119,7 +121,7 @@ class NewAuctionLineitemTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, campaignId: str, lineitem: dict):
+    def _run(self, campaignId: str, lineitem: NewAuctionLineitem):
         """
         Creates a Retail Media Auction Lineitem for campaign by {campaignId} and returns relevant results.
         """
@@ -130,7 +132,7 @@ class NewAuctionLineitemTool(BaseTool):
             json={
                 "data": {
                     "type": "NewLineitems",
-                    "attributes": lineitem,
+                    "attributes": lineitem.model_dump_json(),
                 }
             },
         )

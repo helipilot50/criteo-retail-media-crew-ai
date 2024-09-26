@@ -103,18 +103,22 @@ def test_new_campaign():
         current_datetime = datetime.now()
         newAuctionLineitemResult = newAuctionLineitem._run(
             campaignId=newCampaign.id,
-            lineitem=dict(
+            lineitem=NewAuctionLineitem(
                 name="Jimmy Carr Concert Tour 2030 - Open Auction Lineitem "
                 + current_datetime.strftime("%Y-%m-%d %H:%M:%S")
                 + " - "
                 + str(i),  # name must be unique across the campaign
-                status=LineitemStatus.paused,
+                status=LineitemStatus.draft,
                 targetRetailerId="1106",
                 budget=500,
-                startDate="2030-10-1",
-                endDate="2030-12-31",
+                startDate=datetime.date(2030, 10, 1),
+                endDate=datetime.date(2030, 12, 31),
                 bidStrategy=LineitemBidStrategy.conversion,
-                targetBid=1.0,
+                targetBid=None,
+                isAutoDailyPacing=False,
+                maxBid=None,
+                monthlyPacing=None,
+                dailyPacing=None,
             ),
         )
         assert newAuctionLineitemResult is not None

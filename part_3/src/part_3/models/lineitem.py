@@ -53,15 +53,15 @@ class AuctionLineitem(BaseModel):
 class NewAuctionLineitem(BaseModel):
     name: str
     startDate: datetime.date
-    endDate: Optional[datetime.date]
     status: LineitemStatus
     targetRetailerId: str
+    bidStrategy: LineitemBidStrategy
+    isAutoDailyPacing: bool
+    endDate: Optional[datetime.date]
     budget: Optional[float]
     targetBid: Optional[float]
     maxBid: Optional[float]
     monthlyPacing: Optional[float]
     dailyPacing: Optional[float]
-    isAutoDailyPacing: Optional[bool] = False
-    bidStrategy: LineitemBidStrategy
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
