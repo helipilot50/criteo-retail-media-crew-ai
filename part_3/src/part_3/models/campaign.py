@@ -38,11 +38,10 @@ class ViewAttributionScope(str, Enum):
 
 class NewCampaign(BaseModel):
     name: str
-    startDate: datetime.date
-    endDate: datetime.date
+    startDate: Optional[datetime.date]
+    endDate: Optional[datetime.date]
     budget: Optional[float]
     monthlyPacing: Optional[float]
-    dailyBudget: Optional[float]
     isAutoDailyPacing:bool=False
     dailyPacing:Optional[float]
     type: Optional[CampaignType]
@@ -50,4 +49,46 @@ class NewCampaign(BaseModel):
     viewAttributionWindow:ViewAttributionWindow
     clickAttributionScope:ClickAttributionScope
     viewAttributionScope:ViewAttributionScope
+    companyNames: Optional[str]
+    drawableBalanceIds: Optional[List[str]]
+
+class UpdateCampaign(BaseModel):
+    id:str
+    name:Optional[str]
+    isAutoDailyPacing:Optional[bool]
+    startDate:Optional[datetime.date]
+    endDate:Optional[datetime.date]
+    type:Optional[CampaignType]
+    drawableBalanceIds:Optional[List[str]]
+    clickAttributionWindow:Optional[ClickAttributionWindow]
+    viewAttributionWindow:Optional[ViewAttributionWindow]
+    budget:Optional[float]
+    monthlyPacing:Optional[float]
+    dailyPacing:Optional[float]
+    clickAttributionScope: Optional[ClickAttributionScope]
+    viewAttributionScope: Optional[ViewAttributionScope]
+    companyName:Optional[str]
     
+class Campaign(BaseModel):
+    id: str
+    accountId: str
+    promotedBrandIds:List[str]
+    budgetSpent:float
+    budgetRemaining:Optional[float]
+    status: CampaignStatus
+    createdAt: datetime
+    updatedAt: datetime
+    type: CampaignType
+    drawableBalanceIds:List[str]
+    clickAttributionWindow: ClickAttributionWindow
+    viewAttributionWindow: ViewAttributionWindow
+    name: str
+    budget:Optional[float]
+    monthlyPacing:Optional[float]
+    dailyPacing:Optional[float]
+    isAutoDailyPacing:bool
+    startDate:Optional[datetime.date]
+    endDate:Optional[datetime.date]
+    clickAttributionScope: ClickAttributionScope
+    viewAttributionScope: ViewAttributionScope
+    companyName:Optional[str]
