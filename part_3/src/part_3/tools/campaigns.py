@@ -1,6 +1,8 @@
 import datetime
 from typing import Optional
 from crewai_tools import BaseTool
+from part_3.models.campaign import Campaign, NewCampaign
+from part_3.tools.utils import flatten
 from pydantic import BaseModel
 from part_3.tests.utils import attrubtes_only
 from part_3.tools.access import get_token
@@ -49,14 +51,16 @@ class CampaignTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, campaignId: str):
+    def _run(self, campaignId: str) -> Campaign:
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.get(
             url=f"{self.base_url}campaigns/{campaignId}",
             headers=headers,
         )
-
-        return response.json()
+        if response.status_code != 200:
+            raise Exception("CampaignTool error:", response.json())
+        theCampaign = Campaign(**flatten(response.json()["data"]))
+        return theCampaign
 
 
 class NewCampaignTool(BaseTool):
@@ -91,7 +95,7 @@ class NewCampaignTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, accountId: str, campaign: dict):
+    def _run(self, accountId: str, campaign: dict) -> Campaign:
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.post(
             url=f"{self.base_url}accounts/{accountId}/campaigns",
@@ -100,5 +104,13 @@ class NewCampaignTool(BaseTool):
                 "data": {"type": "NewCampaign", "attributes": campaign},
             },
         )
+        # print("response.status_code --> ", response.status_code)
+        if response.status_code != 201:
+            raise Exception("NewCampaignTool error:", response.json())
+        data = response.json()["data"]
+        flat = flatten(data)
+        # print("flat --> ", flat)
 
-        return response.json()
+        theCampaign = Campaign(**flat)
+        # print("theCampaign --> ", theCampaign)
+        return theCampaign

@@ -1,12 +1,26 @@
 import json
+from part_3.models.campaign import (
+    CampaignType,
+    ClickAttributionScope,
+    ClickAttributionWindow,
+    NewCampaign,
+    ViewAttributionScope,
+    ViewAttributionWindow,
+)
+from part_3.models.lineitem import (
+    LineitemBidStrategy,
+    LineitemStatus,
+    NewAuctionLineitem,
+)
 from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.utils import flatten
 from part_3.tools.accounts import AccountsTool
-from part_3.tools.campaigns import AccountsCampaignsTool, NewCampaignTool 
+from part_3.tools.campaigns import AccountsCampaignsTool, NewCampaignTool
 from crewai_tools import (
     FileWriterTool,
 )
 from datetime import datetime
+
 
 def first_account():
     accounts = AccountsTool()
@@ -58,62 +72,61 @@ def test_new_campaign():
     account_id = account["id"]
     assert account_id is not None
 
-    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_datetime = datetime.now()
 
     campaign = dict(
-        name="Jimmy Carr Concert Tour 2030 "+current_datetime,
+        name="Jimmy Carr Concert Tour 2030 "
+        + current_datetime.strftime("%Y-%m-%d %H:%M:%S"),
         startDate="2030-01-01",
         endDate="2030-12-31",
         budget=1280000,
-        monthlyPacing=500,
-        dailyBudget=10,
         isAutoDailyPacing=False,
-        dailyPacing=10,
-        type="auction",
-        clickAttributionWindow="30D",
-        viewAttributionWindow="None",
-        clickAttributionScope="sameSkuCategory",
-        viewAttributionScope="sameSkuCategory"
+        type=CampaignType.auction,
+        clickAttributionWindow=ClickAttributionWindow.thirtyD,
+        viewAttributionWindow=ViewAttributionWindow.none,
+        clickAttributionScope=ClickAttributionScope.sameSkuCategory,
+        viewAttributionScope=ViewAttributionScope.sameSkuCategory,
     )
     assert campaign is not None
 
-    newCampaignResult = newCampaign._run(accountId=account_id, campaign=campaign)
-    # print("newCampaignResult --> ", newCampaignResult)
-    assert newCampaignResult is not None
-    assert newCampaignResult["data"] is not None
-    theCampaign = flatten(newCampaignResult["data"])
+    newCampaign = newCampaign._run(accountId=account_id, campaign=campaign)
+    assert newCampaign is not None
 
     fileWriter._run(
         directory="output",
-        filename=f"test_{account_id}_new_campaign_{theCampaign["id"]}.json",
-        content=json.dumps(theCampaign, indent=2),
+        filename=f"test_{account_id}_new_campaign_{newCampaign.id}.json",
+        content=json.dumps(newCampaign.model_dump_json(), indent=2),
         overwrite=True,
     )
+
     for i in range(1, 25):
+        current_datetime = datetime.now()
         newAuctionLineitemResult = newAuctionLineitem._run(
-            campaignId=theCampaign["id"],
+            campaignId=newCampaign.id,
             lineitem=dict(
-                name="Jimmy Carr Concert Tour 2030 - Open Auction Lineitem "+current_datetime+" - "+str(i), # name must be unique
-                status="paused",
+                name="Jimmy Carr Concert Tour 2030 - Open Auction Lineitem "
+                + current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+                + " - "
+                + str(i),  # name must be unique across the campaign
+                status=LineitemStatus.paused,
                 targetRetailerId="1106",
                 budget=500,
                 startDate="2030-10-1",
                 endDate="2030-12-31",
-                bidStrategy="conversion",
+                bidStrategy=LineitemBidStrategy.conversion,
                 targetBid=1.0,
             ),
         )
         assert newAuctionLineitemResult is not None
-    
-    campainLineitemsResult = campainLineitems._run(campaignId=theCampaign["id"])
+
+    campainLineitemsResult = campainLineitems._run(campaignId=newCampaign.id)
     assert campainLineitemsResult is not None
     assert campainLineitemsResult["data"] is not None
     lineitems = list(map(flatten, campainLineitemsResult["data"]))
     assert len(lineitems) > 0
     fileWriter._run(
         directory="output",
-        filename=f"test_{theCampaign['id']}_lineitems.json",
+        filename=f"test_{newCampaign.id}_lineitems.json",
         content=json.dumps(lineitems, indent=2),
         overwrite=True,
     )
-

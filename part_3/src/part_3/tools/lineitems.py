@@ -1,7 +1,9 @@
 from crewai_tools import BaseTool
 
+from part_3.models.lineitem import AuctionLineitem, NewAuctionLineitem
 from part_3.tests.utils import attrubtes_only
 from part_3.tools.access import get_token
+from part_3.tools.utils import flatten
 import requests
 import os
 
@@ -34,6 +36,8 @@ class PreferredLineitemsTool(BaseTool):
             headers=headers,
             params=params,
         )
+        if response.status_code != 200:
+            raise Exception("[PreferredLineitemsTool] error:", response.json())
         return response.json()
 
 
@@ -63,6 +67,8 @@ class AuctionLineitemsTool(BaseTool):
             headers=headers,
             params=params,
         )
+        if response.status_code != 200:
+            raise Exception("[AuctionLineitemsTool] error:", response.json())
         return response.json()
 
 
@@ -92,6 +98,8 @@ class AccountLineitemsTool(BaseTool):
             headers=headers,
             params=params,
         )
+        if response.status_code != 200:
+            raise Exception("[AccountLineitemsTool] error:", response.json())
         return response.json()
 
 
@@ -126,7 +134,12 @@ class NewAuctionLineitemTool(BaseTool):
                 }
             },
         )
-        return response.json()
+        if response.status_code != 201:
+            raise Exception("[NewAuctionLineitemTool] error:", response.json())
+        data = response.json()["data"]
+        flat = flatten(data)
+        theLineitem = AuctionLineitem(**flat)
+        return theLineitem
 
 
 class NewPreferredLineitemTool(BaseTool):
@@ -154,6 +167,8 @@ class NewPreferredLineitemTool(BaseTool):
             headers=headers,
             json=lineitem,
         )
+        if response.status_code != 201:
+            raise Exception("[NewPreferredLineitemTool] error:", response.json())
         return response.json()
 
 
@@ -196,6 +211,8 @@ class NewOpenAuctionLineitemTool(BaseTool):
             headers=headers,
             json=lineitem,
         )
+        if response.status_code != 201:
+            raise Exception("[NewOpenAuctionLineitemTool] error:", response.json())
         new_lineitem = response.json()
         return new_lineitem
 
@@ -226,4 +243,6 @@ class PromotedProducts(BaseTool):
             headers=headers,
             params=params,
         )
+        if response.status_code != 200:
+            raise Exception("[PromotedProducts] error:", response.json())
         return response.json()
