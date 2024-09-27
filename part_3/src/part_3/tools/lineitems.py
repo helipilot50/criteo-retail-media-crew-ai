@@ -1,5 +1,6 @@
+import json
 from crewai_tools import BaseTool
-
+from langchain.tools import tool
 from part_3.models.lineitem import (
     AuctionLineitem,
     NewAuctionLineitem,
@@ -117,27 +118,47 @@ class NewAuctionLineitemTool(BaseTool):
 
     name: str = "Retail Media New Auction Lineitem API Caller"
     description: str = (
-        "Calls the Retail Media  REST API and creates a auction Lineitem for a campaign by the campaign {id}"
+        """
+        Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id.
+        Example input data for a new lineitem:
+        {
+            "name": Taylor Swift 2025 - AccorHotels Arena Paris- 2025-05-20,
+            "campaignId": "626444481539563520",
+            "status": "paused",
+            "targetRetailerId": "1106",
+            "budget": 50,
+            "startDate": "2025-10-1",
+            "endDate": "2025-12-31",
+            "bidStrategy": "conversion",
+            "targetBid": 1.0,
+        }
+        """
     )
     base_url: str = base_url_env
 
-    def _run(self, campaignId: str, lineitem: NewAuctionLineitem):
+    def _run(self, campaignId: str, lineitem: dict):
         """
         Creates a Retail Media Auction Lineitem for campaign by {campaignId} and returns relevant results.
         """
         headers = {"Authorization": "Bearer " + get_token()}
+        # json={
+        #         "data": {"type": "NewCampaign", "attributes": campaign},
+        #     },
+        payload = {
+            "data": {
+                "type": f"{campaignId}",
+                "attributes": lineitem,
+            }
+        }
         response = requests.post(
             url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
+            json=payload,
             headers=headers,
-            json={
-                "data": {
-                    "type": "NewLineitems",
-                    "attributes": lineitem.model_dump_json(),
-                }
-            },
+            
         )
         if response.status_code != 201:
-            raise Exception("[NewAuctionLineitemTool] error:", response.json())
+            print("[NewAuctionLineitemTool] errors:", response.json()["errors"])
+            raise Exception("[NewAuctionLineitemTool] errors:", response.json()["errors"])
         data = response.json()["data"]
         flat = flatten(data)
         theLineitem = AuctionLineitem(**flat)
@@ -173,52 +194,6 @@ class NewPreferredLineitemTool(BaseTool):
             raise Exception("[NewPreferredLineitemTool] error:", response.json())
         return response.json()
 
-
-class NewOpenAuctionLineitemTool(BaseTool):
-    """
-    Used to create a Retail Media Open Auction Lineitem and return relevant results.
-    Attributes:
-        name (str): The name of the tool.
-        description (str): The description of the tool.
-        base_url (str): The base URL of the API.
-    """
-
-    name: str = "Retail Media New Open Auction Lineitem API Caller"
-    description: str = (
-        """
-        Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id.
-        Example input data for a new lineitem:
-        {
-            "name": Taylor Swift 2025 - AccorHotels Arena Paris- 2025-05-20,
-            "campaignId": "626444481539563520",
-            "status": "paused",
-            "targetRetailerId": "1106",
-            "budget": 50,
-            "startDate": "2025-10-1",
-            "endDate": "2025-12-31",
-            "bidStrategy": "conversion",
-            "targetBid": 1.0,
-        }
-        """
-    )
-    base_url: str = base_url_env
-
-    def _run(self, campaignId: str, lineitem: dict):
-        """
-        Creates a Retail Media  Open Auction Lineitem for campaign by the campaign id and returns relevant results.
-        """
-        headers = {"Authorization": "Bearer " + get_token()}
-        response = requests.post(
-            url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
-            headers=headers,
-            json=lineitem,
-        )
-        if response.status_code != 201:
-            raise Exception("[NewOpenAuctionLineitemTool] error:", response.json())
-        new_lineitem = response.json()
-        return new_lineitem
-
-
 class PromotedProducts(BaseTool):
     """
     Used to fetch the Retail Media Promoted Products  for a Lineitem and return relevant results.
@@ -248,3 +223,40 @@ class PromotedProducts(BaseTool):
         if response.status_code != 200:
             raise Exception("[PromotedProducts] error:", response.json())
         return response.json()
+
+
+# class LineitemsT():
+#     @tool("New auction lineitem")
+#     def new_auction_lineitem(self, campaignId:str, lineitem: NewAuctionLineitem) -> AuctionLineitem:
+#         """
+#             Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id.
+#             Example input data for a new lineitem:
+#             {
+#                 "name": Taylor Swift 2025 - AccorHotels Arena Paris- 2025-05-20,
+#                 "campaignId": "626444481539563520",
+#                 "status": "paused",
+#                 "targetRetailerId": "1106",
+#                 "budget": 50,
+#                 "startDate": "2025-10-1",
+#                 "endDate": "2025-12-31",
+#                 "bidStrategy": "conversion",
+#                 "targetBid": 1.0,
+#             }
+#         """
+#         headers = {"Authorization": "Bearer " + get_token()}
+#         response = requests.post(
+#             url=f"{base_url_env}campaigns/{campaignId}/auction-line-items",
+#             headers=headers,
+#             json={
+#                 "data": {
+#                     "type": "NewLineitems",
+#                     "attributes": lineitem.model_dump_json(),
+#                 }
+#             },
+#         )
+#         if response.status_code != 201:
+#             raise Exception("[NewAuctionLineitemTool] error:", response.json())
+#         data = response.json()["data"]
+#         flat = flatten(data)
+#         theLineitem = AuctionLineitem(**flat)
+#         return theLineitem

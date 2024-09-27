@@ -19,7 +19,7 @@ from part_3.tools.campaigns import AccountsCampaignsTool, NewCampaignTool
 from crewai_tools import (
     FileWriterTool,
 )
-from datetime import datetime
+from datetime import date, datetime
 
 
 def first_account():
@@ -89,48 +89,50 @@ def test_new_campaign():
     )
     assert campaign is not None
 
-    newCampaign = newCampaign._run(accountId=account_id, campaign=campaign)
-    assert newCampaign is not None
+    theCampaign = newCampaign._run(accountId=account_id, campaign=campaign)
+    assert theCampaign is not None
+    print("theNewCampaign --> ", theCampaign)
 
     fileWriter._run(
         directory="output",
-        filename=f"test_{account_id}_new_campaign_{newCampaign.id}.json",
-        content=json.dumps(newCampaign.model_dump_json(), indent=2),
+        filename=f"test_{account_id}_new_campaign_{theCampaign.id}.json",
+        content=theCampaign.model_dump_json( indent=2),
         overwrite=True,
     )
 
     for i in range(1, 25):
         current_datetime = datetime.now()
-        newAuctionLineitemResult = newAuctionLineitem._run(
-            campaignId=newCampaign.id,
-            lineitem=NewAuctionLineitem(
+        lineitemInput=dict(
                 name="Jimmy Carr Concert Tour 2030 - Open Auction Lineitem "
                 + current_datetime.strftime("%Y-%m-%d %H:%M:%S")
                 + " - "
                 + str(i),  # name must be unique across the campaign
-                status=LineitemStatus.draft,
-                targetRetailerId="1106",
-                budget=500,
-                startDate=datetime.date(2030, 10, 1),
-                endDate=datetime.date(2030, 12, 31),
-                bidStrategy=LineitemBidStrategy.conversion,
-                targetBid=None,
-                isAutoDailyPacing=False,
-                maxBid=None,
-                monthlyPacing=None,
-                dailyPacing=None,
-            ),
+                startDate = "2030-01-01",
+                targetRetailerId = "906",
+                endDate = "2030-12-31",
+                status = LineitemStatus.paused,
+                budget = 1.00,
+                targetBid = 5,
+                maxBid = 5,
+                monthlyPacing = 50,
+                dailyPacing = 5,
+                isAutoDailyPacing = False,
+                bidStrategy = LineitemBidStrategy.conversion
+        )
+        newAuctionLineitemResult = newAuctionLineitem._run(
+            campaignId=theCampaign.id,
+            lineitem=lineitemInput,
         )
         assert newAuctionLineitemResult is not None
 
-    campainLineitemsResult = campainLineitems._run(campaignId=newCampaign.id)
+    campainLineitemsResult = campainLineitems._run(campaignId=theCampaign.id)
     assert campainLineitemsResult is not None
     assert campainLineitemsResult["data"] is not None
     lineitems = list(map(flatten, campainLineitemsResult["data"]))
     assert len(lineitems) > 0
     fileWriter._run(
         directory="output",
-        filename=f"test_{newCampaign.id}_lineitems.json",
+        filename=f"test_{theCampaign.id}_lineitems.json",
         content=json.dumps(lineitems, indent=2),
         overwrite=True,
     )

@@ -1,6 +1,6 @@
 import datetime
 from typing import Optional
-from crewai_tools import BaseTool
+from crewai_tools import BaseTool,tool
 from part_3.models.campaign import Campaign, NewCampaign
 from part_3.tools.utils import flatten
 from pydantic import BaseModel
