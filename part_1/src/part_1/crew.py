@@ -1,6 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
+
 from part_1.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 
 import os
