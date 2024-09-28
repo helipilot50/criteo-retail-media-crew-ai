@@ -1,19 +1,31 @@
+import os
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-# from langchain_openai import ChatOpenAI
+
 
 from part_1.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 
-import os
-
 # only if you use Azure
-from langchain_openai import AzureChatOpenAI
+# from langchain_openai import AzureChatOpenAI
 
-llm = AzureChatOpenAI(
-    model=os.environ["OPENAI_MODEL_NAME"],
-    deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
-)
+# llm = AzureChatOpenAI(
+#     model=os.environ["OPENAI_MODEL_NAME"],
+#     deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
+# )
 # end Azure
+
+# only if you use Groq
+from crewai import LLM
+os.environ["OPENAI_API_KEY"] = os.environ["GROQ_API_KEY"]
+os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
+os.environ["OPENAI_MODEL_NAME"] = os.environ["GROQ_AI_MODEL_NAME"]
+
+llm = LLM(
+    model=os.environ["GROQ_AI_MODEL_NAME"],
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.environ["GROQ_API_KEY"],
+)
+# end Groq
 
 
 @CrewBase
@@ -32,12 +44,8 @@ class Part1Crew:
     def account_manager(self) -> Agent:
         return Agent(
             config=self.agents_config["account_manager"],
-            tools=[
-                AccountsTool(),
-                RetailersTool(),
-                BrandsTool(),
-            ],
             llm=llm,
+            max_iter=1,
         )
 
     """
@@ -51,6 +59,9 @@ class Part1Crew:
         return Task(
             config=self.tasks_config["accounts"],
             output_file="output/accounts.md",
+            tools=[
+                AccountsTool(),
+            ],
         )
 
     """
@@ -64,6 +75,11 @@ class Part1Crew:
         return Task(
             config=self.tasks_config["brands"],
             output_file="output/brands.md",
+            asynch=True,
+            context=[self.accounts()],
+            tools=[
+                BrandsTool(),
+            ],
         )
 
     """
@@ -77,6 +93,11 @@ class Part1Crew:
         return Task(
             config=self.tasks_config["retailers"],
             output_file="output/retailers.md",
+            asynch=True,
+            context=[self.accounts()],
+            tools=[
+                RetailersTool(),
+            ],
         )
 
     """
@@ -92,7 +113,5 @@ class Part1Crew:
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            planning=True,
-            planning_llm=llm,
             output_log_file="output/part_1.log",
         )
