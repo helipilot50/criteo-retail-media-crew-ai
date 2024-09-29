@@ -2,14 +2,16 @@ accounts:
   description: >
     Retrieve a list of accounts available to this user. Use the Retail Media REST API and remember the result. The results are paginated, so you may need to make multiple requests, do not make more than the total number of pages.
   expected_output: >
-    A list of accounts available to this user formatted as a table in Markdown.
+    A list of accounts available to this user formatted as a table in Markdown. Here is an example of the expected output:
+    | Retailer ID | Name |	Type | Subtype | Countries | Currency | Parent Account Label | Time Zone | Company Name |
   agent: account_manager
 
 brands:
   description: >
     Iterate through the {accounts list}, and for each {account} retrieve the Retail Media brands. Use the {account id} to get the brands.
   expected_output: >
-    A list of brands for the account formatted as a table in Markdown.
+    A list of brands for the account formatted as a table in Markdown. Here is an example of the expected output:
+    | Brand ID | Brand Name | 
   agent: account_manager
   context:
     - accounts
@@ -18,7 +20,8 @@ retailers:
   description: >
     Iterate through the {accounts list}, and for each {account} retrieve the Retail Media retailers. Use the {account id} to get the retailers.
   expected_output: >
-    A list of retailers for the account formatted as a table in Markdown.
+    A list of retailers for the account formatted as a table in Markdown. Here is an example of the expected output:
+    | Retailer ID | Retailer Name | Campaign Eligibilities |
   agent: account_manager
   context:
     - accounts

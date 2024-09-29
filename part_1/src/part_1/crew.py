@@ -2,7 +2,6 @@ import os
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 
-
 from part_1.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 
 # only if you use Azure
