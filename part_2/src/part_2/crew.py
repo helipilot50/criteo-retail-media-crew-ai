@@ -3,7 +3,6 @@ from datetime import date, datetime
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import (
-    FileWriterTool,
     FileReadTool,
     DirectoryReadTool,
 )
@@ -14,40 +13,42 @@ from part_2.tools.charts import BarChartTool, PieChartTool
 from part_2.tools.campaigns import CampaignsTool
 
 # only if you use Azure
-from langchain_openai import AzureChatOpenAI
+# from langchain_openai import AzureChatOpenAI
 
-llm = AzureChatOpenAI(
-    model=os.environ["OPENAI_MODEL_NAME"],
-    deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
-)
+# llm = AzureChatOpenAI(
+#     model=os.environ["OPENAI_MODEL_NAME"],
+#     deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
+# )
 # end Azure
 
 # only if you use Groq
-# from crewai import LLM
+from langchain_groq import ChatGroq
 
-# llm = LLM(
-#     model=os.environ["GROQ_AI_MODEL_NAME"],
-#     base_url="https://api.groq.com/openai/v1",
-#     api_key=os.environ["GROQ_API_KEY"],
-# )
+llm = ChatGroq(
+    model=os.environ["GROQ_AI_MODEL_NAME"],
+    api_key=os.environ["GROQ_API_KEY"],
+    verbose=True,
+)
+
 # end Groq
 
 
-# class Campaign(BaseModel):
-#     """Campaign model"""
+class Campaign(BaseModel):
+    """Campaign model"""
 
-#     id: str = Field(..., description="ID of the campaign")
-#     name: str = Field(..., description="Name of the campaign")
-#     budget: float = Field(..., description="Budget of the campaign")
-#     budgetSpent: float = Field(..., description="Budget spent of the campaign")
-#     startDate: str = Field(..., description="Start date of the campaign")
-#     status: str = Field(..., description="Status of the campaign")
-#     type: str = Field(..., description="Type of the campaign")
+    id: str = Field(..., description="ID of the campaign")
+    name: str = Field(..., description="Name of the campaign")
+    budget: float = Field(..., description="Budget of the campaign")
+    budgetSpent: float = Field(..., description="Budget spent of the campaign")
+    startDate: str = Field(..., description="Start date of the campaign")
+    # endDate: str = Optional(Field(..., description="Start date of the campaign"))
+    status: str = Field(..., description="Status of the campaign")
+    type: str = Field(..., description="Type of the campaign")
 
 
-# class CampaignList(BaseModel):
-#     campaigns: List[Campaign] = Field(..., description="Campaigns collection")
-#     totalItems: int = Field(..., description="Total items in the collection")
+class CampaignList(BaseModel):
+    campaigns: List[Campaign] = Field(..., description="Campaigns collection")
+    totalItems: int = Field(..., description="Total items in the collection")
 
 
 @CrewBase
@@ -62,9 +63,7 @@ class Part2Crew:
         config = self.agents_config["campaign_manager"]
         return Agent(
             config=config,
-            tools=[CampaignsTool()],
             llm=llm, # Azure or Groq
-            
         )
 
     @agent
@@ -74,7 +73,6 @@ class Part2Crew:
             config=config,
             tools=[PieChartTool(), BarChartTool()],
             llm=llm, # Azure or Groq
-            
         )
 
     @agent
@@ -95,7 +93,7 @@ class Part2Crew:
                 CampaignsTool(),
             ],
             agent=self.campaign_manager(),
-            # output_json=CampaignList,
+            output_json=CampaignList,
         )
 
     @task
@@ -131,5 +129,6 @@ class Part2Crew:
             process=Process.sequential,
             verbose=True,
             planning=True,
+            planning_llm=llm,
             output_log_file="output/part_2.log",
         )

@@ -8,7 +8,6 @@ campaign_manager:
     You use the Retail Media Campaigns  API efficently.
     Dont make more requests that is necessary by checking the 'totalPages' and make the right number of requests.
     Remember the results of the campaigns API to avoid making unnecessary requests.
-  memory: True
   verbose: True
   cache: True
 
