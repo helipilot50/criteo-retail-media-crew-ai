@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import sys
-from part_2.azure_example import AzureExample
 from part_2.crew import Part2Crew
 
 from dotenv import load_dotenv

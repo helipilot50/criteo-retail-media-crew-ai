@@ -15,9 +15,6 @@ from part_1.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 
 # only if you use Groq
 from crewai import LLM
-os.environ["OPENAI_API_KEY"] = os.environ["GROQ_API_KEY"]
-os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
-os.environ["OPENAI_MODEL_NAME"] = os.environ["GROQ_AI_MODEL_NAME"]
 
 llm = LLM(
     model=os.environ["GROQ_AI_MODEL_NAME"],
@@ -43,7 +40,7 @@ class Part1Crew:
     def account_manager(self) -> Agent:
         return Agent(
             config=self.agents_config["account_manager"],
-            llm=llm,
+            llm=llm,  # Azure or Groq
             max_iter=1,
         )
 
