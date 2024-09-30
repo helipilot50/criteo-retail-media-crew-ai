@@ -7,22 +7,33 @@ from crewai_tools import (
     FileReadTool,
     DirectoryReadTool,
 )
-
 from pydantic import BaseModel, Field
 from typing import List, Optional
-
 
 from part_2.tools.charts import BarChartTool, PieChartTool
 from part_2.tools.campaigns import CampaignsTool
 
 # only if you use Azure
-from langchain_openai import AzureChatOpenAI
+# from langchain_openai import AzureChatOpenAI
 
-llm = AzureChatOpenAI(
-    model=os.environ["OPENAI_MODEL_NAME"],
-    deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
-)
+# llm = AzureChatOpenAI(
+#     model=os.environ["OPENAI_MODEL_NAME"],
+#     deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
+# )
 # end Azure
+
+# only if you use Groq
+# from crewai import LLM
+# os.environ["OPENAI_API_KEY"] = os.environ["GROQ_API_KEY"]
+# os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
+# os.environ["OPENAI_MODEL_NAME"] = os.environ["GROQ_AI_MODEL_NAME"]
+
+# llm = LLM(
+#     model=os.environ["GROQ_AI_MODEL_NAME"],
+#     base_url=os.environ["OPENAI_API_BASE"],
+#     api_key=os.environ["GROQ_API_KEY"],
+# )
+# end Groq
 
 
 class Campaign(BaseModel):
@@ -55,7 +66,7 @@ class Part2Crew:
         return Agent(
             config=config,
             tools=[CampaignsTool()],
-            llm=llm, # Azure
+            # llm=llm, # Azure
             
         )
 
@@ -65,7 +76,7 @@ class Part2Crew:
         return Agent(
             config=config,
             tools=[PieChartTool(), BarChartTool()],
-            llm=llm, # Azure
+            # llm=llm, # Azure or Groq
             
         )
 
@@ -75,7 +86,7 @@ class Part2Crew:
         return Agent(
             config=config,
             tools=[DirectoryReadTool(), FileReadTool()],
-            llm=llm, # Azure
+            # llm=llm, # Azure or Groq
         )
 
     @task
@@ -123,6 +134,6 @@ class Part2Crew:
             process=Process.sequential,
             verbose=True,
             planning=True,
-            planning_llm=llm,  # Azure
+            # planning_llm=llm,  # Azure or Groq
             output_log_file="output/part_2.log",
         )
