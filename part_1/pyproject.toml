@@ -7,7 +7,7 @@ authors = ["Peter Milne <helipilot50@gmail.com>"]
 [tool.poetry.dependencies]
 python = ">=3.12,<=3.13"
 crewai = { extras = ["tools"], version = "^0.65.2" }
-
+langchain-groq = "^0.1.10"
 
 
 

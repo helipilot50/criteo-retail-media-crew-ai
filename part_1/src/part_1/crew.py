@@ -47,7 +47,7 @@ class Part1Crew:
     """
     Accounts task instance created from the config file.
     This function is decorated with the @agent decorator to indicate that it is an agent.
-    It's job is to retrive Accounts data and produce a Markdown file.
+    It's job is to retrieve Accounts data and produce a Markdown file.
     """
 
     @task
@@ -63,7 +63,7 @@ class Part1Crew:
     """
     Brands task instance created from the config file.
     This function is decorated with the @agent decorator to indicate that it is an agent.
-    It's job is to retrive Brands data for a specific Account and produce a Markdown file.
+    It's job is to retrieve Brands data for a specific Account and produce a Markdown file.
     """
 
     @task
@@ -81,7 +81,7 @@ class Part1Crew:
     """
     Retailers task instance created from the config file.
     This function is decorated with the @agent decorator to indicate that it is an agent.
-    It's job is to retrive Retailers data for a specific Account and produce a Markdown file.
+    It's job is to retrieve Retailers data for a specific Account and produce a Markdown file.
     """
 
     @task
