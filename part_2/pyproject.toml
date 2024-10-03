@@ -17,6 +17,8 @@ run_crew = "part_2.main:run"
 train = "part_2.main:train"
 replay = "part_2.main:replay"
 test = "part_2.main:test"
+azure = "part_2.llm:azure"
+groq = "part_2.llm:groq"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.2"
