@@ -1,6 +1,6 @@
 import os
 from typing import Any
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 
 from part_3.handlers.panel import PanelHandler
@@ -11,14 +11,24 @@ from part_3.tools.search import InternetSearch, SearchTools
 
 
 # uncomment only if you use Azure
-from langchain_openai import AzureChatOpenAI
+# from langchain_openai import AzureChatOpenAI
 
-
-llm = AzureChatOpenAI(
-    model=os.environ["OPENAI_MODEL_NAME"],
-    deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
-)
+# llm = AzureChatOpenAI(
+#     model=os.environ["OPENAI_MODEL_NAME"],
+#     deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
+# )
 # end Azure
+# only if you use Groq
+from crewai import LLM
+
+llm = LLM(
+			model="groq/llama-3.1-70b-versatile",
+			temperature=0.7,
+			base_url="https://api.groq.com/openai/v1",
+			api_key=os.environ["GROQ_API_KEY"],
+		)
+
+# end Groq
 
 
 @CrewBase
