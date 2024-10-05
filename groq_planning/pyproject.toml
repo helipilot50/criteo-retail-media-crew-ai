@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "groq_planning"
+version = "0.1.0"
+description = "groq-planning using crewAI"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<=3.13"
+crewai = { extras = ["tools"], version = ">=0.65.2,<1.0.0" }
+langchain-groq = "^0.1.10"
+
+
+[tool.poetry.scripts]
+groq_planning = "groq_planning.main:run"
+run_crew = "groq_planning.main:run"
+train = "groq_planning.main:train"
+replay = "groq_planning.main:replay"
+test = "groq_planning.main:test"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
