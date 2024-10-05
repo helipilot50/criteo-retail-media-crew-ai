@@ -44,35 +44,35 @@ class Part2Crew:
     def __init__(self):
 
         self.llm = LLM(
-            model=os.environ["GROQ_AI_MODEL_NAME"],
-            temperature=0.7,
-            base_url="https://api.groq.com/openai/v1",
-            api_key=os.environ["GROQ_API_KEY"],
-        )
+			model="groq/llama-3.1-70b-versatile",
+			temperature=0.7,
+			base_url="https://api.groq.com/openai/v1",
+			api_key=os.environ["GROQ_API_KEY"],
+		)
 
-        print("+++++++++++ Azure OpenAI +++++++++++")
-        print("AZURE_OPENAI_API_VERSION",os.environ["AZURE_OPENAI_API_VERSION"])
-        print("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME",os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"])
-        print("AZURE_OPENAI_ENDPOINT",os.environ["AZURE_OPENAI_ENDPOINT"])
-        print("AZURE_OPENAI_API_KEY",os.environ["AZURE_OPENAI_API_KEY"])
+        # print("+++++++++++ Azure OpenAI +++++++++++")
+        # print("AZURE_OPENAI_API_VERSION",os.environ["AZURE_OPENAI_API_VERSION"])
+        # print("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME",os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"])
+        # print("AZURE_OPENAI_ENDPOINT",os.environ["AZURE_OPENAI_ENDPOINT"])
+        # print("AZURE_OPENAI_API_KEY",os.environ["AZURE_OPENAI_API_KEY"])
             
-        self.azure_llm = AzureChatOpenAI(
-            # model=os.environ["OPENAI_MODEL_NAME"],
-            provider="azure_openai",
-            # deployment_name=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
-            # azure_endpoint = os.environ["AZURE_OPENAI_ENDPOINT"], 
-            # api_key=os.environ["AZURE_OPENAI_API_KEY"],  
-            # api_version=os.environ["AZURE_OPENAI_API_VERSION"],
+        # self.azure_llm = AzureChatOpenAI(
+        #     # model=os.environ["OPENAI_MODEL_NAME"],
+        #     provider="azure_openai",
+        #     # deployment_name=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
+        #     # azure_endpoint = os.environ["AZURE_OPENAI_ENDPOINT"], 
+        #     # api_key=os.environ["AZURE_OPENAI_API_KEY"],  
+        #     # api_version=os.environ["AZURE_OPENAI_API_VERSION"],
 
-            openai_api_version=os.environ["AZURE_OPENAI_API_VERSION"],
-            azure_deployment=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
-            azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"], 
-            api_key=os.environ["AZURE_OPENAI_API_KEY"],
-            max_tokens=4096,
-            temperature=0.6,
-        )
-        pi = self.azure_llm.invoke("what is PI to 10 decimal places")
-        print("PI",pi)
+        #     openai_api_version=os.environ["AZURE_OPENAI_API_VERSION"],
+        #     azure_deployment=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
+        #     azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"], 
+        #     api_key=os.environ["AZURE_OPENAI_API_KEY"],
+        #     max_tokens=4096,
+        #     temperature=0.6,
+        # )
+        # pi = self.azure_llm.invoke("what is PI to 10 decimal places")
+        # print("PI",pi)
 
     @agent
     def campaign_manager(self) -> Agent:
@@ -83,23 +83,23 @@ class Part2Crew:
             memory=True,
         )
 
-    # @agent
-    # def visualizer_agent(self) -> Agent:
-    #     config = self.agents_config["visualizer_agent"]
-    #     return Agent(
-    #         config=config,
-    #         tools=[PieChartTool(), BarChartTool()],
-    #         llm=self.groq_llm
-    #     )
+    @agent
+    def visualizer_agent(self) -> Agent:
+        config = self.agents_config["visualizer_agent"]
+        return Agent(
+            config=config,
+            tools=[PieChartTool(), BarChartTool()],
+            llm=self.llm
+        )
 
-    # @agent
-    # def campaign_reporter_agent(self) -> Agent:
-    #     config = self.agents_config["campaign_reporter_agent"]
-    #     return Agent(
-    #         config=config,
-    #         tools=[DirectoryReadTool(), FileReadTool()],
-    #         llm=self.groq_llm
-    #     )
+    @agent
+    def campaign_reporter_agent(self) -> Agent:
+        config = self.agents_config["campaign_reporter_agent"]
+        return Agent(
+            config=config,
+            tools=[DirectoryReadTool(), FileReadTool()],
+            llm=self.llm
+        )
 
     @task
     def fetch_campaigns_task(self) -> Task:
@@ -113,29 +113,29 @@ class Part2Crew:
             output_json=CampaignList,
         )
 
-    # @task
-    # def campaigns_budget_pie_chart(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["campaigns_budget_pie_chart"],
-    #         tools=[
-    #             PieChartTool(),
-    #         ],
-    #         agent=self.visualizer_agent(),
-    #         context=[self.fetch_campaigns_task()], # context improves consistency
-    #     )
+    @task
+    def campaigns_budget_pie_chart(self) -> Task:
+        return Task(
+            config=self.tasks_config["campaigns_budget_pie_chart"],
+            tools=[
+                PieChartTool(),
+            ],
+            agent=self.visualizer_agent(),
+            context=[self.fetch_campaigns_task()], # context improves consistency
+        )
 
-    # @task
-    # def campaigns_report(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["campaigns_report"],
-    #         output_file="output/campaigns_report.md",
-    #         agent=self.campaign_reporter_agent(),
-    #         asynch=True,
-    #         context=[ # context improves consistency
-    #             self.fetch_campaigns_task(),
-    #             self.campaigns_budget_pie_chart(),
-    #         ],  
-    #     )
+    @task
+    def campaigns_report(self) -> Task:
+        return Task(
+            config=self.tasks_config["campaigns_report"],
+            output_file="output/campaigns_report.md",
+            agent=self.campaign_reporter_agent(),
+            asynch=True,
+            context=[ # context improves consistency
+                self.fetch_campaigns_task(),
+                self.campaigns_budget_pie_chart(),
+            ],  
+        )
 
     @crew
     def crew(self) -> Crew:
