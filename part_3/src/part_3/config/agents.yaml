@@ -47,7 +47,7 @@ campaign_budget_agent:
     Formulate a budget for a specific entertainer
   backstory: >
     You're an expert in formulating budgets for an entertainment artist
-    You use the artist_name to formulate a budget for the campaign.
+    You use the {artist_name} to formulate a budget for the campaign.
     You use concert and venue information to formulate the busget for each concert.
   cache: True
   memory: True

@@ -6,7 +6,7 @@ from crewai.project import CrewBase, agent, crew, task
 from part_3.handlers.panel import PanelHandler
 from part_3.tools.accounts import AccountsTool, BrandsTool, RetailersTool
 from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
-from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
+from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool, venue_budget_calculator
 from part_3.tools.search import InternetSearch, SearchTools
 
 
@@ -147,12 +147,22 @@ class Part3Crew:
         )
 
     @task
-    def formulate_budget(self) -> Task:
+    def formulate_campaign_budget(self) -> Task:
         return Task(
-            config=self.tasks_config["formulate_budget"],
+            config=self.tasks_config["formulate_campaign_budget"],
             output_file=f"output/{self.artist_name}_budget.json",
             agent=self.campaign_budget_agent(),
             context=[self.find_concert_venues()],
+        )
+    
+    @task
+    def formulate_venue_budget(self) -> Task:
+        return Task(
+            config=self.tasks_config["formulate_campaign_budget"],
+            output_file=f"output/{self.artist_name}_venue_budget.json",
+            agent=self.campaign_budget_agent(),
+            context=[self.formulate_campaign_budget()],
+            tools=[venue_budget_calculator]
         )
 
     @task
@@ -173,7 +183,7 @@ class Part3Crew:
             output_file=f"output/{self.artist_name}_campaign.json",
             agent=self.campaign_manager(),
             context=[
-                self.formulate_budget(),
+                self.formulate_campaign_budget(),
             ],
             tools=[NewCampaignTool(), CampaignTool()],
             # human_input=True,
@@ -187,7 +197,7 @@ class Part3Crew:
             output_file=f"output/{self.artist_name}_lineitems.json",
             agent=self.linitem_manager(),
             context=[
-                self.formulate_budget(),
+                self.formulate_venue_budget(),
                 self.find_concert_venues(),
                 self.create_campaign(),
             ],
@@ -205,7 +215,8 @@ class Part3Crew:
                 self.account(),
                 self.research_demographics(),
                 self.find_concert_venues(),
-                self.formulate_budget(),
+                self.formulate_campaign_budget(),
+                self.formulate_venue_budget(),
                 self.create_campaign(),
                 self.create_lineitems(),
             ],

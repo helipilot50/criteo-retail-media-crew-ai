@@ -33,7 +33,7 @@ find_concert_venues:
   expected_output: >
     A JSON array of concerts, dates, venues and their searing capacity for the artist.
 
-formulate_budget:
+formulate_campaign_budget:
   description: >
     Formulate an advertising budget for a digital advertising campaign using the {artist_name}, the location of the venues and their seating capacity.
     Provide a total budget for the digital advertising campaign.
@@ -58,10 +58,7 @@ formulate_budget:
         - **Example**: $7,500,000 to $10,000,000 for traditional media.
 
     4. **Digital Advertising Strategy**
-      - **Social Media Ads**: Platforms like Instagram, Facebook, TikTok, and Twitter are crucial for reaching Taylor Swift's fanbase.
-      - **Search Engine Marketing (SEM)**: Use Google Ads to target keywords related to the concerts.
-      - **Streaming Services**: Advertise on music streaming platforms like Spotify and Apple Music.
-      - **Influencer Partnerships**: Collaborate with influencers to promote the concerts.
+      - **Social Media Ads**: Platforms like Instagram, Facebook, TikTok, and Twitter are crucial for reaching {artist_name} fanbase.
       - **Retail Media**: Utilize retail media platforms to reach audiences while they shop online.
 
 
@@ -75,28 +72,52 @@ formulate_budget:
       - **Cost Per Click (CPC)**: $0.50
       - **Digital Advertising Budget**: $3,472,219
 
-    Example Budget Allocation for each venue:
-      "venue": "Stade de France"
-      "date": 2025-05-20
-      "city": "Paris"
-      "country": "France"
-      "seating_capacity": 80000
-      "averageTicketPrice": 150
-      "estimatedRevenue": 12000000
-      "digitalAdvertisingBudget": 1800
-
   expected_output: >
-    A JSON object with the budget for the campaign and each venue.
+    A JSON object with the budget for the campaign. 
+
+formulate_lineitem_budget:
+  description: >
+    Formulate the budget for the line items for the campaign.
+    Use the Digital Advertising Budget for the concert to formulate the budget for the line items.
+    The budget amount for the concert should be based on the venue and geographic location.
+    Express the budget in USD.
+
+    Here's a structured approach to help you get started:
+
+    1. **Estimate Revenue Goals**
+      - **Determine Ticket Sales Revenue**: Estimate the total revenue from ticket sales. For example, if each concert has 20,000 tickets at an average price of $150, the revenue per concert would be $3,000,000.
+      - **Total Concerts**: Multiply by the number of concerts. If there are 50 concerts, the total revenue would be $150,000,000.
+
+    2. **Allocate Advertising Budget**
+      - **Percentage of Revenue**: A common rule of thumb is to allocate 15%-20% of the total potential gross revenue to advertising². For Taylor Swift's concerts, this would be:
+        - **15% of $150,000,000**: $22,500,000
+        - **20% of $150,000,000**: $30,000,000
+
+    3. **Break Down the Budget**
+      - **Digital Advertising**: Allocate a significant portion to digital platforms (e.g., social media, search engines, streaming services). This could be around 60%-70% of the total advertising budget.
+        - **Example**: If the total budget is $25,000,000, then $15,000,000 to $17,500,000 could be for digital advertising.
+      - **Traditional Media**: Allocate the remaining budget to traditional media (e.g., TV, radio, print).
+        - **Example**: $7,500,000 to $10,000,000 for traditional media.
+
+    4. **Digital Advertising Strategy**
+      - **Social Media Ads**: Platforms like Instagram, Facebook, TikTok, and Twitter are crucial for reaching {artist_name} fanbase.
+      - **Retail Media**: Utilize retail media platforms to reach audiences while they shop online.
+
+    Example Calculation
+    If the goal is to generate $45,000,000 in ticket sales from digital advertising:
+      - **Ticket Price**: $150
+      - **Tickets Sold**: 300,000 tickets
+      - **Orders Needed**: 111,111 orders (
 
 create_campaign:
   description: >
     Use Retail Media API to create the campaign with:
-     The {artist_name}, the budget to create a campaign.
+     
      The campaign name is the {artist_name}, the {year}, the date of the first concert and the date of the last concert.
      
      The start date of the campaign should be 60 days before the first concert.
      The end date of the campaign should be the date of the last concert.
-     The budget is the total budget calculated.
+     The budget is the Digital Advertising Budget.
      Include the campaign name, the campaign start date, the campaign end date, the campaign budget, the campaign demographics, the campaign venues, and the campaign media.
     Formulate the campaign structure to match the following example.
     Example campaign input data:
