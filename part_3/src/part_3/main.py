@@ -6,12 +6,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-artist_name = input("Enter the artist name: ")
-year = input("Enter the year: ")
-account_id = input("Enter the account id: ")
+artist_name = input("Enter the artist name (default: 'Ed Sheeran'): ") or "Ed Sheeran"
+year = input("Enter the year (Default: 2025): ") or "2025"
+account_id = input("Enter the account id (Default: 4): ") or 4
+digital_advertising_budget = input("Enter the digital advertising budget (Default: 500000): ") or 500000
 
-inputs = {"account_id": account_id, "artist_name": artist_name, "year": year}
+inputs = {"account_id": account_id, 
+          "artist_name": artist_name, 
+          "year": year, 
+          "digital_advertising_budget": digital_advertising_budget}
 
+print(f"Inputs: {inputs}")
 
 def run():
     """

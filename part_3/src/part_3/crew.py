@@ -2,11 +2,17 @@ import os
 from typing import Any
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
+from crewai_tools import (
+    FileReadTool,
+    FileWriterTool,
+    DirectoryReadTool,
+)
 
 from part_3.handlers.panel import PanelHandler
 from part_3.tools.accounts import AccountsTool, BrandsTool, RetailersTool
+from part_3.tools.budget import venue_budget_calculator
 from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
-from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool, venue_budget_calculator
+from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.search import InternetSearch, SearchTools
 
 
@@ -38,8 +44,6 @@ class Part3Crew:
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
 
-    # def __init__(self, instance) -> None:
-    #     self.instance = instance
 
     def __init__(self, inputs: dict) -> Any:
         self.account_id = inputs["account_id"]
@@ -117,7 +121,7 @@ class Part3Crew:
         )
 
     @agent
-    def linitem_manager(self) -> Agent:
+    def lineitem_manager(self) -> Agent:
         config = self.agents_config["linitem_manager"]
         # callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
@@ -142,27 +146,20 @@ class Part3Crew:
         return Task(
             config=self.tasks_config["find_concert_venues"],
             output_file=f"output/{self.artist_name}_concert_venues.json",
+            # output_json=True,
             agent=self.concert_venue_agent(),
             tools=[InternetSearch()],
         )
 
     @task
-    def formulate_campaign_budget(self) -> Task:
+    def formulate_lineitem_budget(self) -> Task:
         return Task(
-            config=self.tasks_config["formulate_campaign_budget"],
-            output_file=f"output/{self.artist_name}_budget.json",
+            config=self.tasks_config["formulate_lineitem_budget"],
+            output_file=f"output/{self.artist_name}_venues_budget.json",
+            # output_json=True,
             agent=self.campaign_budget_agent(),
             context=[self.find_concert_venues()],
-        )
-    
-    @task
-    def formulate_venue_budget(self) -> Task:
-        return Task(
-            config=self.tasks_config["formulate_campaign_budget"],
-            output_file=f"output/{self.artist_name}_venue_budget.json",
-            agent=self.campaign_budget_agent(),
-            context=[self.formulate_campaign_budget()],
-            tools=[venue_budget_calculator]
+            tools=[venue_budget_calculator,FileWriterTool()],
         )
 
     @task
@@ -182,11 +179,7 @@ class Part3Crew:
             cache=True,
             output_file=f"output/{self.artist_name}_campaign.json",
             agent=self.campaign_manager(),
-            context=[
-                self.formulate_campaign_budget(),
-            ],
             tools=[NewCampaignTool(), CampaignTool()],
-            # human_input=True,
         )
 
     @task
@@ -195,13 +188,13 @@ class Part3Crew:
             config=self.tasks_config["create_lineitems"],
             cache=True,
             output_file=f"output/{self.artist_name}_lineitems.json",
-            agent=self.linitem_manager(),
+            agent=self.lineitem_manager(),
             context=[
-                self.formulate_venue_budget(),
                 self.find_concert_venues(),
                 self.create_campaign(),
+                self.formulate_lineitem_budget(),
             ],
-            tools=[NewAuctionLineitemTool(), AuctionLineitemsTool()],
+            tools=[FileReadTool(), NewAuctionLineitemTool(), AuctionLineitemsTool()],
             # human_input=True,
         )
 
@@ -215,9 +208,8 @@ class Part3Crew:
                 self.account(),
                 self.research_demographics(),
                 self.find_concert_venues(),
-                self.formulate_campaign_budget(),
-                self.formulate_venue_budget(),
                 self.create_campaign(),
+                self.formulate_lineitem_budget(),
                 self.create_lineitems(),
             ],
         )
@@ -236,7 +228,7 @@ class Part3Crew:
             verbose=True,
             # memory=True, causes weird python error with sqllite.py line 88
             planning=True,
-            planning_llm=llm,  # Azure
+            planning_llm=llm,  
             output_log_file=f"output/{self.artist_name}_part_3.log",
             output_file=f"output/{self.artist_name}_part_3.md",
         )

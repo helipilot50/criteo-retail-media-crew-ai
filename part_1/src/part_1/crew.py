@@ -110,6 +110,8 @@ class Part1Crew:
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
+            planning=True,
+            planning_llm=llm,  
             verbose=True,
             output_log_file="output/part_1.log",
         )
