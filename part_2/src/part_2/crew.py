@@ -1,13 +1,10 @@
 import os
-from datetime import date, datetime
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import (
     FileReadTool,
     DirectoryReadTool,
 )
-from langchain_groq import ChatGroq
-from langchain_openai import AzureChatOpenAI, AzureOpenAI
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
@@ -23,7 +20,6 @@ class Campaign(BaseModel):
     budget: float = Field(..., description="Budget of the campaign")
     budgetSpent: float = Field(..., description="Budget spent of the campaign")
     startDate: str = Field(..., description="Start date of the campaign")
-    # endDate: str = Optional(Field(..., description="Start date of the campaign"))
     status: str = Field(..., description="Status of the campaign")
     type: str = Field(..., description="Type of the campaign")
 
@@ -42,38 +38,34 @@ class Part2Crew:
     llm:LLM = None
 
     def __init__(self):
-
+        """
+        Initializes the Crew class with an instance of the LLM model.
+        Attributes:
+            llm (LLM): An instance of the LLM class initialized with specific parameters.
+                - model (str): The model identifier, set to "groq/llama-3.1-8b-instant".
+                - temperature (float): The temperature setting for the model, set to 0.7.
+                - base_url (str): The base URL for the API, set to "https://api.groq.com/openai/v1".
+                - api_key (str): The API key for authentication, retrieved from the environment variable "GROQ_API_KEY".
+        """
         self.llm = LLM(
-			model="groq/llama-3.1-70b-versatile",
+			model="groq/llama-3.1-8b-instant",
 			temperature=0.7,
 			base_url="https://api.groq.com/openai/v1",
 			api_key=os.environ["GROQ_API_KEY"],
 		)
 
-        # print("+++++++++++ Azure OpenAI +++++++++++")
-        # print("AZURE_OPENAI_API_VERSION",os.environ["AZURE_OPENAI_API_VERSION"])
-        # print("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME",os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"])
-        # print("AZURE_OPENAI_ENDPOINT",os.environ["AZURE_OPENAI_ENDPOINT"])
-        # print("AZURE_OPENAI_API_KEY",os.environ["AZURE_OPENAI_API_KEY"])
-            
-        # self.azure_llm = AzureChatOpenAI(
-        #     # model=os.environ["OPENAI_MODEL_NAME"],
-        #     provider="azure_openai",
-        #     # deployment_name=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
-        #     # azure_endpoint = os.environ["AZURE_OPENAI_ENDPOINT"], 
-        #     # api_key=os.environ["AZURE_OPENAI_API_KEY"],  
-        #     # api_version=os.environ["AZURE_OPENAI_API_VERSION"],
+    
+    
+    """
+    Creates and returns an instance of the Agent class configured as a campaign manager.
 
-        #     openai_api_version=os.environ["AZURE_OPENAI_API_VERSION"],
-        #     azure_deployment=os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"],
-        #     azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"], 
-        #     api_key=os.environ["AZURE_OPENAI_API_KEY"],
-        #     max_tokens=4096,
-        #     temperature=0.6,
-        # )
-        # pi = self.azure_llm.invoke("what is PI to 10 decimal places")
-        # print("PI",pi)
+    This method retrieves the configuration for the campaign manager from the 
+    agents_config dictionary, initializes an Agent with the specified configuration, 
+    and enables memory for the agent.
 
+    Returns:
+        Agent: An instance of the Agent class configured as a campaign manager.
+    """
     @agent
     def campaign_manager(self) -> Agent:
         config = self.agents_config["campaign_manager"]
@@ -83,8 +75,22 @@ class Part2Crew:
             memory=True,
         )
 
+    
+    
+    
     @agent
     def visualizer_agent(self) -> Agent:
+        """
+        Creates and returns a visualizer agent.
+
+        The visualizer agent is configured using the settings from the 
+        'visualizer_agent' section of the agents configuration. It is equipped 
+        with tools for generating pie charts and bar charts.
+
+        Returns:
+            Agent: An instance of the Agent class configured with visualization tools.
+        """
+    
         config = self.agents_config["visualizer_agent"]
         return Agent(
             config=config,
@@ -94,6 +100,17 @@ class Part2Crew:
 
     @agent
     def campaign_reporter_agent(self) -> Agent:
+        """
+        Creates and returns an instance of the campaign reporter agent.
+
+        This agent is configured using the settings specified in the 
+        `agents_config` dictionary under the key "campaign_reporter_agent". 
+        It is equipped with tools for reading directories and files, 
+        and utilizes the specified language model (llm).
+
+        Returns:
+            Agent: An instance of the campaign reporter agent.
+        """
         config = self.agents_config["campaign_reporter_agent"]
         return Agent(
             config=config,
@@ -103,6 +120,17 @@ class Part2Crew:
 
     @task
     def fetch_campaigns_task(self) -> Task:
+        """
+        Creates and returns a Task for fetching campaigns.
+
+        This method initializes a Task object configured to fetch campaign data.
+        The task is set up with specific configurations, output file location, 
+        tools required for the task, the agent responsible for managing the campaigns, 
+        and the expected output format.
+
+        Returns:
+            Task: A configured Task object for fetching campaigns.
+        """
         return Task(
             config=self.tasks_config["fetch_campaigns_task"],
             output_file="output/campaigns.json",
@@ -115,6 +143,18 @@ class Part2Crew:
 
     @task
     def campaigns_budget_pie_chart(self) -> Task:
+        """
+        Creates a Task to generate a pie chart visualizing campaign budgets.
+
+        This method configures a Task using the "campaigns_budget_pie_chart" 
+        settings from the tasks configuration. It utilizes the PieChartTool 
+        for creating the pie chart and the visualizer agent for rendering. 
+        The context is enhanced by including the result of the fetch_campaigns_task 
+        method to ensure consistency.
+
+        Returns:
+            Task: A configured Task object for generating the campaigns budget pie chart.
+        """
         return Task(
             config=self.tasks_config["campaigns_budget_pie_chart"],
             tools=[
@@ -126,6 +166,13 @@ class Part2Crew:
 
     @task
     def campaigns_report(self) -> Task:
+        """
+        Generates a Task for creating a campaigns report.
+        This is a simple example of a markdown report that lists the campaigns.
+
+        Returns:
+            Task: A Task object configured to generate a campaigns report.
+        """
         return Task(
             config=self.tasks_config["campaigns_report"],
             output_file="output/campaigns_report.md",
@@ -139,13 +186,19 @@ class Part2Crew:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the Part 2 crew"""
+        """
+        Creates and returns a Crew instance with the specified configuration.
+        Returns:
+            Crew: An instance of the Crew class initialized with the current
+                  agents, tasks, and other parameters.
+        """
+        
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            # planning=True,
-            # planning_llm=llm,
+            planning=True,
+            planning_llm=self.llm,
             output_log_file="output/part_2.log",
         )
