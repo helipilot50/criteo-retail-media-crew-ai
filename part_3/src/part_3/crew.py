@@ -8,33 +8,13 @@ from crewai_tools import (
     DirectoryReadTool,
 )
 
-from part_3.handlers.panel import PanelHandler
-from part_3.tools.accounts import AccountsTool, BrandsTool, RetailersTool
-from part_3.tools.budget import venue_budget_calculator
+from langchain_openai import AzureChatOpenAI
+from part_3.tools.accounts import AccountsTool
+from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
 from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
 from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
-from part_3.tools.search import InternetSearch, SearchTools
+from part_3.tools.search import InternetSearch
 
-
-# uncomment only if you use Azure
-# from langchain_openai import AzureChatOpenAI
-
-# llm = AzureChatOpenAI(
-#     model=os.environ["OPENAI_MODEL_NAME"],
-#     deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT"],
-# )
-# end Azure
-# only if you use Groq
-from crewai import LLM
-
-llm = LLM(
-			model="groq/llama-3.1-70b-versatile",
-			temperature=0.7,
-			base_url="https://api.groq.com/openai/v1",
-			api_key=os.environ["GROQ_API_KEY"],
-		)
-
-# end Groq
 
 
 @CrewBase
@@ -50,16 +30,31 @@ class Part3Crew:
         self.artist_name = inputs["artist_name"]
         self.year = inputs["year"]
 
+        self.fileWriter = FileWriterTool()
+
+        print("Account ID", self.account_id)
+        if inputs["groq_or_azure"] == "groq":
+            self.llm = LLM(
+                model="groq/llama3-8b-8192",
+                temperature=0.7,
+                base_url="https://api.groq.com/openai/v1",
+                api_key=os.environ["GROQ_API_KEY"],
+                verbose=True
+            )
+        else:
+            self.llm = LLM(
+                model="azure/"+os.environ["AZURE_OPENAI_DEPLOYMENT"],
+                temperature=0.5,
+                base_url=os.environ["AZURE_API_BASE"],
+                api_key=os.environ["AZURE_API_KEY"],
+                verbose=True
+            )
+
     @agent
     def account_manager(self) -> Agent:
         return Agent(
             config=self.agents_config["account_manager"],
-            tools=[
-                AccountsTool(),
-                RetailersTool(),
-                BrandsTool(),
-            ],
-            llm=llm,
+            llm=self.llm,
         )
 
     @agent
@@ -67,13 +62,8 @@ class Part3Crew:
         config = self.agents_config["campaign_manager"]
         return Agent(
             config=config,
-            # tools=[
-            #     AccountsCampaignsTool(),
-            #     CampaignTool(),
-            #     NewCampaignTool(),
-            # ],
             verbose=True,
-            llm=llm,
+            llm=self.llm,
         )
 
     @agent
@@ -84,7 +74,7 @@ class Part3Crew:
             config=config,
             # callbacks=[callback_handler],
             verbose=True,
-            llm=llm,
+            llm=self.llm,
         )
 
     @agent
@@ -95,7 +85,7 @@ class Part3Crew:
             config=config,
             # callbacks=[callback_handler],
             verbose=True,
-            llm=llm,
+            llm=self.llm,
         )
 
     @agent
@@ -106,7 +96,7 @@ class Part3Crew:
             config=config,
             # callbacks=[callback_handler],
             verbose=True,
-            llm=llm,
+            llm=self.llm,
         )
 
     @agent
@@ -117,7 +107,7 @@ class Part3Crew:
             config=config,
             # callbacks=[callback_handler],
             verbose=True,
-            llm=llm,
+            llm=self.llm,
         )
 
     @agent
@@ -128,7 +118,7 @@ class Part3Crew:
             config=config,
             # callbacks=[callback_handler],
             verbose=True,
-            llm=llm,
+            llm=self.llm,
         )
 
     @task
@@ -159,7 +149,7 @@ class Part3Crew:
             # output_json=True,
             agent=self.campaign_budget_agent(),
             context=[self.find_concert_venues()],
-            tools=[venue_budget_calculator,FileWriterTool()],
+            tools=[venue_budget_calculator,self.fileWriter],
         )
 
     @task
@@ -179,7 +169,7 @@ class Part3Crew:
             cache=True,
             output_file=f"output/{self.artist_name}_campaign.json",
             agent=self.campaign_manager(),
-            tools=[NewCampaignTool(), CampaignTool()],
+            tools=[calculate_monthly_pacing, NewCampaignTool(), CampaignTool(), self.fileWriter],
         )
 
     @task
@@ -194,7 +184,7 @@ class Part3Crew:
                 self.create_campaign(),
                 self.formulate_lineitem_budget(),
             ],
-            tools=[FileReadTool(), NewAuctionLineitemTool(), AuctionLineitemsTool()],
+            # tools=[FileReadTool(), NewAuctionLineitemTool(), AuctionLineitemsTool()],
             # human_input=True,
         )
 
@@ -202,7 +192,7 @@ class Part3Crew:
     def summary_task(self) -> Task:
         return Task(
             config=self.tasks_config["summary"],
-            output_file=f"output/{self.artist_name}_summary.md",
+            # output_file=f"output/{self.artist_name}_summary.md",
             agent=self.summary_agent(),
             context=[
                 self.account(),
@@ -212,6 +202,7 @@ class Part3Crew:
                 self.formulate_lineitem_budget(),
                 self.create_lineitems(),
             ],
+            tools=[ self.fileWriter],
         )
 
     @crew
@@ -224,11 +215,11 @@ class Part3Crew:
             agents=self.agents,
             tasks=self.tasks,
             process=Process.hierarchical,
-            manager_llm=llm,
+            manager_llm=self.llm,
             verbose=True,
-            # memory=True, causes weird python error with sqllite.py line 88
+            # memory=True, #causes weird python error with sqllite.py line 88
             planning=True,
-            planning_llm=llm,  
+            planning_llm=self.llm,  
             output_log_file=f"output/{self.artist_name}_part_3.log",
             output_file=f"output/{self.artist_name}_part_3.md",
         )

@@ -116,7 +116,7 @@ class NewAuctionLineitemTool(BaseTool):
         base_url (str): The base URL of the API.
     """
 
-    name: str = "Retail Media New Auction Lineitem API Caller"
+    name: str = "New Auction Lineitem API"
     description: str = (
         """
         Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id.
@@ -136,7 +136,7 @@ class NewAuctionLineitemTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, campaignId: str, lineitem: dict):
+    def _run(self, campaignId: str, lineitem: NewAuctionLineitem):
         """
         Creates a Retail Media Auction Lineitem for campaign by {campaignId} and returns relevant results.
         """

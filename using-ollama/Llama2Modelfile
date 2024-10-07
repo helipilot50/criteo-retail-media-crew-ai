@@ -1,4 +1,0 @@
-FROM llama2
-
-PARAMETER temperature 0.8
-PARAMETER stop Result

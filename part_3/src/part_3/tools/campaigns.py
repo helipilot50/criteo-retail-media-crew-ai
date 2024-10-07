@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional
-from crewai_tools import BaseTool,tool
+from crewai_tools import BaseTool,FileWriterTool
+import json
 from part_3.models.campaign import Campaign, NewCampaign
 from part_3.tools.utils import flatten
 from pydantic import BaseModel
@@ -45,7 +46,7 @@ class CampaignTool(BaseTool):
     operations on a single campaign
     """
 
-    name: str = "Retail Media Single Campaign API"
+    name: str = "SingleCampaignTool"
     description: str = (
         "Calls the Retail Media  REST API and returns a single Campaign by the  campaign {id} "
     )
@@ -72,9 +73,9 @@ class NewCampaignTool(BaseTool):
         base_url (str): The base URL of the API.
     """
 
-    name: str = "Retail Media New Campaign API"
+    name: str = "NewCampaignTool"
     description: str = (
-        """Calls the Retail Media  REST API and creates a campaign for an account by the  {account_id}
+        """Create  a campaign for an account using {account_id} and NewCampaign object.
         Example input for new Campaign:
         {
             "name": "{artist_name} Concert Tour {year}",
@@ -95,7 +96,14 @@ class NewCampaignTool(BaseTool):
     )
     base_url: str = base_url_env
 
-    def _run(self, accountId: str, campaign: dict) -> Campaign:
+    def _run(self, accountId: str, campaign: NewCampaign) -> Campaign:
+        fileWriter = FileWriterTool()
+        fileWriter._run(
+            directory="output",
+            filename=f"new_campaign_object_t.json",
+            content=json.dumps(campaign, indent=2),
+            overwrite=True,
+        )
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.post(
             url=f"{self.base_url}accounts/{accountId}/campaigns",
@@ -104,13 +112,16 @@ class NewCampaignTool(BaseTool):
                 "data": {"type": "NewCampaign", "attributes": campaign},
             },
         )
-        # print("response.status_code --> ", response.status_code)
         if response.status_code != 201:
             raise Exception("NewCampaignTool error:", response.json())
         data = response.json()["data"]
         flat = flatten(data)
-        # print("flat --> ", flat)
 
         theCampaign = Campaign(**flat)
-        # print("theCampaign --> ", theCampaign)
+        fileWriter._run(
+            directory="output",
+            filename=f"new_campaign_{theCampaign.id}_created_t.json",
+            content=json.dumps(theCampaign, indent=2),
+            overwrite=True,
+        )
         return theCampaign

@@ -7,7 +7,7 @@ import os
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
 class NewCampaignForArtist(BaseTool):
-    name: str = "New Campaign  for a concert tour",
+    name: str = "New Campaign for a concert tour",
     description: str = """
         Creates a campaign and lineitems for the astist
 

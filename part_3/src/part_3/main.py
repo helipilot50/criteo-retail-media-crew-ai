@@ -10,11 +10,13 @@ artist_name = input("Enter the artist name (default: 'Ed Sheeran'): ") or "Ed Sh
 year = input("Enter the year (Default: 2025): ") or "2025"
 account_id = input("Enter the account id (Default: 4): ") or 4
 digital_advertising_budget = input("Enter the digital advertising budget (Default: 500000): ") or 500000
+groq_or_azure = input("Groq or Azure (Default: 'Azure'): ") or "azure"
 
 inputs = {"account_id": account_id, 
           "artist_name": artist_name, 
           "year": year, 
-          "digital_advertising_budget": digital_advertising_budget}
+          "digital_advertising_budget": digital_advertising_budget,
+          "groq_or_azure": groq_or_azure.lower()}
 
 print(f"Inputs: {inputs}")
 

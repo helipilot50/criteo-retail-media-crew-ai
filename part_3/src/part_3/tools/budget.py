@@ -1,3 +1,4 @@
+from datetime import date
 from langchain.tools import tool
 
 
@@ -12,3 +13,11 @@ def venue_budget_calculator(budget: float, venues: dict) -> float:
         venues[venue]["budget"] = (capacity / total_capacity) * budget
 
     return venues
+
+@tool("calculate monthly pacing")
+def calculate_monthly_pacing(budget: float, startDate: date, endDate:date) -> float:
+    """
+    Calculates the monthly pacing for a campaign
+    """
+    num_months = (endDate.year - startDate.year) * 12 + endDate.month - startDate.month
+    return budget / num_months

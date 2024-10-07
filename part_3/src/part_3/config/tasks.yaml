@@ -3,14 +3,16 @@ account:
     Use the  Retail Media REST API to get a list of accounts for this user.
     Remember the result.
     Do not hallucinate.
-    DO not fabricate data.
-    Use the {account_id} to get the specific from the list of accounts
+    Do not fabricate data.
+    Use the {account_id} to get the specific account from the list of accounts
   expected_output: >
     A JSON object with the account details.
 
 campaigns:
   description: >
     Use the account number of {account_id} to get a list of campaigns.
+    Do not hallucinate.
+    Do not fabricate data.
 
   expected_output: >
     A list of campaign ids for the account as a JSON array. Do not include the whold campaign object. Only the campaign Id.
@@ -25,55 +27,57 @@ research_demographics:
 
 find_concert_venues:
   description: >
-    Use the {artist_name} to find the concerts and venues for {year}, indluding international venues.
+    Use the {artist_name} to search the Web for the concerts and venues for {year}, indluding international venues.
     Include the seating capacity of each venue.
     Include the data of each concert.
-    You will need to use the Web and Social media to obtain your data.
+    Do not hallucinate.
+    Do not fabricate data.
+   
 
   expected_output: >
     A JSON array of concerts, dates, venues and their searing capacity for the artist.
 
-formulate_campaign_budget:
-  description: >
-    Formulate an advertising budget for a digital advertising campaign using the {artist_name}, the location of the venues and their seating capacity.
-    Provide a total budget for the digital advertising campaign.
-    For each concert, formulate a budget amount based on the venue and geographic location. These values should be based on the seating capacity of the venue and the location of the venue.
-    Express the budget in USD.
+# formulate_campaign_budget:
+#   description: >
+#     Formulate an advertising budget for a digital advertising campaign using the {artist_name}, the location of the venues and their seating capacity.
+#     Provide a total budget for the digital advertising campaign.
+#     For each concert, formulate a budget amount based on the venue and geographic location. These values should be based on the seating capacity of the venue and the location of the venue.
+#     Express the budget in USD.
 
-    Here's a structured approach to help you get started:
+#     Here's a structured approach to help you get started:
 
-    1. **Estimate Revenue Goals**
-      - **Determine Ticket Sales Revenue**: Estimate the total revenue from ticket sales. For example, if each concert has 20,000 tickets at an average price of $150, the revenue per concert would be $3,000,000.
-      - **Total Concerts**: Multiply by the number of concerts. If there are 50 concerts, the total revenue would be $150,000,000.
+#     1. **Estimate Revenue Goals**
+#       - **Determine Ticket Sales Revenue**: Estimate the total revenue from ticket sales. For example, if each concert has 20,000 tickets at an average price of $150, the revenue per concert would be $3,000,000.
+#       - **Total Concerts**: Multiply by the number of concerts. If there are 50 concerts, the total revenue would be $150,000,000.
 
-    2. **Allocate Advertising Budget**
-      - **Percentage of Revenue**: A common rule of thumb is to allocate 15%-20% of the total potential gross revenue to advertising². For Taylor Swift's concerts, this would be:
-        - **15% of $150,000,000**: $22,500,000
-        - **20% of $150,000,000**: $30,000,000
+#     2. **Allocate Advertising Budget**
+#       - **Percentage of Revenue**: A common rule of thumb is to allocate 15%-20% of the total potential gross revenue to advertising². For Taylor Swift's concerts, this would be:
+#         - **15% of $150,000,000**: $22,500,000
+#         - **20% of $150,000,000**: $30,000,000
 
-    3. **Break Down the Budget**
-      - **Digital Advertising**: Allocate a significant portion to digital platforms (e.g., social media, search engines, streaming services). This could be around 60%-70% of the total advertising budget.
-        - **Example**: If the total budget is $25,000,000, then $15,000,000 to $17,500,000 could be for digital advertising.
-      - **Traditional Media**: Allocate the remaining budget to traditional media (e.g., TV, radio, print).
-        - **Example**: $7,500,000 to $10,000,000 for traditional media.
+#     3. **Break Down the Budget**
+#       - **Digital Advertising**: Allocate a significant portion to digital platforms (e.g., social media, search engines, streaming services). This could be around 60%-70% of the total advertising budget.
+#         - **Example**: If the total budget is $25,000,000, then $15,000,000 to $17,500,000 could be for digital advertising.
+#       - **Traditional Media**: Allocate the remaining budget to traditional media (e.g., TV, radio, print).
+#         - **Example**: $7,500,000 to $10,000,000 for traditional media.
 
-    4. **Digital Advertising Strategy**
-      - **Social Media Ads**: Platforms like Instagram, Facebook, TikTok, and Twitter are crucial for reaching {artist_name} fanbase.
-      - **Retail Media**: Utilize retail media platforms to reach audiences while they shop online.
+#     4. **Digital Advertising Strategy**
+#       - **Social Media Ads**: Platforms like Instagram, Facebook, TikTok, and Twitter are crucial for reaching {artist_name} fanbase.
+#       - **Retail Media**: Utilize retail media platforms to reach audiences while they shop online.
 
 
-    Example Calculation
-    If the goal is to generate $45,000,000 in ticket sales from digital advertising:
-      - **Ticket Price**: $150
-      - **Tickets Sold**: 300,000 tickets
-      - **Orders Needed**: 111,111 orders (assuming 2.7 tickets per order)
-      - **Unique Ad Clicks Needed**: 5,555,550 clicks (assuming 2% conversion rate)
-      - **Total Ad Clicks Needed**: 6,944,438 clicks (assuming 80% unique clicks)
-      - **Cost Per Click (CPC)**: $0.50
-      - **Digital Advertising Budget**: $3,472,219
+#     Example Calculation
+#     If the goal is to generate $45,000,000 in ticket sales from digital advertising:
+#       - **Ticket Price**: $150
+#       - **Tickets Sold**: 300,000 tickets
+#       - **Orders Needed**: 111,111 orders (assuming 2.7 tickets per order)
+#       - **Unique Ad Clicks Needed**: 5,555,550 clicks (assuming 2% conversion rate)
+#       - **Total Ad Clicks Needed**: 6,944,438 clicks (assuming 80% unique clicks)
+#       - **Cost Per Click (CPC)**: $0.50
+#       - **Digital Advertising Budget**: $3,472,219
 
-  expected_output: >
-    A JSON object with the budget for the campaign. 
+#   expected_output: >
+#     A JSON object with the budget for the campaign. 
 
 formulate_lineitem_budget:
   description: >
@@ -83,7 +87,7 @@ formulate_lineitem_budget:
     Express the budget in USD.
     Follow these steps:
     1. Use the venue budget calculator to calculate the budget for each venue, using the total bugdet and the seating capacity of the venue.
-    2. Write the result as a json object to the directory 'output' with the file name '{artist_name}_{year}_lineitems_budget.json' .
+    2. Use the FileWriterTool to write the result as a json object to the directory 'output' with the file name '{artist_name}_{year}_lineitems_budget.json' .
   expected_output: >
     A JSON object with the budget for the lineitems.
 
@@ -92,33 +96,40 @@ create_campaign:
   description: >
     Use Retail Media API to create the campaign with:
      
-     The campaign name is the {artist_name}, the {year}, the date of the first concert and the date of the last concert.
-     
-     The start date of the campaign should be 60 days before the first concert.
-     The end date of the campaign should be the date of the last concert.
-     The budget is the {digital_advertising_budget}.
-     Include the campaign name, the campaign start date, the campaign end date, the campaign budget, the campaign demographics, the campaign venues, and the campaign media.
-    Formulate the campaign structure to match the following example.
-    Example campaign input data:
-            "name": "{artist_name} Concert Tour {year}",
-            "startDate": "2025-01-01",
-            "endDate": "2025-12-31",
-            "budget": {digital_advertising_budget},
-            "monthlyPacing": 500,
-            "dailyBudget": 10,
-            "isAutoDailyPacing": false,
-            "dailyPacing": 10,
-            "type": "auction",
-            "clickAttributionWindow": "30D",
-            "viewAttributionWindow": "None",
-            "clickAttributionScope": "sameSkuCategory",
-            "viewAttributionScope": "sameSkuCategory",
-        
-    do not add any fields not in the example campaign input data.
-    use the Retail Media API to create the campaign.
+    The campaign name is the {artist_name}, the {year}, the date of the first concert and the date of the last concert.
+    
+    The start date of the campaign should be 60 days before the first concert.
+    The end date of the campaign should be the date of the last concert.
+    The budget is the {digital_advertising_budget}.
+    The monthlyPacing is calculated using the calculate monthly pacing tool.
+    Include the campaign name, the campaign start date, the campaign end date, the campaign budget.
+
+    Follow these steps:
+    1. Formulate the NewCampaign to match the following example.
+      Example campaign input data:
+              "name": "{artist_name} Concert Tour {year}",
+              "startDate": "2025-01-01",
+              "endDate": "2025-12-31",
+              "budget": {digital_advertising_budget},
+              "monthlyPacing": 500,
+              "dailyBudget": 10,
+              "isAutoDailyPacing": false,
+              "dailyPacing": 10,
+              "type": "auction",
+              "clickAttributionWindow": "30D",
+              "viewAttributionWindow": "None",
+              "clickAttributionScope": "sameSkuCategory",
+              "viewAttributionScope": "sameSkuCategory",
+          
+      do not add any fields not in the example campaign input data.
+    2. Use the FileWriterTool to write the NewCampaign as a JSON with
+        - directory 'output' 
+        - filename '{artist_name}_{year}_new_campaign.json'
+        - content as the NewCampaign object.
+
 
   expected_output: >
-    A JSON object with the campaign details.
+    A NewCampaign object with the campaign details.
 
 create_lineitems:
   description: >
@@ -129,18 +140,17 @@ create_lineitems:
       startDate: 90 days before the concert date
       endDate: 1 day concert date
       campaignId: new campaign id
+      status: draft
       Example input data for a new lineitem: 
             "name": Taylor Swift 2025 - AccorHotels Arena, Paris, France - 2025-05-20,
             "campaignId": new campaign id,
-            "status": "paused",
+            "status": "draft",
             "targetRetailerId": "1106",
             "budget": 50,
             "startDate": "2025-10-1",
             "endDate": "2025-12-31",
             "bidStrategy": "conversion",
             "targeBid": 1.0,
-    Create the lineitems using the Retail Media API.
-    Once the linetems are created, fetch the linitems for the campaign  using the Retail Media API
 
   expected_output: >
     A JSON array of line items for the campaign.
@@ -149,10 +159,12 @@ summary:
   description: >
     Provide a summary of the campaign.
     Include:
-    1. the account: name, contact, email. Fetch the account using the {account_id}
+    1. the account: name, Id. Fetch the account using the {account_id}
     2. the new campaign: id, name, start date, end date, total budget.
     3. the new auction lineitems as a table with these columns: venue, concert date, seating capacity, budget amount, lineitem id, lineitem startDate and lineitem endDate
     4. A summary of the demographics for the artist.
+
+    Save the summery using the FileWriterTool.
 
   expected_output: >
     A summary in markdown format.

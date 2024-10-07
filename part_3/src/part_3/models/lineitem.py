@@ -5,13 +5,13 @@ from enum import Enum
 
 
 class LineitemStatus(str, Enum):
+    draft = "draft"
     active = "active"
     paused = "paused"
     scheduled = "scheduled"
     ended = "ended"
     budgetHit = "budgetHit"
     noFunds = "noFunds"
-    draft = "draft"
     archived = "archived"
 
 
