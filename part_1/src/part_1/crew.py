@@ -17,7 +17,7 @@ from part_1.tools.accounts import AccountsTool, RetailersTool, BrandsTool
 from crewai import LLM
 
 llm = LLM(
-			model="groq/llama-3.1-70b-versatile",
+			model="groq/llama-3.1-8b-instant",
 			temperature=0.7,
 			base_url="https://api.groq.com/openai/v1",
 			api_key=os.environ["GROQ_API_KEY"],
