@@ -62,11 +62,9 @@ def test_new_campaign():
         viewAttributionScope=ViewAttributionScope.sameSkuCategory,
     )
     assert campaign is not None
-    campaign_json = campaign.model_dump_json()
-    assert campaign_json is not None
     fileWriter._run(
         directory="output",
         filename=f"test_model_new_campaign.json",
-        content=campaign_json,
+        content=campaign.model_dump_json(indent=2),
         overwrite=True,
     )

@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
 from enum import Enum
 
 
@@ -15,11 +15,12 @@ class CampaignStatus(str, Enum):
 
 
 class ViewAttributionWindow(str, Enum):
-    none = "none"
+    oneDay = "1D"
     sevenDays = "7D"
     fourteenDays = "14D"
     thirtyDays = "30D"
     unknown = "unknown"
+    none = "none"
 
 
 class ClickAttributionWindow(str, Enum):
@@ -64,8 +65,11 @@ class NewCampaign(BaseModel):
         if isinstance(value, str):
             return datetime.strptime(value, "%Y-%m-%d").date()
         return value
-
-    # model_config = ConfigDict(arbitrary_types_allowed=True)
+    
+    @field_serializer('startDate', 'endDate')
+    def serialize_date(self, thedate: date) -> str:
+        return thedate.strftime("%Y-%m-%d")
+    
     class Config:
         json_encoders = {
             date: lambda v: v.strftime("%Y-%m-%d"),
