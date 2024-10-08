@@ -1,6 +1,6 @@
-import datetime
+from datetime import date, datetime
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from enum import Enum
 
 
@@ -26,11 +26,13 @@ class LineitemBidStrategy(str, Enum):
     conversion = "conversion"
     revenue = "revenue"
 
+
 # RetailMediaAuctionLineItem
 class AuctionLineitem(BaseModel):
     """
     Line Item ID
     """
+
     id: str
     """
     Campaign ID
@@ -47,11 +49,11 @@ class AuctionLineitem(BaseModel):
     """
     Line item start date in the account timeZone
     """
-    startDate: datetime.date
+    startDate: date
     """
     Line item end date in the account timeZone; serves indefinitely if omitted or set to null
     """
-    endDate: Optional[datetime.date]
+    endDate: Optional[date]
     """
     Line item lifetime spend cap; uncapped if omitted or set to null
     """
@@ -127,16 +129,28 @@ class AuctionLineitem(BaseModel):
 
 class NewAuctionLineitem(BaseModel):
     name: str
-    startDate: datetime.date
+    startDate: date
     targetRetailerId: str
-    endDate: Optional[datetime.date]
-    status: LineitemStatus
-    budget: Optional[float]
-    targetBid: Optional[float]
-    maxBid: Optional[float]
-    monthlyPacing: Optional[float]
-    dailyPacing: Optional[float]
-    isAutoDailyPacing: bool
-    bidStrategy: LineitemBidStrategy
-    
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    endDate: Optional[date] = None
+    status: LineitemStatus = LineitemStatus.draft
+    budget: Optional[float] = None
+    targetBid: Optional[float] = None
+    maxBid: Optional[float] = None
+    monthlyPacing: Optional[float] = None
+    dailyPacing: Optional[float] = None
+    isAutoDailyPacing: bool = False
+    bidStrategy: LineitemBidStrategy = LineitemBidStrategy.unknown
+
+    @field_validator("startDate", "endDate")
+    @classmethod
+    def validate_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, "%Y-%m-%d").date()
+        return value
+
+    class Config:
+        json_encoders = {
+            date: lambda v: v.strftime("%Y-%m-%d"),
+            LineitemStatus: lambda v: v.value,
+            LineitemBidStrategy: lambda v: v.value,
+        }

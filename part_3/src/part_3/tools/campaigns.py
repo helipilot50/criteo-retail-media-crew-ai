@@ -1,6 +1,6 @@
 import datetime
 from typing import Optional
-from crewai_tools import BaseTool,FileWriterTool
+from crewai_tools import BaseTool, FileWriterTool
 import json
 from part_3.models.campaign import Campaign, NewCampaign
 from part_3.tools.utils import flatten
@@ -101,15 +101,19 @@ class NewCampaignTool(BaseTool):
         fileWriter._run(
             directory="output",
             filename=f"new_campaign_object_t.json",
-            content=json.dumps(campaign, indent=2),
+            content=json.dumps(campaign.model_dump_json(), indent=2),
             overwrite=True,
         )
         headers = {"Authorization": "Bearer " + get_token()}
+
         response = requests.post(
             url=f"{self.base_url}accounts/{accountId}/campaigns",
             headers=headers,
             json={
-                "data": {"type": "NewCampaign", "attributes": campaign},
+                "data": {
+                    "type": "NewCampaign",
+                    "attributes": campaign.model_dump_json(),
+                },
             },
         )
         if response.status_code != 201:
@@ -121,7 +125,7 @@ class NewCampaignTool(BaseTool):
         fileWriter._run(
             directory="output",
             filename=f"new_campaign_{theCampaign.id}_created_t.json",
-            content=json.dumps(theCampaign, indent=2),
+            content=json.dumps(theCampaign.model_dump_json, indent=2),
             overwrite=True,
         )
         return theCampaign

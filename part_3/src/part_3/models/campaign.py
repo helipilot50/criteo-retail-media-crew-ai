@@ -1,6 +1,6 @@
-import datetime
+from datetime import datetime, date
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from enum import Enum
 
 
@@ -16,16 +16,16 @@ class CampaignStatus(str, Enum):
 
 class ViewAttributionWindow(str, Enum):
     none = "none"
-    sevenD = "7D"
-    fourteenD = "14D"
-    thirtyD = "30D"
+    sevenDays = "7D"
+    fourteenDays = "14D"
+    thirtyDays = "30D"
     unknown = "unknown"
 
 
 class ClickAttributionWindow(str, Enum):
-    sevenD = "7D"
-    fourteenD = "14D"
-    thirtyD = "30D"
+    sevenDays = "7D"
+    fourteenDays = "14D"
+    thirtyDays = "30D"
     unknown = "unknown"
 
 
@@ -44,41 +44,59 @@ class ViewAttributionScope(str, Enum):
 
 class NewCampaign(BaseModel):
     name: str
-    startDate: Optional[datetime.date]
-    endDate: Optional[datetime.date]
-    budget: Optional[float]
-    monthlyPacing: Optional[float]
+    startDate: Optional[date] = None
+    endDate: Optional[date] = None
+    budget: Optional[float] = None
+    monthlyPacing: Optional[float] = None
     isAutoDailyPacing: bool = False
-    dailyPacing: Optional[float]
-    type: Optional[CampaignType]
+    dailyPacing: Optional[float] = None
+    type: Optional[CampaignType] = CampaignType.auction
     clickAttributionWindow: ClickAttributionWindow
     viewAttributionWindow: ViewAttributionWindow
     clickAttributionScope: ClickAttributionScope
     viewAttributionScope: ViewAttributionScope
-    companyNames: Optional[str]
-    drawableBalanceIds: Optional[List[str]]
+    companyNames: Optional[str] = None
+    drawableBalanceIds: Optional[List[str]] = None
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    @field_validator("startDate", "endDate")
+    @classmethod
+    def validate_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, "%Y-%m-%d").date()
+        return value
+
+    # model_config = ConfigDict(arbitrary_types_allowed=True)
+    class Config:
+        json_encoders = {
+            date: lambda v: v.strftime("%Y-%m-%d"),
+            CampaignType: lambda v: v.value,
+            ClickAttributionWindow: lambda v: v.value,
+            ViewAttributionWindow: lambda v: v.value,
+            ClickAttributionScope: lambda v: v.value,
+            ViewAttributionScope: lambda v: v.value,
+        }
 
 
 class UpdateCampaign(BaseModel):
     id: str
-    name: Optional[str]
-    isAutoDailyPacing: Optional[bool]
-    startDate: Optional[datetime.date]
-    endDate: Optional[datetime.date]
-    type: Optional[CampaignType]
-    drawableBalanceIds: Optional[List[str]]
-    clickAttributionWindow: Optional[ClickAttributionWindow]
-    viewAttributionWindow: Optional[ViewAttributionWindow]
-    budget: Optional[float]
-    monthlyPacing: Optional[float]
-    dailyPacing: Optional[float]
-    clickAttributionScope: Optional[ClickAttributionScope]
-    viewAttributionScope: Optional[ViewAttributionScope]
-    companyName: Optional[str]
+    name: Optional[str] = None
+    isAutoDailyPacing: Optional[bool] = None
+    startDate: Optional[date] = None
+    endDate: Optional[date] = None
+    type: Optional[CampaignType] = None
+    drawableBalanceIds: Optional[List[str]] = None
+    clickAttributionWindow: Optional[ClickAttributionWindow] = None
+    viewAttributionWindow: Optional[ViewAttributionWindow] = None
+    budget: Optional[float] = None
+    monthlyPacing: Optional[float] = None
+    dailyPacing: Optional[float] = None
+    clickAttributionScope: Optional[ClickAttributionScope] = None
+    viewAttributionScope: Optional[ViewAttributionScope] = None
+    companyName: Optional[str] = None
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    # model_config = ConfigDict(arbitrary_types_allowed=True)
+    class Config:
+        json_encoders = {date: lambda v: v.strftime("%Y-%m-%d")}
 
 
 class Campaign(BaseModel):
@@ -86,7 +104,7 @@ class Campaign(BaseModel):
     accountId: str
     promotedBrandIds: List[str]
     budgetSpent: float
-    budgetRemaining: Optional[float]
+    budgetRemaining: Optional[float] = None
     status: CampaignStatus
     createdAt: datetime
     updatedAt: datetime
@@ -95,14 +113,16 @@ class Campaign(BaseModel):
     clickAttributionWindow: ClickAttributionWindow
     viewAttributionWindow: ViewAttributionWindow
     name: str
-    budget: Optional[float]
-    monthlyPacing: Optional[float]
-    dailyPacing: Optional[float]
+    budget: Optional[float] = None
+    monthlyPacing: Optional[float] = None
+    dailyPacing: Optional[float] = None
     isAutoDailyPacing: bool
-    startDate: Optional[datetime.date]
-    endDate: Optional[datetime.date]
+    startDate: Optional[date] = None
+    endDate: Optional[date] = None
     clickAttributionScope: ClickAttributionScope
     viewAttributionScope: ViewAttributionScope
-    companyName: Optional[str]
+    companyName: Optional[str] = None
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    # model_config = ConfigDict(arbitrary_types_allowed=True)
+    class Config:
+        json_encoders = {date: lambda v: v.strftime("%Y-%m-%d")}

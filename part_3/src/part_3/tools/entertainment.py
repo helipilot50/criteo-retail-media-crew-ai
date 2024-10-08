@@ -1,68 +1,91 @@
 from typing import List
+from datetime import date, datetime
 from crewai_tools import BaseTool
-from part_3.tools.access import get_token
-import requests
-import os
+from part_3.src.part_3.models.campaign import (
+    CampaignType,
+    ClickAttributionWindow,
+    NewCampaign,
+    ViewAttributionWindow,
+)
+from part_3.src.part_3.models.concert import Concert
+from part_3.src.part_3.models.lineitem import (
+    LineitemBidStrategy,
+    LineitemStatus,
+    NewAuctionLineitem,
+)
+from part_3.src.part_3.tools.campaigns import NewCampaignTool
+from part_3.src.part_3.tools.lineitems import NewAuctionLineitemTool
 
-base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
-class NewCampaignForArtist(BaseTool):
-    name: str = "New Campaign for a concert tour",
+class NewCampaignForConcertTourTool(BaseTool):
+    name: str = ("Campaign for concert tour",)
     description: str = """
-        Creates a campaign and lineitems for the astist
-
+        Creates a campaign and lineitems for the Concert tour
     """
-    base_url: str = base_url_env
-    def _run(self, artistName, year, account, campaign: dict, lineitems: List):
 
-        
+    def __init__(self):
+        self.newCampaignTool = NewCampaignTool()
+        self.newAuctionLineitemTool = NewAuctionLineitemTool()
+
+    def _run(
+        self,
+        artistName: str,
+        year: str,
+        budget: float,
+        campaignStart: date,
+        campaignEnd: date,
+        pacing: float,
+        account: int,
+        concerts: List[Concert],
+    ):
+
+        time_stamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
         # Create campaign
-        headers = {"Authorization": "Bearer " + get_token()}
-        response = requests.post(
-            url=f"{self.base_url}accounts/{account}/campaigns",
-            headers=headers,
-            json={
-                "data": {"type": "Lineitem", "attributes": campaign},
-            },
+        newCampaign = NewCampaign(
+            name=f"{artistName} {year} Tour {time_stamp}",
+            startDate=campaignStart,
+            endDate=campaignEnd,
+            budget=budget,
+            type=CampaignType.auction,
+            monthlyPacing=pacing,
+            isAutoDailyPacing=False,
+            clickAttributionWindow=ClickAttributionWindow.thirtyDays,
+            viewAttributionWindow=ViewAttributionWindow.thirtyDays,
+            clickAttributionScope="sameSkuCategory",
+            viewAttributionScope="sameSkuCategory",
         )
 
-        newCampaign = response.json()["data"]
-
+        createdCampaign = self.newCampaignTool._run(
+            accountId=account, campaign=newCampaign
+        )
 
         # Create lineitems
 
-        headers = {"Authorization": "Bearer " + get_token()}
-        for lineitem in lineitems:
-            response = requests.post(
-                url=f"{self.base_url}campaigns/{newCampaign["id"]}/auction-line-items",
-                headers=headers,
-                json={
-                    "data": {
-                        "type": "NewLineitems",
-                        "attributes": lineitem,
-                    }
-                },
-            )
+        lineitems: List[NewAuctionLineitem] = []
 
-        # fetch created campaign
-        campaignResponse = requests.get(
-            url=f"{self.base_url}campaigns/{newCampaign["id"]}",
-            headers=headers,
-        )
+        for concert in concerts:
 
-        # fetch created lineitems
+            try:
+                newLineitem = NewAuctionLineitem(
+                    name=f"{artistName} {year} {concert.name} {time_stamp}",
+                    startDate=campaignStart,
+                    endDate=concert.date,
+                    status=LineitemStatus.paused,
+                    budget=concert.digitalAdvertisingBudget,
+                    isAutoDailyPacing=False,
+                    bidStrategy=LineitemBidStrategy.conversion,
+                )
 
-        lineitemsResponse = requests.get(
-            url=f"{self.base_url}campaigns/{newCampaign["id"]}/lineitems",
-            headers=headers,
-        )
+                createdLineitem = self.newAuctionLineitemTool._run(
+                    campaignId=createdCampaign.id,
+                    lineitem=newLineitem,
+                )
+                lineitems.append(createdLineitem)
+            except Exception as e:
+                print(f"Failed to create lineitem for concert {concert.name}: {e}")
 
         return {
-            "campaign": campaignResponse.json(),
-            "lineitems": lineitemsResponse.json(),
+            "campaign": createdCampaign,
+            "lineitems": lineitems,
         }
-
-
-
-        
-

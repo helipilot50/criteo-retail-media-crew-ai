@@ -5,10 +5,20 @@ from part_3.models.lineitem import (
     LineitemStatus,
     NewAuctionLineitem,
 )
-from crewai_tools import BaseTool
+from part_3.models.campaign import (
+    CampaignType,
+    ClickAttributionScope,
+    ClickAttributionWindow,
+    NewCampaign,
+    ViewAttributionScope,
+    ViewAttributionWindow,
+)
+from crewai_tools import (
+    FileWriterTool,
+)
 
 
-class TestClass():
+class TestClass:
     name: str = "A tool"
     description: str = "does stuff with lineitem"
 
@@ -17,37 +27,46 @@ class TestClass():
 
 
 def do_something_with_lineitem(lineitem: NewAuctionLineitem) -> NewAuctionLineitem:
-    aDict = lineitem.model_dump()
+    aDict = lineitem.model_dump_json()
     assert aDict is not None
-    # print("aDict --> ", aDict)
-    aJSON = lineitem.model_dump_json()
-    assert aJSON is not None
-    # print("aJSON --> ", aJSON)
-    serialisedDict = json.dumps(aDict)
-    assert serialisedDict is not None
     return lineitem
 
 
 def test_new_auction_lineitem():
-    test_new_auction_lineitem = NewAuctionLineitem(
+    new_lineitem = NewAuctionLineitem(
         name="test",
         startDate=datetime.date(2022, 1, 1),
         status=LineitemStatus.draft,
         targetRetailerId="test",
         bidStrategy=LineitemBidStrategy.clicks,
         isAutoDailyPacing=False,
-        endDate=None,
-        budget=None,
-        targetBid=None,
-        maxBid=None,
-        monthlyPacing=None,
-        dailyPacing=None,
     )
-    assert test_new_auction_lineitem is not None
-    result = do_something_with_lineitem(test_new_auction_lineitem)
+    assert new_lineitem is not None
+
+    result = do_something_with_lineitem(new_lineitem)
     assert result is not None
 
-    testClass = TestClass()
-    assert testClass is not None
-    result = testClass._run(test_new_auction_lineitem)
-    assert result is not None
+
+def test_new_campaign():
+    fileWriter = FileWriterTool()
+    campaign = NewCampaign(
+        name="Jimmy Carr Concert Tour 2030 ",
+        startDate="2030-01-01",
+        endDate=datetime.date(2030, 12, 31),
+        budget=1280000,
+        isAutoDailyPacing=False,
+        type=CampaignType.auction,
+        clickAttributionWindow=ClickAttributionWindow.thirtyDays,
+        viewAttributionWindow=ViewAttributionWindow.none,
+        clickAttributionScope=ClickAttributionScope.sameSkuCategory,
+        viewAttributionScope=ViewAttributionScope.sameSkuCategory,
+    )
+    assert campaign is not None
+    campaign_json = campaign.model_dump_json()
+    assert campaign_json is not None
+    fileWriter._run(
+        directory="output",
+        filename=f"test_model_new_campaign.json",
+        content=campaign_json,
+        overwrite=True,
+    )
