@@ -112,28 +112,40 @@ class NewCampaignTool(BaseTool):
                 },
             },
         
-        # current_datetime = datetime.now()
-        # body = {
-        #         "data": {
-        #             "type": "<string>",
-        #             "attributes": {
-        #                 "name": "Valentine Day Sale " + current_datetime.strftime("%Y-%m-%d %H:%M:%S"),
-        #                 "isAutoDailyPacing": "false",
-        #                 "startDate": "2024-02-12",
-        #                 "endDate": "2024-02-15",
-        #                 "type": "auction",
-        #                 "clickAttributionWindow": "30D",
-        #                 "viewAttributionWindow": "30D",
-        #                 "budget": "100",
-        #                 "monthlyPacing": "50",
-        #                 "dailyPacing": "10",
-        #                 "clickAttributionScope": "sameSkuCategory",
-        #                 "viewAttributionScope": "sameSkuCategory",
-        #             }
-        #         }
-        #     }
+        current_datetime = datetime.now()
+        body_x = {
+                "data": {
+                    "type": "<string>",
+                    "attributes": {
+                        "name": "Valentine Day Sale " + current_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+                        "isAutoDailyPacing": "false",
+                        "startDate": "2024-02-12",
+                        "endDate": "2024-02-15",
+                        "type": "auction",
+                        "clickAttributionWindow": "30D",
+                        "viewAttributionWindow": "30D",
+                        "budget": "100",
+                        "monthlyPacing": "50",
+                        "dailyPacing": "10",
+                        "clickAttributionScope": "sameSkuCategory",
+                        "viewAttributionScope": "sameSkuCategory",
+                    }
+                }
+            }
 
-        print("body --> ", json.dumps(body, indent=2))
+        # print("body --> ", json.dumps(body, indent=2))
+        fileWriter._run(
+            directory="output",
+            filename=f"new_campaign_body.json",
+            content=json.dumps(body, indent=2),
+            overwrite=True,
+        )
+        fileWriter._run(
+            directory="output",
+            filename=f"new_campaign_body_x.json",
+            content=json.dumps(body_x, indent=2),
+            overwrite=True,
+        )
 
         response = requests.post(
             url=f"{self.base_url}accounts/{accountId}/campaigns",
