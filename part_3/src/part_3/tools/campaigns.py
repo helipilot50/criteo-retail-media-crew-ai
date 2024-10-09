@@ -97,56 +97,28 @@ class NewCampaignTool(BaseTool):
     base_url: str = base_url_env
 
     def _run(self, accountId: str, campaign: NewCampaign) -> Campaign:
-        fileWriter = FileWriterTool()
-        fileWriter._run(
-            directory="output",
-            filename=f"new_campaign_object_t.json",
-            content=campaign.model_dump_json(indent=2),
-            overwrite=True,
-        )
-        headers = {"Authorization": "Bearer " + get_token()}
-        body = {
-                "data": {
-                    "type": "NewCampaign",
-                    "attributes": campaign.model_dump(),
-                },
-            },
+        # fileWriter = FileWriterTool()
+        # fileWriter._run(
+        #     directory="output",
+        #     filename=f"new_campaign_object_t.json",
+        #     content=json.dumps(campaign.model_dump(), indent=2),
+        #     overwrite=True,
+        # )
         
-        current_datetime = datetime.now()
-        body_x = {
-                "data": {
-                    "type": "<string>",
-                    "attributes": {
-                        "name": "Valentine Day Sale " + current_datetime.strftime("%Y-%m-%d %H:%M:%S"),
-                        "isAutoDailyPacing": "false",
-                        "startDate": "2024-02-12",
-                        "endDate": "2024-02-15",
-                        "type": "auction",
-                        "clickAttributionWindow": "30D",
-                        "viewAttributionWindow": "30D",
-                        "budget": "100",
-                        "monthlyPacing": "50",
-                        "dailyPacing": "10",
-                        "clickAttributionScope": "sameSkuCategory",
-                        "viewAttributionScope": "sameSkuCategory",
-                    }
-                }
-            }
-
+        body = dict(
+                data=dict(
+                    type= "NewCampaign",
+                    attributes= campaign.model_dump(),
+                ),
+            )
         # print("body --> ", json.dumps(body, indent=2))
-        fileWriter._run(
-            directory="output",
-            filename=f"new_campaign_body.json",
-            content=json.dumps(body, indent=2),
-            overwrite=True,
-        )
-        fileWriter._run(
-            directory="output",
-            filename=f"new_campaign_body_x.json",
-            content=json.dumps(body_x, indent=2),
-            overwrite=True,
-        )
-
+        # fileWriter._run(
+        #     directory="output",
+        #     filename=f"new_campaign_body.json",
+        #     content=json.dumps(body, indent=2),
+        #     overwrite=True,
+        # )
+        headers = {"Authorization": "Bearer " + get_token()}
         response = requests.post(
             url=f"{self.base_url}accounts/{accountId}/campaigns",
             headers=headers,
@@ -157,12 +129,12 @@ class NewCampaignTool(BaseTool):
             raise Exception("NewCampaignTool error:", response.json())
         data = response.json()["data"]
         flat = flatten(data)
-        print("flat --> ", flat)
+        # print("flat --> ", flat)
         theCampaign = Campaign(**flat)
-        fileWriter._run(
-            directory="output",
-            filename=f"new_campaign_{theCampaign.id}_created_t.json",
-            content=theCampaign.model_dump_json(indent=2),
-            overwrite=True,
-        )
+        # fileWriter._run(
+        #     directory="output",
+        #     filename=f"new_campaign_{theCampaign.id}_created_t.json",
+        #     content=theCampaign.model_dump_json(indent=2),
+        #     overwrite=True,
+        # )
         return theCampaign
