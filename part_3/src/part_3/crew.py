@@ -11,10 +11,9 @@ from crewai_tools import (
 from langchain_openai import AzureChatOpenAI
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
-from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
+from part_3.tools.campaigns import AccountCampaignsTool, CampaignTool, NewCampaignTool
 from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.search import InternetSearch
-
 
 
 @CrewBase
@@ -23,7 +22,6 @@ class Part3Crew:
 
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
-
 
     def __init__(self, inputs: dict) -> Any:
         self.account_id = inputs["account_id"]
@@ -39,15 +37,15 @@ class Part3Crew:
                 temperature=0.7,
                 base_url="https://api.groq.com/openai/v1",
                 api_key=os.environ["GROQ_API_KEY"],
-                verbose=True
+                verbose=True,
             )
         else:
             self.llm = LLM(
-                model="azure/"+os.environ["AZURE_OPENAI_DEPLOYMENT"],
+                model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
                 temperature=0.5,
                 base_url=os.environ["AZURE_API_BASE"],
                 api_key=os.environ["AZURE_API_KEY"],
-                verbose=True
+                verbose=True,
             )
 
     @agent
@@ -149,7 +147,7 @@ class Part3Crew:
             # output_json=True,
             agent=self.campaign_budget_agent(),
             context=[self.find_concert_venues()],
-            tools=[venue_budget_calculator,self.fileWriter],
+            tools=[venue_budget_calculator, self.fileWriter],
         )
 
     @task
@@ -169,7 +167,12 @@ class Part3Crew:
             cache=True,
             output_file=f"output/{self.artist_name}_campaign.json",
             agent=self.campaign_manager(),
-            tools=[calculate_monthly_pacing, NewCampaignTool(), CampaignTool(), self.fileWriter],
+            tools=[
+                calculate_monthly_pacing,
+                NewCampaignTool(),
+                CampaignTool(),
+                self.fileWriter,
+            ],
         )
 
     @task
@@ -202,7 +205,7 @@ class Part3Crew:
                 self.formulate_lineitem_budget(),
                 self.create_lineitems(),
             ],
-            tools=[ self.fileWriter],
+            tools=[self.fileWriter],
         )
 
     @crew
@@ -219,7 +222,7 @@ class Part3Crew:
             verbose=True,
             # memory=True, #causes weird python error with sqllite.py line 88
             planning=True,
-            planning_llm=self.llm,  
+            planning_llm=self.llm,
             output_log_file=f"output/{self.artist_name}_part_3.log",
             output_file=f"output/{self.artist_name}_part_3.md",
         )

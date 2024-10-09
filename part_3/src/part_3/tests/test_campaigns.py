@@ -1,5 +1,6 @@
 import json
 from part_3.models.campaign import (
+    CampaignList,
     CampaignStatus,
     CampaignType,
     ClickAttributionScope,
@@ -10,6 +11,7 @@ from part_3.models.campaign import (
 )
 from part_3.models.lineitem import (
     LineitemBidStrategy,
+    LineitemList,
     LineitemStatus,
     NewAuctionLineitem,
 )
@@ -18,7 +20,7 @@ from part_3.models.lineitem import (
 from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.utils import flatten
 from part_3.tools.accounts import AccountsTool
-from part_3.tools.campaigns import AccountsCampaignsTool, NewCampaignTool
+from part_3.tools.campaigns import AccountCampaignsTool, NewCampaignTool
 from crewai_tools import (
     FileWriterTool,
 )
@@ -39,27 +41,25 @@ def first_account():
 
 def test_campaigns():
     # tools
-    campaigns = AccountsCampaignsTool()
+    campaigns = AccountCampaignsTool()
     fileWriter = FileWriterTool()
 
     account = first_account()
     account_id = account["id"]
     assert account_id is not None
 
-    campaigns_api_result = campaigns._run(
+    campaign_list: CampaignList = campaigns._run(
         accountId=account_id, pageIndex=1, pageSize=1000
     )
-    totalItems = campaigns_api_result["metadata"]["totalItemsAcrossAllPages"]
-    print("totalItems --> ", totalItems)
-    assert campaigns_api_result is not None
-    assert campaigns_api_result["data"] is not None
-    campaignsList = list(map(flatten, campaigns_api_result["data"]))
-    assert len(campaignsList) > 0
+
+    assert campaign_list is not None
+    print("totalItems --> ", campaign_list.totalItems)
+    assert len(campaign_list.campaigns) > 0
 
     fileWriter._run(
         directory="output",
         filename=f"test_{account_id}_campaigns.json",
-        content=json.dumps(campaignsList, indent=2),
+        content=json.dumps(campaign_list.model_dump(), indent=2),
         overwrite=True,
     )
 
@@ -95,7 +95,6 @@ def test_new_campaign():
 
     theCampaign = newCampaign._run(accountId=account_id, campaign=campaign)
     assert theCampaign is not None
-    print("theNewCampaign --> ", theCampaign)
 
     fileWriter._run(
         directory="output",
@@ -129,17 +128,16 @@ def test_new_campaign():
         )
         assert newAuctionLineitemResult is not None
 
-    campainLineitemsResult = campainLineitems._run(campaignId=theCampaign.id)
-    assert campainLineitemsResult is not None
-    assert campainLineitemsResult["data"] is not None
-    lineitems = list(map(flatten, campainLineitemsResult["data"]))
-    assert len(lineitems) > 0
-    fileWriter._run(
-        directory="output",
-        filename=f"test_{theCampaign.id}_lineitems.json",
-        content=json.dumps(lineitems, indent=2),
-        overwrite=True,
-    )
+    lineitems_list: LineitemList = campainLineitems._run(campaignId=theCampaign.id)
+    assert lineitems_list is not None
+
+    assert len(lineitems_list.lineitems) > 0
+    # fileWriter._run(
+    #     directory="output",
+    #     filename=f"test_{theCampaign.id}_lineitems.json",
+    #     content=json.dumps(lineitems_list.model_dump(), indent=2),
+    #     overwrite=True,
+    # )
 
 
 # def test_new_campaign_for_concert_tour():

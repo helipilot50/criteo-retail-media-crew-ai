@@ -13,7 +13,7 @@ from crewai_tools import (
 )
 
 from part_3.tools.accounts import AccountsTool, RetailersTool
-from part_3.tools.campaigns import AccountsCampaignsTool, CampaignTool, NewCampaignTool
+from part_3.tools.campaigns import AccountCampaignsTool, CampaignTool, NewCampaignTool
 from part_3.tools.entertainment import ConcertsForArtistTool
 from part_3.tools.lineitems import (
     AuctionLineitemsTool,

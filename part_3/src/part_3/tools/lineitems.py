@@ -3,6 +3,7 @@ from crewai_tools import BaseTool
 
 from part_3.models.lineitem import (
     AuctionLineitem,
+    LineitemList,
     NewAuctionLineitem,
 )
 from part_3.tools.access import get_token
@@ -39,9 +40,10 @@ class PreferredLineitemsTool(BaseTool):
         )
         if response.status_code != 200:
             raise Exception("[PreferredLineitemsTool] error:", response.json())
-        if response.json() is None:
+        response_body = response.json()
+        if response_body is None:
             return []
-        return response.json()
+        return response_body
 
 
 class AuctionLineitemsTool(BaseTool):
@@ -50,23 +52,23 @@ class AuctionLineitemsTool(BaseTool):
     Attributes:
         name (str): The name of the tool.
         description (str): The description of the tool.
-        base_url (str): The base URL of the API.
     """
 
     name: str = "Auction Lineitems Tool"
     description: str = (
         "Fetch a list of  auction Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results."
     )
-    base_url: str = base_url_env
 
-    def _run(self, campaignId: str, pageIndex: int = 0, pageSize: int = 25):
+    def _run(
+        self, campaignId: str, pageIndex: int = 0, pageSize: int = 25
+    ) -> list[AuctionLineitem]:
         """
         Fetches the Retail Media auction Lineitems for campaign by {campaignId} and returns relevant results.
         """
         headers = {"Authorization": "Bearer " + get_token()}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
-            url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
+            url=f"{base_url_env}campaigns/{campaignId}/auction-line-items",
             headers=headers,
             params=params,
         )
@@ -74,10 +76,17 @@ class AuctionLineitemsTool(BaseTool):
             raise Exception("[AuctionLineitemsTool] error:", response.json())
 
         response_body = response.json()
-        if response_body is None:
+        if response_body is None or "data" not in response_body:
             return []
 
-        return response_body
+        lineitem_list = LineitemList(
+            totalItems=response_body["metadata"]["totalItemsAcrossAllPages"]
+        )
+        for lineitem_element in response_body["data"]:
+            flat = flatten(lineitem_element)
+            lineitem_list.lineitems.append(AuctionLineitem(**flat))
+
+        return lineitem_list
 
 
 class AccountLineitemsTool(BaseTool):
@@ -90,19 +99,16 @@ class AccountLineitemsTool(BaseTool):
     """
 
     name: str = "Retail Media Account Lineitems API Caller"
-    description: str = (
-        "Calls the Retail Media  REST API and returns the account Lineitems"
-    )
-    base_url: str = base_url_env
+    description: str = "Fetch the account lineitems for account id"
 
     def _run(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
         """
-        Fetches the Retail Media account Lineitems for account by {accountId} and returns relevant results.
+        Fetches the Retail Media account Lineitems for account id {accountId}.
         """
         headers = {"Authorization": "Bearer " + get_token()}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
-            url=f"{self.base_url}accounts/{accountId}/line-items",
+            url=f"{base_url_env}accounts/{accountId}/line-items",
             headers=headers,
             params=params,
         )
@@ -118,10 +124,9 @@ class NewAuctionLineitemTool(BaseTool):
     Attributes:
         name (str): The name of the tool.
         description (str): The description of the tool.
-        base_url (str): The base URL of the API.
     """
 
-    name: str = "New Auction Lineitem API"
+    name: str = "New Auction Lineitem Tool"
     description: str = (
         """
         Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id.
@@ -139,11 +144,10 @@ class NewAuctionLineitemTool(BaseTool):
         }
         """
     )
-    base_url: str = base_url_env
 
     def _run(self, campaignId: str, lineitem: NewAuctionLineitem):
         """
-        Creates a Retail Media Auction Lineitem for campaign by {campaignId} and returns relevant results.
+        Creates an  Auction Lineitem for a campaign id
         """
         headers = {"Authorization": "Bearer " + get_token()}
 
@@ -151,7 +155,7 @@ class NewAuctionLineitemTool(BaseTool):
             data=dict(type="NewAuctionLineitem", attributes=lineitem.model_dump())
         )
         response = requests.post(
-            url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
+            url=f"{base_url_env}campaigns/{campaignId}/auction-line-items",
             json=payload,
             headers=headers,
         )
@@ -175,11 +179,8 @@ class NewPreferredLineitemTool(BaseTool):
         base_url (str): The base URL of the API.
     """
 
-    name: str = "Retail Media New Preferred Lineitem API Caller"
-    description: str = (
-        "Calls the Retail Media  REST API and creates a preferred Lineitem for a campaign by the campaign {id}"
-    )
-    base_url: str = base_url_env
+    name: str = "ew Preferred Lineitem Tool"
+    description: str = "Creates a preferred Lineitem for a campaign id"
 
     def _run(self, campaignId: str, lineitem: dict):
         """
@@ -187,12 +188,14 @@ class NewPreferredLineitemTool(BaseTool):
         """
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.post(
-            url=f"{self.base_url}campaigns/{campaignId}/preferred-line-items",
+            url=f"{base_url_env}campaigns/{campaignId}/preferred-line-items",
             headers=headers,
             json=lineitem,
         )
         if response.status_code != 201:
+            print("[NewPreferredLineitemTool] errors:", response.json()["errors"])
             raise Exception("[NewPreferredLineitemTool] error:", response.json())
+
         return response.json()
 
 
@@ -202,14 +205,12 @@ class PromotedProducts(BaseTool):
     Attributes:
         name (str): The name of the tool.
         description (str): The description of the tool.
-        base_url (str): The base URL of the API.
     """
 
     name: str = "Retail Media Promoted Products API Caller"
     description: str = (
         "Calls the Retail Media  REST API and returns the Promoted Products for a lineitem using the lineitem id"
     )
-    base_url: str = base_url_env
 
     def _run(self, lineitemId: str, pageIndex: int = 0, pageSize: int = 25):
         """
@@ -218,47 +219,10 @@ class PromotedProducts(BaseTool):
         headers = {"Authorization": "Bearer " + get_token()}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
-            url=f"{self.base_url}line-items/{lineitemId}/products",
+            url=f"{base_url_env}line-items/{lineitemId}/products",
             headers=headers,
             params=params,
         )
         if response.status_code != 200:
             raise Exception("[PromotedProducts] error:", response.json())
         return response.json()
-
-
-# class LineitemsT():
-#     @tool("New auction lineitem")
-#     def new_auction_lineitem(self, campaignId:str, lineitem: NewAuctionLineitem) -> AuctionLineitem:
-#         """
-#             Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id.
-#             Example input data for a new lineitem:
-#             {
-#                 "name": Taylor Swift 2025 - AccorHotels Arena Paris- 2025-05-20,
-#                 "campaignId": "626444481539563520",
-#                 "status": "paused",
-#                 "targetRetailerId": "1106",
-#                 "budget": 50,
-#                 "startDate": "2025-10-1",
-#                 "endDate": "2025-12-31",
-#                 "bidStrategy": "conversion",
-#                 "targetBid": 1.0,
-#             }
-#         """
-#         headers = {"Authorization": "Bearer " + get_token()}
-#         response = requests.post(
-#             url=f"{base_url_env}campaigns/{campaignId}/auction-line-items",
-#             headers=headers,
-#             json={
-#                 "data": {
-#                     "type": "NewLineitems",
-#                     "attributes": lineitem.model_dump_json(),
-#                 }
-#             },
-#         )
-#         if response.status_code != 201:
-#             raise Exception("[NewAuctionLineitemTool] error:", response.json())
-#         data = response.json()["data"]
-#         flat = flatten(data)
-#         theLineitem = AuctionLineitem(**flat)
-#         return theLineitem

@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
+from pydantic import BaseModel, field_serializer, field_validator
 from enum import Enum
 
 
@@ -34,13 +34,13 @@ class ClickAttributionScope(str, Enum):
     unknown = "unknown"
     sameSkuCategory = "sameSkuCategory"
     sameSku = "sameSku"
-    sameSkuBrandCategory = "sameSkuBrandCategory"
+    sameSkuCategoryBrand = "sameSkuCategoryBrand"
 
 
 class ViewAttributionScope(str, Enum):
     sameSkuCategory = "sameSkuCategory"
     sameSku = "sameSku"
-    sameSkuBrandCategory = "sameSkuBrandCategory"
+    sameSkuCategoryBrand = "sameSkuCategoryBrand"
 
 
 class NewCampaign(BaseModel):
@@ -68,6 +68,8 @@ class NewCampaign(BaseModel):
 
     @field_serializer("startDate", "endDate")
     def serialize_date(self, thedate: date) -> str:
+        if thedate is None:
+            return None
         return thedate.strftime("%Y-%m-%d")
 
     class Config:
@@ -85,8 +87,8 @@ class UpdateCampaign(BaseModel):
     id: str
     name: Optional[str] = None
     isAutoDailyPacing: Optional[bool] = None
-    startDate: Optional[date] = None
-    endDate: Optional[date] = None
+    startDate: Optional[datetime] = None
+    endDate: Optional[datetime] = None
     type: Optional[CampaignType] = None
     drawableBalanceIds: Optional[List[str]] = None
     clickAttributionWindow: Optional[ClickAttributionWindow] = None
@@ -99,15 +101,20 @@ class UpdateCampaign(BaseModel):
     companyName: Optional[str] = None
 
     @field_validator("startDate", "endDate")
-    @classmethod
+    # @classmethod
     def validate_date(cls, value):
+        # print("validate_date", value)
         if isinstance(value, str):
-            return datetime.strptime(value, "%Y-%m-%d").date()
+            return datetime.fromisoformat(value)
+        if isinstance(value, datetime):
+            return value
         return value
 
     @field_serializer("startDate", "endDate")
-    def serialize_date(self, thedate: date) -> str:
-        return thedate.strftime("%Y-%m-%d")
+    def serialize_date_time(self, thedatetime: datetime) -> str:
+        if thedatetime is None:
+            return None
+        return thedatetime.isoformat()
 
 
 class Campaign(BaseModel):
@@ -128,19 +135,28 @@ class Campaign(BaseModel):
     monthlyPacing: Optional[float] = None
     dailyPacing: Optional[float] = None
     isAutoDailyPacing: bool
-    startDate: Optional[date] = None
-    endDate: Optional[date] = None
+    startDate: Optional[datetime] = None
+    endDate: Optional[datetime] = None
     clickAttributionScope: ClickAttributionScope
     viewAttributionScope: ViewAttributionScope
     companyName: Optional[str] = None
 
-    @field_validator("startDate", "endDate")
-    @classmethod
+    @field_validator("createdAt", "updatedAt", "startDate", "endDate")
     def validate_date(cls, value):
+        # print("validate_date", value)
         if isinstance(value, str):
-            return datetime.strptime(value, "%Y-%m-%d").date()
+            return datetime.fromisoformat(value)
+        if isinstance(value, datetime):
+            return value
         return value
 
-    @field_serializer("startDate", "endDate")
-    def serialize_date(self, thedate: date) -> str:
-        return thedate.strftime("%Y-%m-%d")
+    @field_serializer("createdAt", "updatedAt", "startDate", "endDate")
+    def serialize_date_time(self, thedatetime: datetime) -> str:
+        if thedatetime is None:
+            return None
+        return thedatetime.isoformat()
+
+
+class CampaignList(BaseModel):
+    campaigns: List[Campaign] = []
+    totalItems: int = 0

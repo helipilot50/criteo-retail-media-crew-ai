@@ -49,11 +49,11 @@ class AuctionLineitem(BaseModel):
     """
     Line item start date in the account timeZone
     """
-    startDate: date
+    startDate: datetime
     """
     Line item end date in the account timeZone; serves indefinitely if omitted or set to null
     """
-    endDate: Optional[date] = None
+    endDate: Optional[datetime] = None
     """
     Line item lifetime spend cap; uncapped if omitted or set to null
     """
@@ -127,15 +127,18 @@ class AuctionLineitem(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @field_validator("startDate", "endDate")
-    @classmethod
     def validate_date(cls, value):
         if isinstance(value, str):
-            return datetime.strptime(value, "%Y-%m-%d").date()
+            return datetime.fromisoformat(value)
+        if isinstance(value, datetime):
+            return value
         return value
 
     @field_serializer("startDate", "endDate")
-    def serialize_date(self, thedate: date) -> str:
-        return thedate.strftime("%Y-%m-%d")
+    def serialize_date_time(self, thedatetime: datetime) -> str:
+        if thedatetime is None:
+            return None
+        return thedatetime.isoformat()
 
 
 class NewAuctionLineitem(BaseModel):
@@ -161,4 +164,11 @@ class NewAuctionLineitem(BaseModel):
 
     @field_serializer("startDate", "endDate")
     def serialize_date(self, thedate: date) -> str:
+        if thedate is None:
+            return None
         return thedate.strftime("%Y-%m-%d")
+
+
+class LineitemList(BaseModel):
+    lineitems: List[AuctionLineitem] = []
+    totalItems: int = 0

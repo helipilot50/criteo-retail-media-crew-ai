@@ -6,6 +6,7 @@ from part_3.models.lineitem import (
     NewAuctionLineitem,
 )
 from part_3.models.campaign import (
+    Campaign,
     CampaignType,
     ClickAttributionScope,
     ClickAttributionWindow,
@@ -65,6 +66,43 @@ def test_new_campaign():
     fileWriter._run(
         directory="output",
         filename=f"test_model_new_campaign.json",
+        content=json.dumps(campaign.model_dump(), indent=2),
+        overwrite=True,
+    )
+
+
+def test_campaign():
+    fileWriter = FileWriterTool()
+    campaign = Campaign(
+        accountId="4",
+        promotedBrandIds=[],
+        budgetSpent=0.0,
+        budgetRemaining=None,
+        status="inactive",
+        createdAt="2024-04-17T22:06:01+00:00",
+        updatedAt="2024-04-17T22:06:01+00:00",
+        type="auction",
+        drawableBalanceIds=[],
+        clickAttributionWindow="30D",
+        viewAttributionWindow="1D",
+        name="TEST CATIRE",
+        budget=None,
+        monthlyPacing=None,
+        dailyPacing=None,
+        isAutoDailyPacing=False,
+        startDate="2024-04-17T04:00:00+00:00",
+        # endDate="2024-04-18T03:59:59+00:00",
+        endDate=None,
+        clickAttributionScope=ClickAttributionScope.sameSku,
+        viewAttributionScope=ViewAttributionScope.sameSku,
+        companyName=None,
+        onBehalfCompanyName=None,
+        id="568557877387161600",
+    )
+    assert campaign is not None
+    fileWriter._run(
+        directory="output",
+        filename=f"test_model_campaign.json",
         content=json.dumps(campaign.model_dump(), indent=2),
         overwrite=True,
     )
