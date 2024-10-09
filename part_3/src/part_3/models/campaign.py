@@ -65,11 +65,11 @@ class NewCampaign(BaseModel):
         if isinstance(value, str):
             return datetime.strptime(value, "%Y-%m-%d").date()
         return value
-    
-    @field_serializer('startDate', 'endDate')
+
+    @field_serializer("startDate", "endDate")
     def serialize_date(self, thedate: date) -> str:
         return thedate.strftime("%Y-%m-%d")
-    
+
     class Config:
         json_encoders = {
             date: lambda v: v.strftime("%Y-%m-%d"),
@@ -98,9 +98,16 @@ class UpdateCampaign(BaseModel):
     viewAttributionScope: Optional[ViewAttributionScope] = None
     companyName: Optional[str] = None
 
-    # model_config = ConfigDict(arbitrary_types_allowed=True)
-    class Config:
-        json_encoders = {date: lambda v: v.strftime("%Y-%m-%d")}
+    @field_validator("startDate", "endDate")
+    @classmethod
+    def validate_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, "%Y-%m-%d").date()
+        return value
+
+    @field_serializer("startDate", "endDate")
+    def serialize_date(self, thedate: date) -> str:
+        return thedate.strftime("%Y-%m-%d")
 
 
 class Campaign(BaseModel):
@@ -127,6 +134,13 @@ class Campaign(BaseModel):
     viewAttributionScope: ViewAttributionScope
     companyName: Optional[str] = None
 
-    # model_config = ConfigDict(arbitrary_types_allowed=True)
-    class Config:
-        json_encoders = {date: lambda v: v.strftime("%Y-%m-%d")}
+    @field_validator("startDate", "endDate")
+    @classmethod
+    def validate_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, "%Y-%m-%d").date()
+        return value
+
+    @field_serializer("startDate", "endDate")
+    def serialize_date(self, thedate: date) -> str:
+        return thedate.strftime("%Y-%m-%d")

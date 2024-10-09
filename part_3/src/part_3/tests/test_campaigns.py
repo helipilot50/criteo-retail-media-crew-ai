@@ -11,6 +11,7 @@ from part_3.models.campaign import (
 from part_3.models.lineitem import (
     LineitemBidStrategy,
     LineitemStatus,
+    NewAuctionLineitem,
 )
 
 # from part_3.tools.entertainment import NewCampaignForConcertTourTool
@@ -103,42 +104,42 @@ def test_new_campaign():
         overwrite=True,
     )
 
-    # for i in range(1, 25):
-    #     current_datetime = datetime.now()
-    #     lineitemInput = dict(
-    #         name="Jimmy Carr Concert Tour 2030 - Open Auction Lineitem "
-    #         + current_datetime.strftime("%Y-%m-%d %H:%M:%S")
-    #         + " - "
-    #         + str(i),  # name must be unique across the campaign
-    #         startDate="2030-01-01",
-    #         targetRetailerId="906",
-    #         endDate="2030-12-31",
-    #         status=LineitemStatus.paused,
-    #         budget=1.00,
-    #         targetBid=5,
-    #         maxBid=5,
-    #         monthlyPacing=50,
-    #         dailyPacing=5,
-    #         isAutoDailyPacing=False,
-    #         bidStrategy=LineitemBidStrategy.conversion,
-    #     )
-    #     newAuctionLineitemResult = newAuctionLineitem._run(
-    #         campaignId=theCampaign.id,
-    #         lineitem=lineitemInput,
-    #     )
-    #     assert newAuctionLineitemResult is not None
+    for i in range(1, 25):
+        current_datetime = datetime.now()
+        lineitemInput = NewAuctionLineitem(
+            name="Jimmy Carr Concert Tour 2030 - Open Auction Lineitem "
+            + current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+            + " - "
+            + str(i),  # name must be unique across the campaign
+            startDate="2030-01-01",
+            targetRetailerId="906",
+            endDate="2030-12-31",
+            status=LineitemStatus.paused,
+            budget=1.00,
+            targetBid=5,
+            maxBid=5,
+            monthlyPacing=50,
+            dailyPacing=5,
+            isAutoDailyPacing=False,
+            bidStrategy=LineitemBidStrategy.conversion,
+        )
+        newAuctionLineitemResult = newAuctionLineitem._run(
+            campaignId=theCampaign.id,
+            lineitem=lineitemInput,
+        )
+        assert newAuctionLineitemResult is not None
 
-    # campainLineitemsResult = campainLineitems._run(campaignId=theCampaign.id)
-    # assert campainLineitemsResult is not None
-    # assert campainLineitemsResult["data"] is not None
-    # lineitems = list(map(flatten, campainLineitemsResult["data"]))
-    # assert len(lineitems) > 0
-    # fileWriter._run(
-    #     directory="output",
-    #     filename=f"test_{theCampaign.id}_lineitems.json",
-    #     content=json.dumps(lineitems, indent=2),
-    #     overwrite=True,
-    # )
+    campainLineitemsResult = campainLineitems._run(campaignId=theCampaign.id)
+    assert campainLineitemsResult is not None
+    assert campainLineitemsResult["data"] is not None
+    lineitems = list(map(flatten, campainLineitemsResult["data"]))
+    assert len(lineitems) > 0
+    fileWriter._run(
+        directory="output",
+        filename=f"test_{theCampaign.id}_lineitems.json",
+        content=json.dumps(lineitems, indent=2),
+        overwrite=True,
+    )
 
 
 # def test_new_campaign_for_concert_tour():

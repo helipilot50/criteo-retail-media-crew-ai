@@ -1,6 +1,6 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, field_serializer, field_validator
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime
 
 
 class Concert(BaseModel):
@@ -12,7 +12,16 @@ class Concert(BaseModel):
     seatingCapacity: int
     digitalAdvertisingBudget: float
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    @field_validator("date")
+    @classmethod
+    def validate_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, "%Y-%m-%d").date()
+        return value
+
+    @field_serializer("date")
+    def serialize_date(self, thedate: date) -> str:  # type: ignore
+        return thedate.strftime("%Y-%m-%d")
 
 
 class Tour(BaseModel):
@@ -20,5 +29,3 @@ class Tour(BaseModel):
     year: str
     description: str
     concerts: Optional[List[Concert]]
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)

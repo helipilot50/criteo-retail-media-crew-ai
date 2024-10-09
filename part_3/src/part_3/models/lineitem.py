@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
 from enum import Enum
 
 
@@ -53,11 +53,11 @@ class AuctionLineitem(BaseModel):
     """
     Line item end date in the account timeZone; serves indefinitely if omitted or set to null
     """
-    endDate: Optional[date]
+    endDate: Optional[date] = None
     """
     Line item lifetime spend cap; uncapped if omitted or set to null
     """
-    budget: Optional[float]
+    budget: Optional[float] = None
     """
     Amount the line item has already spent
     """
@@ -70,14 +70,14 @@ class AuctionLineitem(BaseModel):
     Amount the line item can spend per calendar month in the account timeZone; 
     resets each calendar month; uncapped if omitted or set to null
     """
-    monthlyPacing: Optional[float]
+    monthlyPacing: Optional[float] = None
     """
     Amount the line item can spend per day 
     in the account timeZone; resets each day; 
     overwritten by a calculation if isAutoDailyPacing is configured; 
     uncapped if omitted or set to null
     """
-    dailyPacing: Optional[float]
+    dailyPacing: Optional[float] = None
     """
     To activate, either line item endDate and budget, 
     or monthlyPace, must be specified; 
@@ -96,7 +96,7 @@ class AuctionLineitem(BaseModel):
     for line item to serve; minBid depends on selected products 
     and is retrieved through the catalog; input excludes platform fees
     """
-    targetBid: Optional[float]
+    targetBid: Optional[float] = None
     """
     If optimizing for conversion or revenue, 
     the maximum amount allowed to bid for each bid; 
@@ -107,7 +107,7 @@ class AuctionLineitem(BaseModel):
     does not apply if optimizing for clicks; 
     input excludes platform fees
     """
-    maxBid: Optional[float]
+    maxBid: Optional[float] = None
     """
     Line item status; can only be updated by a user 
     to active or paused; all other values are applied 
@@ -125,6 +125,17 @@ class AuctionLineitem(BaseModel):
     updatedAt: datetime
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    @field_validator("startDate", "endDate")
+    @classmethod
+    def validate_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, "%Y-%m-%d").date()
+        return value
+
+    @field_serializer("startDate", "endDate")
+    def serialize_date(self, thedate: date) -> str:
+        return thedate.strftime("%Y-%m-%d")
 
 
 class NewAuctionLineitem(BaseModel):
@@ -148,9 +159,6 @@ class NewAuctionLineitem(BaseModel):
             return datetime.strptime(value, "%Y-%m-%d").date()
         return value
 
-    class Config:
-        json_encoders = {
-            date: lambda v: v.strftime("%Y-%m-%d"),
-            LineitemStatus: lambda v: v.value,
-            LineitemBidStrategy: lambda v: v.value,
-        }
+    @field_serializer("startDate", "endDate")
+    def serialize_date(self, thedate: date) -> str:
+        return thedate.strftime("%Y-%m-%d")

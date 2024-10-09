@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, date
 import json
 from part_3.models.lineitem import (
     LineitemBidStrategy,
@@ -27,7 +27,7 @@ class TestClass:
 
 
 def do_something_with_lineitem(lineitem: NewAuctionLineitem) -> NewAuctionLineitem:
-    aDict = lineitem.model_dump_json()
+    aDict = lineitem.model_dump()
     assert aDict is not None
     return lineitem
 
@@ -35,7 +35,7 @@ def do_something_with_lineitem(lineitem: NewAuctionLineitem) -> NewAuctionLineit
 def test_new_auction_lineitem():
     new_lineitem = NewAuctionLineitem(
         name="test",
-        startDate=datetime.date(2022, 1, 1),
+        startDate=date(2022, 1, 1),
         status=LineitemStatus.draft,
         targetRetailerId="test",
         bidStrategy=LineitemBidStrategy.clicks,
@@ -52,7 +52,7 @@ def test_new_campaign():
     campaign = NewCampaign(
         name="Jimmy Carr Concert Tour 2030 ",
         startDate="2030-01-01",
-        endDate=datetime.date(2030, 12, 31),
+        endDate=date(2030, 12, 31),
         budget=1280000,
         isAutoDailyPacing=False,
         type=CampaignType.auction,
@@ -65,6 +65,6 @@ def test_new_campaign():
     fileWriter._run(
         directory="output",
         filename=f"test_model_new_campaign.json",
-        content=campaign.model_dump_json(indent=2),
+        content=json.dumps(campaign.model_dump(), indent=2),
         overwrite=True,
     )

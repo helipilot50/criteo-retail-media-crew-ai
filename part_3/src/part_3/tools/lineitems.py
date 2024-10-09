@@ -19,14 +19,12 @@ class PreferredLineitemsTool(BaseTool):
     Attributes:
         name (str): The name of the tool.
         description (str): The description of the tool.
-        base_url (str): The base URL of the API.
     """
 
-    name: str = "Retail Media preferred Lineitems  API Caller"
+    name: str = "Preferred Lineitems Tool"
     description: str = (
-        "Calls the Retail Media  REST API and returns the preferred Lineitems for a campaign using the  campaign {id}"
+        "Fetch a list of preferred Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results."
     )
-    base_url: str = base_url_env
 
     def _run(self, campaignId: str, pageIndex: int = 0, pageSize: int = 25):
         """
@@ -35,12 +33,14 @@ class PreferredLineitemsTool(BaseTool):
         headers = {"Authorization": "Bearer " + get_token()}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
-            url=f"{self.base_url}campaigns/{campaignId}/preferred-line-items",
+            url=f"{base_url_env}campaigns/{campaignId}/preferred-line-items",
             headers=headers,
             params=params,
         )
         if response.status_code != 200:
             raise Exception("[PreferredLineitemsTool] error:", response.json())
+        if response.json() is None:
+            return []
         return response.json()
 
 
@@ -53,9 +53,9 @@ class AuctionLineitemsTool(BaseTool):
         base_url (str): The base URL of the API.
     """
 
-    name: str = "Retail Media auction Lineitems API Caller"
+    name: str = "Auction Lineitems Tool"
     description: str = (
-        "Calls the Retail Media  REST API and returns the auction Lineitems for a campaign using the campaign {id}"
+        "Fetch a list of  auction Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results."
     )
     base_url: str = base_url_env
 
@@ -72,7 +72,12 @@ class AuctionLineitemsTool(BaseTool):
         )
         if response.status_code != 200:
             raise Exception("[AuctionLineitemsTool] error:", response.json())
-        return response.json()
+
+        response_body = response.json()
+        if response_body is None:
+            return []
+
+        return response_body
 
 
 class AccountLineitemsTool(BaseTool):
@@ -141,24 +146,20 @@ class NewAuctionLineitemTool(BaseTool):
         Creates a Retail Media Auction Lineitem for campaign by {campaignId} and returns relevant results.
         """
         headers = {"Authorization": "Bearer " + get_token()}
-        # json={
-        #         "data": {"type": "NewCampaign", "attributes": campaign},
-        #     },
-        payload = {
-            "data": {
-                "type": f"{campaignId}",
-                "attributes": lineitem,
-            }
-        }
+
+        payload = dict(
+            data=dict(type="NewAuctionLineitem", attributes=lineitem.model_dump())
+        )
         response = requests.post(
             url=f"{self.base_url}campaigns/{campaignId}/auction-line-items",
             json=payload,
             headers=headers,
-            
         )
         if response.status_code != 201:
             print("[NewAuctionLineitemTool] errors:", response.json()["errors"])
-            raise Exception("[NewAuctionLineitemTool] errors:", response.json()["errors"])
+            raise Exception(
+                "[NewAuctionLineitemTool] errors:", response.json()["errors"]
+            )
         data = response.json()["data"]
         flat = flatten(data)
         theLineitem = AuctionLineitem(**flat)
@@ -194,6 +195,7 @@ class NewPreferredLineitemTool(BaseTool):
             raise Exception("[NewPreferredLineitemTool] error:", response.json())
         return response.json()
 
+
 class PromotedProducts(BaseTool):
     """
     Used to fetch the Retail Media Promoted Products  for a Lineitem and return relevant results.
@@ -223,7 +225,6 @@ class PromotedProducts(BaseTool):
         if response.status_code != 200:
             raise Exception("[PromotedProducts] error:", response.json())
         return response.json()
-
 
 
 # class LineitemsT():
