@@ -1,5 +1,10 @@
 import json
 from crewai_tools import BaseTool
+from crewai_tools import (
+    FileReadTool,
+    FileWriterTool,
+    DirectoryReadTool,
+)
 
 from part_3.models.lineitem import (
     AuctionLineitem,
@@ -54,7 +59,7 @@ class AuctionLineitemsTool(BaseTool):
         description (str): The description of the tool.
     """
 
-    name: str = "Auction Lineitems Tool"
+    name: str = "AuctionLineitemsTool"
     description: str = (
         "Fetch a list of  auction Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results."
     )
@@ -126,10 +131,10 @@ class NewAuctionLineitemTool(BaseTool):
         description (str): The description of the tool.
     """
 
-    name: str = "New Auction Lineitem Tool"
+    name: str = "NewAuctionLineitemTool"
     description: str = (
         """
-        Calls the Retail Media  REST API and creates a Open Auction Lineitem for a campaign by the campaign id.
+        Creates a NewAuctionLineitem for a campaign id.
         Example input data for a new lineitem:
         {
             "name": Taylor Swift 2025 - AccorHotels Arena Paris- 2025-05-20,
@@ -149,6 +154,8 @@ class NewAuctionLineitemTool(BaseTool):
         """
         Creates an  Auction Lineitem for a campaign id
         """
+
+        fileWriter = FileWriterTool()
         headers = {"Authorization": "Bearer " + get_token()}
 
         payload = dict(
@@ -167,7 +174,14 @@ class NewAuctionLineitemTool(BaseTool):
         data = response.json()["data"]
         flat = flatten(data)
         theLineitem = AuctionLineitem(**flat)
+        fileWriter._run(
+            content=json.dumps(theLineitem.model_dump(), indent=2),
+            directory="output",
+            filename=f"t_{campaignId}_lineitem_{theLineitem.id}.json",
+            overwrite=True
+        )
         return theLineitem
+
 
 
 class NewPreferredLineitemTool(BaseTool):
@@ -179,13 +193,14 @@ class NewPreferredLineitemTool(BaseTool):
         base_url (str): The base URL of the API.
     """
 
-    name: str = "ew Preferred Lineitem Tool"
+    name: str = "NewPreferredLineitemTool"
     description: str = "Creates a preferred Lineitem for a campaign id"
 
     def _run(self, campaignId: str, lineitem: dict):
         """
         Creates a Retail Media  Preferred Lineitem for campaign by {campaignId} and returns relevant results.
         """
+
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.post(
             url=f"{base_url_env}campaigns/{campaignId}/preferred-line-items",

@@ -4,6 +4,12 @@ from part_3.tools.utils import flatten
 from part_3.tools.access import get_token
 import requests
 import os
+from crewai_tools import (
+    FileReadTool,
+    FileWriterTool,
+    DirectoryReadTool,
+)
+import json
 
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
@@ -77,7 +83,7 @@ class NewCampaignTool(BaseTool):
         base_url (str): The base URL of the API.
     """
 
-    name: str = "New Campaign Tool"
+    name: str = "NewCampaignTool"
     description: str = (
         """Create  a campaign for an account using {account_id} and NewCampaign object.
         Example input for new Campaign:
@@ -100,6 +106,7 @@ class NewCampaignTool(BaseTool):
     )
 
     def _run(self, accountId: str, campaign: NewCampaign) -> Campaign:
+        fileWriter = FileWriterTool()
 
         body = dict(
             data=dict(
@@ -118,4 +125,9 @@ class NewCampaignTool(BaseTool):
         data = response.json()["data"]
         flat = flatten(data)
         theCampaign = Campaign(**flat)
+        fileWriter._run(
+            content=json.dumps(theCampaign.model_dump(), indent=2),
+            directory="output",
+            filename=f"t_{theCampaign.id}_campaign.json",
+            overwrite=True)
         return theCampaign

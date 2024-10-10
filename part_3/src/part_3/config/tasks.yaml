@@ -1,12 +1,14 @@
 account:
   description: >
-    Fetch a list of accounts for this user, using the Fetch Accounts Tool.
-    Remember the result.
+    Fetch a list of accounts using the FetchAccountsTool.
+    Remember the result as [AccountList].
     Do not hallucinate.
     Do not fabricate data.
-    Use the {account_id} to find the specific account from the list of accounts
+    Use the {account_id} to find the account in [AccountList]
+    Remember the account as [Account].
   expected_output: >
-    A JSON object with the account details.
+    [Account] formated as a JSON object.
+  agent: account_manager
 
 campaigns:
   description: >
@@ -37,47 +39,6 @@ find_concert_venues:
   expected_output: >
     A JSON array of concerts, dates, venues and their searing capacity for the artist.
 
-# formulate_campaign_budget:
-#   description: >
-#     Formulate an advertising budget for a digital advertising campaign using the {artist_name}, the location of the venues and their seating capacity.
-#     Provide a total budget for the digital advertising campaign.
-#     For each concert, formulate a budget amount based on the venue and geographic location. These values should be based on the seating capacity of the venue and the location of the venue.
-#     Express the budget in USD.
-
-#     Here's a structured approach to help you get started:
-
-#     1. **Estimate Revenue Goals**
-#       - **Determine Ticket Sales Revenue**: Estimate the total revenue from ticket sales. For example, if each concert has 20,000 tickets at an average price of $150, the revenue per concert would be $3,000,000.
-#       - **Total Concerts**: Multiply by the number of concerts. If there are 50 concerts, the total revenue would be $150,000,000.
-
-#     2. **Allocate Advertising Budget**
-#       - **Percentage of Revenue**: A common rule of thumb is to allocate 15%-20% of the total potential gross revenue to advertising². For Taylor Swift's concerts, this would be:
-#         - **15% of $150,000,000**: $22,500,000
-#         - **20% of $150,000,000**: $30,000,000
-
-#     3. **Break Down the Budget**
-#       - **Digital Advertising**: Allocate a significant portion to digital platforms (e.g., social media, search engines, streaming services). This could be around 60%-70% of the total advertising budget.
-#         - **Example**: If the total budget is $25,000,000, then $15,000,000 to $17,500,000 could be for digital advertising.
-#       - **Traditional Media**: Allocate the remaining budget to traditional media (e.g., TV, radio, print).
-#         - **Example**: $7,500,000 to $10,000,000 for traditional media.
-
-#     4. **Digital Advertising Strategy**
-#       - **Social Media Ads**: Platforms like Instagram, Facebook, TikTok, and Twitter are crucial for reaching {artist_name} fanbase.
-#       - **Retail Media**: Utilize retail media platforms to reach audiences while they shop online.
-
-
-#     Example Calculation
-#     If the goal is to generate $45,000,000 in ticket sales from digital advertising:
-#       - **Ticket Price**: $150
-#       - **Tickets Sold**: 300,000 tickets
-#       - **Orders Needed**: 111,111 orders (assuming 2.7 tickets per order)
-#       - **Unique Ad Clicks Needed**: 5,555,550 clicks (assuming 2% conversion rate)
-#       - **Total Ad Clicks Needed**: 6,944,438 clicks (assuming 80% unique clicks)
-#       - **Cost Per Click (CPC)**: $0.50
-#       - **Digital Advertising Budget**: $3,472,219
-
-#   expected_output: >
-#     A JSON object with the budget for the campaign. 
 
 formulate_lineitem_budget:
   description: >
@@ -94,19 +55,17 @@ formulate_lineitem_budget:
 
 create_campaign:
   description: >
-    Use Retail Media API to create the campaign with:
+    Use the NewCampaignTool to create a campaign with:
      
     The campaign name is the {artist_name}, the {year}, the date of the first concert and the date of the last concert.
-    
     The start date of the campaign should be 60 days before the first concert.
     The end date of the campaign should be the date of the last concert.
     The budget is the {digital_advertising_budget}.
     The monthlyPacing is calculated using the calculate monthly pacing tool.
     Include the campaign name, the campaign start date, the campaign end date, the campaign budget.
 
-    Follow these steps:
-    1. Formulate the NewCampaign to match the following example.
-      Example campaign input data:
+    Remember the new campaign as [newCampaign] 
+    Example campaign input data:
               "name": "{artist_name} Concert Tour {year}",
               "startDate": "2025-01-01",
               "endDate": "2025-12-31",
@@ -122,21 +81,15 @@ create_campaign:
               "viewAttributionScope": "sameSkuCategory",
           
       do not add any fields not in the example campaign input data.
-    2. Use the FileWriterTool to write the NewCampaign as a JSON with
-        - directory 'output' 
-        - filename '{artist_name}_{year}_new_campaign.json'
-        - content as the NewCampaign object.
-    3. Use the New Campaign Tool to create the campaign and remember the new campaign as [newCampaign] 
-    5. Use the FileWriterTool to write the [newCampaign] to the directory 'output' with the filename '{artist_name}_{year}_new_campaign_details.json'. 
-
+    
 
   expected_output: >
-    A [NewCampaign] object as JSON.
+    [newCampaign] object as JSON.
 
 create_lineitems:
   description: >
     Use the new campaign id to create line items for the campaign.
-    For each concert, create a NewAcutionLineitemm, with the following attributes:
+    For each concert, create a NewAcutionLineitemm using the NewAuctionLineitemTool, with the following attributes:
       name: {artist_name} {year} - venue, city, country - concert date
       budget: budget amount gor the venue
       startDate: 90 days before the concert date
@@ -153,9 +106,9 @@ create_lineitems:
             "endDate": "2025-12-31",
             "bidStrategy": "conversion",
             "targeBid": 1.0,
-      Create A NewAuctionLineitem using the NewAuctionLineitemTool.
-    Fetch the  list of Lineitems for the [newCampaign].id using the Auction Lineitems Tool.
-    Remember the list of Lineitems.
+      
+    Fetch the  list of Lineitems for the [newCampaign] id using the AuctionLineitemsTool.
+    Remember the list of Lineitems as [LineitemsList].
   expected_output: >
     A JSON array of AuctionLineitems.
 
@@ -165,10 +118,8 @@ summary:
     Include:
     
     1. the new campaign: id, name, start date, end date, total budget.
-    2. the new auction lineitems as a table with these columns: lineitem name, budget amount, lineitem id, lineitem startDate and lineitem endDate
+    2. Format the [LineitemList] as a table with these columns: lineitem name, budget amount, lineitem id, lineitem startDate and lineitem endDate
     3. A summary of the demographics for the artist.
-
-
 
   expected_output: >
     A summary in markdown format.

@@ -14,12 +14,11 @@ class AccountsTool(BaseTool):
     Attributes:
         name (str): The name of the tool ("Retail Media Accounts API Caller").
         description (str): The description of the tool ("Calls the Retail Media REST API and returns the Accounts accessible to the account manager").
-        token (str): The token for authentication.
     Methods:
         _run(): Fetches the Retail Media accounts and returns the relevant results.
     """
 
-    name: str = "Fetch Accounts Tool"
+    name: str = "FetchAccountsTool"
     description: str = (
         "Fetch the Accounts accessable to the account manager"
     )

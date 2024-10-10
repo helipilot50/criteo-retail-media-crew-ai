@@ -62,6 +62,7 @@ class Part3Crew:
             config=config,
             verbose=True,
             llm=self.llm,
+            memory=True,
         )
 
     @agent
@@ -117,6 +118,7 @@ class Part3Crew:
             # callbacks=[callback_handler],
             verbose=True,
             llm=self.llm,
+            memory=True,
         )
 
     @task
@@ -124,7 +126,7 @@ class Part3Crew:
         return Task(
             config=self.tasks_config["research_demographics"],
             output_file=f"output/{self.artist_name}_research_demographics.json",
-            parameters={"cats": "cats"},
+            # parameters={"cats": "cats"},
             agent=self.demographics_agent(),
             async_=True,
         )
