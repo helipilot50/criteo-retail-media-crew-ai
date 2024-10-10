@@ -57,7 +57,7 @@ def test_auction_lineitem_list():
     for i in range(1,10):
         a_datetime = datetime(year=2022, month=1, day=i)
         assert a_datetime is not None
-        print("a_datetime --> ", a_datetime)
+        # print("a_datetime --> ", a_datetime)
         new_lineitem = AuctionLineitem(
             name=f"test_{i}",
             startDate=a_datetime,

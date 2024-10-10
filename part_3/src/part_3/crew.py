@@ -187,7 +187,7 @@ class Part3Crew:
                 self.create_campaign(),
                 self.formulate_lineitem_budget(),
             ],
-            # tools=[FileReadTool(), NewAuctionLineitemTool(), AuctionLineitemsTool()],
+            tools=[FileReadTool(), NewAuctionLineitemTool(), AuctionLineitemsTool()],
             # human_input=True,
         )
 
@@ -195,7 +195,7 @@ class Part3Crew:
     def summary_task(self) -> Task:
         return Task(
             config=self.tasks_config["summary"],
-            # output_file=f"output/{self.artist_name}_summary.md",
+            output_file=f"output/{self.artist_name}_summary.md",
             agent=self.summary_agent(),
             context=[
                 self.account(),
@@ -205,7 +205,7 @@ class Part3Crew:
                 self.formulate_lineitem_budget(),
                 self.create_lineitems(),
             ],
-            tools=[self.fileWriter],
+            
         )
 
     @crew

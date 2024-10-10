@@ -1,10 +1,10 @@
 account:
   description: >
-    Use the  Retail Media REST API to get a list of accounts for this user.
+    Fetch a list of accounts for this user, using the Fetch Accounts Tool.
     Remember the result.
     Do not hallucinate.
     Do not fabricate data.
-    Use the {account_id} to get the specific account from the list of accounts
+    Use the {account_id} to find the specific account from the list of accounts
   expected_output: >
     A JSON object with the account details.
 
@@ -126,10 +126,12 @@ create_campaign:
         - directory 'output' 
         - filename '{artist_name}_{year}_new_campaign.json'
         - content as the NewCampaign object.
+    3. Use the New Campaign Tool to create the campaign and remember the new campaign as NewCampaign 
+    5. Use the FileWriterTool to write the NewCampaign to the directory 'output' with the filename '{artist_name}_{year}_new_campaign_details.json'. 
 
 
   expected_output: >
-    A NewCampaign object with the campaign details.
+    A NewCampaign object as JSON.
 
 create_lineitems:
   description: >
@@ -139,11 +141,11 @@ create_lineitems:
       budget: budget amount for the concert
       startDate: 90 days before the concert date
       endDate: 1 day concert date
-      campaignId: new campaign id
+      campaignId: NewCampaign.id
       status: draft
       Example input data for a new lineitem: 
             "name": Taylor Swift 2025 - AccorHotels Arena, Paris, France - 2025-05-20,
-            "campaignId": new campaign id,
+            "campaignId": "1234567890",
             "status": "draft",
             "targetRetailerId": "1106",
             "budget": 50,
@@ -151,9 +153,12 @@ create_lineitems:
             "endDate": "2025-12-31",
             "bidStrategy": "conversion",
             "targeBid": 1.0,
-
+      Create A NewAuctionLineitem using the NewAuctionLineitemTool.
+    Fetch the  list of Lineitems for the NewCampaign.id using the Auction Lineitems Tool.
+    Remember the list of Lineitems.
+    Use the FileWriterTool to write the list of Lineitems to the directory 'output' with the filename '{artist_name}_{year}_new_auction_lineitems.json'.
   expected_output: >
-    A JSON array of line items for the campaign.
+    A JSON array of AuctionLineitems.
 
 summary:
   description: >
@@ -164,7 +169,7 @@ summary:
     3. the new auction lineitems as a table with these columns: venue, concert date, seating capacity, budget amount, lineitem id, lineitem startDate and lineitem endDate
     4. A summary of the demographics for the artist.
 
-    Save the summery using the FileWriterTool.
+   
 
   expected_output: >
     A summary in markdown format.

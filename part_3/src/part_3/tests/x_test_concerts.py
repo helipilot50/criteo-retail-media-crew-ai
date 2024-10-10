@@ -31,7 +31,7 @@ def find_first_last_event(collection: List[Any]) -> Any:
     return {"first": earliest_object, "last": latest_object}
 
 
-def test_concert_dates():
+def x_test_concert_dates():
     fileReader = FileReadTool()
 
     concerts_file = fileReader._run(
@@ -49,7 +49,7 @@ def test_concert_dates():
     # print("first_last_event --> ", first_last_event)
 
 
-def test_concert_campaign():
+def x_test_concert_campaign():
     # tools
     concerts = ConcertsForArtistTool()
     fileWriter = FileWriterTool()

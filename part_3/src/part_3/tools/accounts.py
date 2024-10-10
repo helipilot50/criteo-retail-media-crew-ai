@@ -14,22 +14,21 @@ class AccountsTool(BaseTool):
     Attributes:
         name (str): The name of the tool ("Retail Media Accounts API Caller").
         description (str): The description of the tool ("Calls the Retail Media REST API and returns the Accounts accessible to the account manager").
-        base_url (str): The base URL for the API.
         token (str): The token for authentication.
     Methods:
         _run(): Fetches the Retail Media accounts and returns the relevant results.
     """
 
-    name: str = "Retail Media Accounts API Caller"
+    name: str = "Fetch Accounts Tool"
     description: str = (
-        "Calls the Retail Media  REST API and returns the Accounts accessable to the account manager"
+        "Fetch the Accounts accessable to the account manager"
     )
-    base_url: str = base_url_env
+    
 
     def _run(self, pageIndex: int = 0, pageSize: int = 25):
         """Useful to fetch my Retail Media acounts and return relevant results"""
 
-        url = self.base_url + "accounts"
+        url = base_url_env + "accounts"
         authHeader: str = "Bearer " + get_token()
         headers = {"Authorization": authHeader}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
@@ -59,13 +58,13 @@ class BrandsTool(BaseTool):
     description: str = (
         "Calls the Retail Media REST API and returns the Brands accessable to the account manager."
     )
-    base_url: str = base_url_env
+    
 
     def _run(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
         headers = {"Authorization": "Bearer " + get_token()}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
-            url=f"{self.base_url}accounts/{accountId}/brands",
+            url=f"{base_url_env}accounts/{accountId}/brands",
             headers=headers,
             params=params,
         )
@@ -93,13 +92,13 @@ class RetailersTool(BaseTool):
     description: str = (
         "Calls the Retail Media REST API and returns the Retailer  accessable to the account manager."
     )
-    base_url: str = base_url_env
+    
 
     def _run(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
         headers = {"Authorization": "Bearer " + get_token()}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
         response = requests.get(
-            url=f"{self.base_url}accounts/{accountId}/retailers",
+            url=f"{base_url_env}accounts/{accountId}/retailers",
             headers=headers,
             params=params,
         )
@@ -127,12 +126,12 @@ class BalancesTool(BaseTool):
     description: str = (
         "Calls the Retail Media REST API and returns the balances for the account."
     )
-    base_url: str = base_url_env
+    
 
     def _run(self, accountId: str):
         headers = {"Authorization": "Bearer " + get_token()}
         response = requests.get(
-            url=f"{self.base_url}accounts/{accountId}/balances",
+            url=f"{base_url_env}accounts/{accountId}/balances",
             headers=headers,
         )
         if response.status_code != 200:

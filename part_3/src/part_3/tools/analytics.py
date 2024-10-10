@@ -29,13 +29,12 @@ class CampaignAnalyticsTool(BaseTool):
     description: str = (
         "Calls the Retail Media  REST API and returns a report for the requested campaign id and date range"
     )
-    base_url: str = base_url_env
 
     def _run(self, campaignIds: List[str], startDate: str, endDate: str):
         print("campaignIds", campaignIds)
         print("startDate", startDate)
         print("endDate", endDate)
-        url = f"{self.base_url}reports/campaigns"
+        url = f"{base_url_env}reports/campaigns"
         # https://api.criteo.com/2024-01/retail-media/reports/campaigns
         headers = {
             "Authorization": "Bearer " + get_token(),
@@ -75,7 +74,6 @@ class LineitemAnalyticsTool(BaseTool):
     description: str = (
         "Calls the Retail Media  REST API and returns the analytic for the requested lineitems"
     )
-    base_url: str = base_url_env
 
     def _run(self, lineitemIds: List[str], startDate: str, endDate: str):
         headers = {"Authorization": "Bearer " + get_token()}
@@ -95,7 +93,7 @@ class LineitemAnalyticsTool(BaseTool):
         }
         response = requests.request(
             "POST",
-            f"{self.base_url}reports/line-items",
+            f"{base_url_env}reports/line-items",
             headers=headers,
             body=data,
         )
@@ -108,13 +106,12 @@ class ReportStatusTool(BaseTool):
     description: str = (
         "Calls the Retail Media  REST API and returns the status for the report using reportId"
     )
-    base_url: str = base_url_env
 
     def _run(self, reportId: str):
         headers = {"Authorization": "Bearer " + get_token()}
 
         response = requests.get(
-            f"{self.base_url}reports/{reportId}/status",
+            f"{base_url_env}reports/{reportId}/status",
             headers=headers,
         )
         print("status response", response)
@@ -126,14 +123,13 @@ class ReportDownloadTool(BaseTool):
     description: str = (
         "Calls the Retail Media  REST API to download a report using reportId"
     )
-    base_url: str = base_url_env
 
     def _run(self, reportId: str, path: str):
 
         headers = {"Authorization": "Bearer " + get_token}
         response = requests.request(
             "GET",
-            f"{self.base_url}reports/{reportId}/output",
+            f"{base_url_env}reports/{reportId}/output",
             headers=headers,
         )
         with open(path, "wb") as f:
