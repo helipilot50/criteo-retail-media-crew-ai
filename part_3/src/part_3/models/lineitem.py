@@ -132,9 +132,11 @@ class AuctionLineitem(BaseModel):
             return datetime.fromisoformat(value)
         if isinstance(value, datetime):
             return value
+        if isinstance(value, date):
+            return datetime(value.year, value.month, value.day)
         return value
 
-    @field_serializer("startDate", "endDate")
+    @field_serializer("startDate", "endDate", "createdAt", "updatedAt")
     def serialize_date_time(self, thedatetime: datetime) -> str:
         if thedatetime is None:
             return None

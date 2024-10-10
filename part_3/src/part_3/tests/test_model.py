@@ -1,7 +1,9 @@
 from datetime import datetime, date
 import json
 from part_3.models.lineitem import (
+    AuctionLineitem,
     LineitemBidStrategy,
+    LineitemList,
     LineitemStatus,
     NewAuctionLineitem,
 )
@@ -46,6 +48,42 @@ def test_new_auction_lineitem():
 
     result = do_something_with_lineitem(new_lineitem)
     assert result is not None
+
+def test_auction_lineitem_list():
+    fileWriter = FileWriterTool()
+    lineitems = LineitemList()
+    
+
+    for i in range(1,10):
+        a_datetime = datetime(year=2022, month=1, day=i)
+        assert a_datetime is not None
+        print("a_datetime --> ", a_datetime)
+        new_lineitem = AuctionLineitem(
+            name=f"test_{i}",
+            startDate=a_datetime,
+            status=LineitemStatus.draft,
+            targetRetailerId="test",
+            bidStrategy=LineitemBidStrategy.clicks,
+            isAutoDailyPacing=False,
+            campaignId="1234567890",
+            id="314159_" + str(i),
+            budgetSpent=1000.0,
+            budgetRemaining=500,
+            createdAt=a_datetime,
+            updatedAt=a_datetime,
+        )
+        assert new_lineitem is not None
+        lineitems.lineitems.append(new_lineitem)
+    lineitems.totalItems = len(lineitems.lineitems)
+
+    fileWriter._run(
+        directory="output",
+        filename=f"test_model_auction_lineitem_list.json",
+        content=json.dumps(lineitems.model_dump(), indent=2),
+        overwrite=True,
+    )   
+    
+    
 
 
 def test_new_campaign():

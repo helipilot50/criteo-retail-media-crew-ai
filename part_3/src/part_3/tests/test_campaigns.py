@@ -132,12 +132,12 @@ def test_new_campaign():
     assert lineitems_list is not None
 
     assert len(lineitems_list.lineitems) > 0
-    # fileWriter._run(
-    #     directory="output",
-    #     filename=f"test_{theCampaign.id}_lineitems.json",
-    #     content=json.dumps(lineitems_list.model_dump(), indent=2),
-    #     overwrite=True,
-    # )
+    fileWriter._run(
+        directory="output",
+        filename=f"test_{theCampaign.id}_lineitems.json",
+        content=json.dumps(lineitems_list.model_dump(), indent=2),
+        overwrite=True,
+    )
 
 
 # def test_new_campaign_for_concert_tour():
