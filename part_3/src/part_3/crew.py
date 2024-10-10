@@ -187,7 +187,7 @@ class Part3Crew:
                 self.create_campaign(),
                 self.formulate_lineitem_budget(),
             ],
-            tools=[FileReadTool(), NewAuctionLineitemTool(), AuctionLineitemsTool()],
+            tools=[NewAuctionLineitemTool(), AuctionLineitemsTool()],
             # human_input=True,
         )
 
