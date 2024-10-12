@@ -10,6 +10,7 @@ from crewai_tools import (
     DirectoryReadTool,
 )
 import json
+import logging
 
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
@@ -106,7 +107,9 @@ class NewCampaignTool(BaseTool):
     )
 
     def _run(self, accountId: str, campaign: NewCampaign) -> Campaign:
-        fileWriter = FileWriterTool()
+        logger = logging.getLogger("crewai_logger")
+        logger.info(f"[NewCampaignTool] Calling API with accountId: {accountId} and campaign: {campaign}")
+        
 
         body = dict(
             data=dict(
@@ -125,9 +128,5 @@ class NewCampaignTool(BaseTool):
         data = response.json()["data"]
         flat = flatten(data)
         theCampaign = Campaign(**flat)
-        fileWriter._run(
-            content=json.dumps(theCampaign.model_dump(), indent=2),
-            directory="output",
-            filename=f"t_{theCampaign.id}_campaign.json",
-            overwrite=True)
+        logger.info(f"[NewCampaignTool] Campaign created {json.dumps(theCampaign.model_dump(), indent=2)}")
         return theCampaign

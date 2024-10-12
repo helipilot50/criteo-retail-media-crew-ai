@@ -1,13 +1,12 @@
 accounts:
   description: >
-    Retrieve a list of accounts available to this user. 
-    Use the Retail Media REST API and remember the result. 
+    Fetch the accounts available to the account manager. 
     The results are paginated, so you may need to make multiple requests, 
     do not make more than the total number of pages.
   expected_output: >
     A list of accounts available to this user formatted as a table in Markdown. 
     Here is an example of the expected output:
-    | Retailer ID | Name |	Type | Subtype | Countries | Currency | Parent Account Label | Time Zone | Company Name |
+    | Account ID | Name |	Type | Subtype | Countries | Currency | Parent Account Label | Time Zone | Company Name |
   agent: account_manager
 
 brands:

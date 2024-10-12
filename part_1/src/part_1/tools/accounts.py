@@ -20,7 +20,7 @@ class AccountsTool(BaseTool):
         _run(): Fetches the Retail Media accounts and returns the relevant results.
     """
     name: str = "Retail Media Accounts API Caller"
-    description: str = "Calls the Retail Media  REST API and returns the Accounts accessable to the account manager"
+    description: str = "Fetch the Accounts accessable to the account manager"
     base_url:str = base_url_env
     
     def _run(self, pageIndex:int=0, pageSize:int=25):

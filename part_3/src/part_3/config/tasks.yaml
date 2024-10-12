@@ -1,14 +1,13 @@
-account:
+accounts:
   description: >
-    Fetch a list of accounts using the FetchAccountsTool.
-    Remember the result as [AccountList].
-    Do not hallucinate.
-    Do not fabricate data.
-    Use the {account_id} to find the account in [AccountList]
-    Remember the account as [Account].
+    Fetch the accounts available to the account manager. 
+    The results are paginated, so you may need to make multiple requests, start with pageIndex 0 and increment the pageIndex until you reach the last page.
+    do not make more than the total number of pages.
   expected_output: >
-    [Account] formated as a JSON object.
-  agent: account_manager
+    A list of accounts available to this user formatted as a table in Markdown. 
+    Here is an example of the expected output:
+    | Account ID | Name |	Type | Subtype | Countries | Currency | Parent Account Label | Time Zone | Company Name |
+ 
 
 campaigns:
   description: >
@@ -48,7 +47,6 @@ formulate_lineitem_budget:
     Express the budget in USD.
     Follow these steps:
     1. Use the venue budget calculator to calculate the budget for each venue, using the total bugdet and the seating capacity of the venue.
-    2. Use the FileWriterTool to write the result as a json object to the directory 'output' with the file name '{artist_name}_{year}_lineitems_budget.json' .
   expected_output: >
     A JSON object with the budget for the lineitems.
 

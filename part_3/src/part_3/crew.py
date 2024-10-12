@@ -3,15 +3,12 @@ from typing import Any
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import (
-    FileReadTool,
     FileWriterTool,
-    DirectoryReadTool,
 )
 
-from langchain_openai import AzureChatOpenAI
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
-from part_3.tools.campaigns import AccountCampaignsTool, CampaignTool, NewCampaignTool
+from part_3.tools.campaigns import CampaignTool, NewCampaignTool
 from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.search import InternetSearch
 
@@ -53,7 +50,10 @@ class Part3Crew:
         return Agent(
             config=self.agents_config["account_manager"],
             llm=self.llm,
+            vernose=True,
+            tools=[AccountsTool()],
         )
+    
 
     @agent
     def campaign_manager(self) -> Agent:
@@ -85,7 +85,7 @@ class Part3Crew:
             # callbacks=[callback_handler],
             verbose=True,
             llm=self.llm,
-        )
+    )
 
     @agent
     def campaign_budget_agent(self) -> Agent:
@@ -149,17 +149,16 @@ class Part3Crew:
             # output_json=True,
             agent=self.campaign_budget_agent(),
             context=[self.find_concert_venues()],
-            tools=[venue_budget_calculator, self.fileWriter],
+            tools=[venue_budget_calculator],
         )
 
     @task
     def account(self) -> Task:
         return Task(
-            config=self.tasks_config["account"],
-            output_file=f"output/{self.artist_name}_account.json",
+            config=self.tasks_config["accounts"],
+            output_file=f"output/{self.artist_name}_accounts.md",
             agent=self.account_manager(),
-            tools=[AccountsTool()],
-            asynch=True,
+            verbose=True,
         )
 
     @task
@@ -173,8 +172,8 @@ class Part3Crew:
                 calculate_monthly_pacing,
                 NewCampaignTool(),
                 CampaignTool(),
-                self.fileWriter,
             ],
+            verbose=True,
         )
 
     @task
@@ -205,7 +204,7 @@ class Part3Crew:
                 self.find_concert_venues(),
                 self.create_campaign(),
                 self.formulate_lineitem_budget(),
-                self.create_lineitems(),
+                # self.create_lineitems(),
             ],
             
         )
@@ -219,7 +218,7 @@ class Part3Crew:
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
-            process=Process.hierarchical,
+            # process=Process.hierarchical,
             manager_llm=self.llm,
             verbose=True,
             # memory=True, #causes weird python error with sqllite.py line 88
