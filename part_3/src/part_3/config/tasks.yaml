@@ -58,12 +58,13 @@ create_campaign:
     The campaign name is the {artist_name}, the {year}, the date of the first concert and the date of the last concert.
     The start date of the campaign should be 60 days before the first concert.
     The end date of the campaign should be the date of the last concert.
+    startDate and endDate should be in the format "YYYY-MM-DD"
     The budget is the {digital_advertising_budget}.
     The monthlyPacing is calculated using the calculate monthly pacing tool.
     Include the campaign name, the campaign start date, the campaign end date, the campaign budget.
 
     Remember the new campaign as [newCampaign] 
-    Example campaign input data:
+    Example campaign fields data:
               "name": "{artist_name} Concert Tour {year}",
               "startDate": "2025-01-01",
               "endDate": "2025-12-31",
@@ -89,9 +90,10 @@ create_lineitems:
     Use the new campaign id to create line items for the campaign.
     For each concert, create a NewAcutionLineitemm using the NewAuctionLineitemTool, with the following attributes:
       name: {artist_name} {year} - venue, city, country - concert date
-      budget: budget amount gor the venue
+      budget: budget amount for the venue
       startDate: 90 days before the concert date
       endDate: 1 day before concert date
+      startDate and endDate should be in the format "YYYY-MM-DD"
       campaignId: [newCampaign].id
       status: draft
       Example input data for a NewAuctionLineitem: 
@@ -115,7 +117,7 @@ summary:
     Provide a summary of the campaign.
     Include:
     
-    1. the new campaign: id, name, start date, end date, total budget.
+    1. use [newCampaign] id, name, start date, end date, total budget.
     2. Format the [LineitemList] as a table with these columns: lineitem name, budget amount, lineitem id, lineitem startDate and lineitem endDate
     3. A summary of the demographics for the artist.
 
