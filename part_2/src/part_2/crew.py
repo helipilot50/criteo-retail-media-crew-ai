@@ -35,9 +35,9 @@ class Part2Crew:
 
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
-    llm:LLM = None
+    llm: LLM = None
 
-    def __init__(self):
+    def __init__(self, inputs: dict):
         """
         Initializes the Crew class with an instance of the LLM model.
         Attributes:
@@ -47,15 +47,22 @@ class Part2Crew:
                 - base_url (str): The base URL for the API, set to "https://api.groq.com/openai/v1".
                 - api_key (str): The API key for authentication, retrieved from the environment variable "GROQ_API_KEY".
         """
-        self.llm = LLM(
-			model="groq/llama-3.1-8b-instant",
-			temperature=0.7,
-			base_url="https://api.groq.com/openai/v1",
-			api_key=os.environ["GROQ_API_KEY"],
-		)
+        if inputs["groq_or_azure"] == "groq":
+            self.llm = LLM(
+                model="groq/llama-3.1-8b-instant",
+                temperature=0.7,
+                base_url="https://api.groq.com/openai/v1",
+                api_key=os.environ["GROQ_API_KEY"],
+            )
+        else:
+            self.llm = LLM(
+                model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
+                temperature=0.5,
+                base_url=os.environ["AZURE_API_BASE"],
+                api_key=os.environ["AZURE_API_KEY"],
+                verbose=True,
+            )
 
-    
-    
     """
     Creates and returns an instance of the Agent class configured as a campaign manager.
 
@@ -66,6 +73,7 @@ class Part2Crew:
     Returns:
         Agent: An instance of the Agent class configured as a campaign manager.
     """
+
     @agent
     def campaign_manager(self) -> Agent:
         config = self.agents_config["campaign_manager"]
@@ -75,27 +83,22 @@ class Part2Crew:
             memory=True,
         )
 
-    
-    
-    
     @agent
     def visualizer_agent(self) -> Agent:
         """
         Creates and returns a visualizer agent.
 
-        The visualizer agent is configured using the settings from the 
-        'visualizer_agent' section of the agents configuration. It is equipped 
+        The visualizer agent is configured using the settings from the
+        'visualizer_agent' section of the agents configuration. It is equipped
         with tools for generating pie charts and bar charts.
 
         Returns:
             Agent: An instance of the Agent class configured with visualization tools.
         """
-    
+
         config = self.agents_config["visualizer_agent"]
         return Agent(
-            config=config,
-            tools=[PieChartTool(), BarChartTool()],
-            llm=self.llm
+            config=config, tools=[PieChartTool(), BarChartTool()], llm=self.llm
         )
 
     @agent
@@ -103,9 +106,9 @@ class Part2Crew:
         """
         Creates and returns an instance of the campaign reporter agent.
 
-        This agent is configured using the settings specified in the 
-        `agents_config` dictionary under the key "campaign_reporter_agent". 
-        It is equipped with tools for reading directories and files, 
+        This agent is configured using the settings specified in the
+        `agents_config` dictionary under the key "campaign_reporter_agent".
+        It is equipped with tools for reading directories and files,
         and utilizes the specified language model (llm).
 
         Returns:
@@ -113,9 +116,7 @@ class Part2Crew:
         """
         config = self.agents_config["campaign_reporter_agent"]
         return Agent(
-            config=config,
-            tools=[DirectoryReadTool(), FileReadTool()],
-            llm=self.llm
+            config=config, tools=[DirectoryReadTool(), FileReadTool()], llm=self.llm
         )
 
     @task
@@ -124,8 +125,8 @@ class Part2Crew:
         Creates and returns a Task for fetching campaigns.
 
         This method initializes a Task object configured to fetch campaign data.
-        The task is set up with specific configurations, output file location, 
-        tools required for the task, the agent responsible for managing the campaigns, 
+        The task is set up with specific configurations, output file location,
+        tools required for the task, the agent responsible for managing the campaigns,
         and the expected output format.
 
         Returns:
@@ -146,10 +147,10 @@ class Part2Crew:
         """
         Creates a Task to generate a pie chart visualizing campaign budgets.
 
-        This method configures a Task using the "campaigns_budget_pie_chart" 
-        settings from the tasks configuration. It utilizes the PieChartTool 
-        for creating the pie chart and the visualizer agent for rendering. 
-        The context is enhanced by including the result of the fetch_campaigns_task 
+        This method configures a Task using the "campaigns_budget_pie_chart"
+        settings from the tasks configuration. It utilizes the PieChartTool
+        for creating the pie chart and the visualizer agent for rendering.
+        The context is enhanced by including the result of the fetch_campaigns_task
         method to ensure consistency.
 
         Returns:
@@ -161,7 +162,7 @@ class Part2Crew:
                 PieChartTool(),
             ],
             agent=self.visualizer_agent(),
-            context=[self.fetch_campaigns_task()], # context improves consistency
+            context=[self.fetch_campaigns_task()],  # context improves consistency
         )
 
     @task
@@ -178,10 +179,10 @@ class Part2Crew:
             output_file="output/campaigns_report.md",
             agent=self.campaign_reporter_agent(),
             asynch=True,
-            context=[ # context improves consistency
+            context=[  # context improves consistency
                 self.fetch_campaigns_task(),
                 self.campaigns_budget_pie_chart(),
-            ],  
+            ],
         )
 
     @crew
@@ -192,7 +193,7 @@ class Part2Crew:
             Crew: An instance of the Crew class initialized with the current
                   agents, tasks, and other parameters.
         """
-        
+
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
