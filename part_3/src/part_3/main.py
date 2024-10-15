@@ -9,14 +9,18 @@ load_dotenv()
 """
 LLM service chooser
 """
+
+
 def display_menu(options):
-    print("Please select an option:")
+    print("Please select an LLM:")
     for i, option in enumerate(options, 1):
         print(f"{i}. {option}")
+
+
 def get_user_choice(options, default=None):
     while True:
         try:
-            choice = input(f"Enter the number of your choice (default is {default}): ")
+            choice = input(f"Enter the number of your LLM (default is {default}): ")
             if choice == "" and default is not None:
                 return options[default - 1]
             choice = int(choice)
@@ -32,20 +36,24 @@ def get_user_choice(options, default=None):
 artist_name = input("Enter the artist name (default: 'Ed Sheeran'): ") or "Ed Sheeran"
 year = input("Enter the year (Default: 2025): ") or "2025"
 account_id = input("Enter the account id (Default: 4): ") or 4
-digital_advertising_budget = input("Enter the digital advertising budget (Default: 500000): ") or 500000
+digital_advertising_budget = (
+    input("Enter the digital advertising budget (Default: 500000): ") or 500000
+)
 
-options = ["azure", "groq"]
+options = ["groq", "azure"]
 display_menu(options)
 groq_or_azure = get_user_choice(options, default=1)
-# goodgroq_or_azure = input("Groq or Azure (Default: 'Azure'): ") or "azure"
 
-inputs = {"account_id": account_id, 
-          "artist_name": artist_name, 
-          "year": year, 
-          "digital_advertising_budget": digital_advertising_budget,
-          "groq_or_azure": groq_or_azure.lower()}
+inputs = {
+    "account_id": account_id,
+    "artist_name": artist_name,
+    "year": year,
+    "digital_advertising_budget": digital_advertising_budget,
+    "groq_or_azure": groq_or_azure.lower(),
+}
 
 print(f"Inputs: {inputs}")
+
 
 def run():
     """

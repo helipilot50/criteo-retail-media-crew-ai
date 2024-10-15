@@ -12,7 +12,7 @@ LLM service chooser
 
 
 def display_menu(options):
-    print("Please select an option:")
+    print("Please select an LLM:")
     for i, option in enumerate(options, 1):
         print(f"{i}. {option}")
 
@@ -20,7 +20,7 @@ def display_menu(options):
 def get_user_choice(options, default=None):
     while True:
         try:
-            choice = input(f"Enter the number of your choice (default is {default}): ")
+            choice = input(f"Enter the number of your LLM (default is {default}): ")
             if choice == "" and default is not None:
                 return options[default - 1]
             choice = int(choice)
