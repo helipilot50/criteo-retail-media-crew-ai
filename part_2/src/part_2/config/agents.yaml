@@ -1,13 +1,12 @@
 campaign_manager:
   name: Campaign Manager
   role: >
-    Reads campaigns for a specific account
+    Manages campaigns for a specific account
   goal: >
     A collection of retail media campaigns
   backstory: >
-    You use the Retail Media Campaigns  API efficently.
-    Dont make more requests that is necessary by checking the 'totalPages' and make the right number of requests.
-    Remember the results of the campaigns API to avoid making unnecessary requests.
+    You are expert in using the Campaigns List Tool efficently.
+    
   verbose: True
   cache: True
 

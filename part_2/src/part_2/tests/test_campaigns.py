@@ -1,13 +1,13 @@
 import json
 from part_2.tools.accounts import AccountsTool
-from part_2.tools.campaigns import CampaignsTool
+from part_2.tools.campaigns import AccountCampaignsTool
 from crewai_tools import FileWriterTool, FileReadTool, DirectoryReadTool, DirectorySearchTool
 
 
 def test_campaigns():
     # tools
     accounts = AccountsTool()
-    campaigns = CampaignsTool()
+    campaigns = AccountCampaignsTool()
     fileWriter = FileWriterTool()
 
     accounts_api_result = accounts._run()
@@ -19,13 +19,11 @@ def test_campaigns():
     assert account_id is not None
 
     
-    campaigns_api_result = campaigns._run(accountId=account_id)
-    assert campaigns_api_result is not None
-    assert campaigns_api_result["data"] is not None
-    assert len(campaigns_api_result["data"]) > 0
-    data = campaigns_api_result["data"]
-    data = { "total":len(data),"campaigns": data }
+    campaigns_tool_result = campaigns._run(accountId=account_id, pageIndex=0, pageSize=100)
+    assert campaigns_tool_result is not None
+    assert len(campaigns_tool_result.campaigns) > 0
     
-    fileWriter._run(directory='output', filename=f'test_{account_id}_campaigns.json', content=json.dumps(data, indent=2), overwrite=True)
+    
+    fileWriter._run(directory='output', filename=f'test_{account_id}_campaigns.json', content=json.dumps(campaigns_tool_result.model_dump(), indent=2), overwrite=True)
     
 

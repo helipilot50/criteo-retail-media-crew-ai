@@ -1,17 +1,15 @@
 fetch_campaigns_task:
   description: >
-    Get a collection campaigns for account {account_id}.
-    Use the pageIndex and pageSize parameters to get all campaigns for the account.
-    Do not make more API calls than necessary.
-    Reformat each campaign by removing the 'type' field, remap the fields  in 'attributes' to the root level, then remove the 'attributes' field.
+    Get the first 100 campaigns for account {account_id} using the Campaigns List Tool.
+    Start with page 0 and page size 100.
+    Remember the results as [CampaignsList] in the cache.
     If the budget field is missing, set it to 0.0,
-    Do not use "```json" or "```" in the output.
   expected_output: >
-    A collection of campaigns for the account formatted as JSON.
+    A list of campaigns remembered as [CampaignList].
 
 campaigns_budget_pie_chart:
   description: >
-    Create a pie chart from the data in the campaigns collection.
+    Create a pie chart from the data in the [CampaignList].
     The 'labels' should be the 'name' field for each campaign.
     The 'title' should be 'Campaign Budgets for Account {account_id}'.
     The 'file_name' should be 'campaign_budget_pie_chart.png'.
@@ -21,7 +19,7 @@ campaigns_budget_pie_chart:
 
 campaigns_report:
   description: >
-    Create a report in Markdown format, with the data from the campaigns collection.
+    Create a report in Markdown format, with the data from the [CampaignList].
     The report should show a table with the campaign name, start date, budget, and budgetSpent.
     The report should include a pie chart of the campaign budgets. Use only the file name of the pie chart, do not include the path.
     The 'title' should be Campaign Budget Report for Account {account_id}.

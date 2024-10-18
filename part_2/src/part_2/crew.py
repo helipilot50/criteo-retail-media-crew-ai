@@ -5,28 +5,11 @@ from crewai_tools import (
     FileReadTool,
     DirectoryReadTool,
 )
-from pydantic import BaseModel, Field
-from typing import List, Optional
 
+
+from part_2.models.campaign import CampaignList
 from part_2.tools.charts import BarChartTool, PieChartTool
-from part_2.tools.campaigns import CampaignsTool
-
-
-class Campaign(BaseModel):
-    """Campaign model"""
-
-    id: str = Field(..., description="ID of the campaign")
-    name: str = Field(..., description="Name of the campaign")
-    budget: float = Field(..., description="Budget of the campaign")
-    budgetSpent: float = Field(..., description="Budget spent of the campaign")
-    startDate: str = Field(..., description="Start date of the campaign")
-    status: str = Field(..., description="Status of the campaign")
-    type: str = Field(..., description="Type of the campaign")
-
-
-class CampaignList(BaseModel):
-    campaigns: List[Campaign] = Field(..., description="Campaigns collection")
-    totalItems: int = Field(..., description="Total items in the collection")
+from part_2.tools.campaigns import AccountCampaignsTool
 
 
 @CrewBase
@@ -50,14 +33,14 @@ class Part2Crew:
         if inputs["groq_or_azure"] == "groq":
             self.llm = LLM(
                 model="groq/llama-3.1-8b-instant",
-                temperature=0.7,
+                temperature=0.4,
                 base_url="https://api.groq.com/openai/v1",
                 api_key=os.environ["GROQ_API_KEY"],
             )
         else:
             self.llm = LLM(
                 model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                temperature=0.5,
+                temperature=0.4,
                 base_url=os.environ["AZURE_API_BASE"],
                 api_key=os.environ["AZURE_API_KEY"],
                 verbose=True,
@@ -116,7 +99,9 @@ class Part2Crew:
         """
         config = self.agents_config["campaign_reporter_agent"]
         return Agent(
-            config=config, tools=[DirectoryReadTool(), FileReadTool()], llm=self.llm
+            config=config, 
+            tools=[DirectoryReadTool(), FileReadTool()], 
+            llm=self.llm
         )
 
     @task
@@ -136,7 +121,7 @@ class Part2Crew:
             config=self.tasks_config["fetch_campaigns_task"],
             output_file="output/campaigns.json",
             tools=[
-                CampaignsTool(),
+                AccountCampaignsTool(),
             ],
             agent=self.campaign_manager(),
             output_json=CampaignList,
@@ -178,7 +163,7 @@ class Part2Crew:
             config=self.tasks_config["campaigns_report"],
             output_file="output/campaigns_report.md",
             agent=self.campaign_reporter_agent(),
-            asynch=True,
+            # asynch=True,
             context=[  # context improves consistency
                 self.fetch_campaigns_task(),
                 self.campaigns_budget_pie_chart(),
