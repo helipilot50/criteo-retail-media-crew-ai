@@ -1,11 +1,12 @@
+![CrewAI and Criteo](../images/crewai-criteo-transparent.png)
 # Part 2 Crew [WORK IN PROGRESS]
 
 Welcome to the Part2 Crew project, powered by [crewAI](https://crewai.com).
 
 This part creates a Crew to:
 
-1. Revrive campaigns that have a budget
-2. Create a pie chart with using the campaign budget infromation
+1. Retrieve campaigns for an account
+2. Use campaigns with a budget to create a pie chart with using the campaign budget
 3. Create a report about the campaigns budget, including the chart
 
 ## Installation
