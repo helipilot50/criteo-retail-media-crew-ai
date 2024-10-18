@@ -3,6 +3,8 @@ name = "part_1"
 version = "0.1.0"
 description = "part-1 using crewAI"
 authors = ["Peter Milne <helipilot50@gmail.com>"]
+license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<=3.13"
