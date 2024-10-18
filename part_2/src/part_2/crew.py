@@ -33,14 +33,15 @@ class Part2Crew:
         if inputs["groq_or_azure"] == "groq":
             self.llm = LLM(
                 model="groq/llama-3.1-8b-instant",
-                temperature=0.4,
+                temperature=0.2,
                 base_url="https://api.groq.com/openai/v1",
                 api_key=os.environ["GROQ_API_KEY"],
+                verbose=True,
             )
         else:
             self.llm = LLM(
                 model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                temperature=0.4,
+                temperature=0.2,
                 base_url=os.environ["AZURE_API_BASE"],
                 api_key=os.environ["AZURE_API_KEY"],
                 verbose=True,
@@ -124,7 +125,6 @@ class Part2Crew:
                 AccountCampaignsTool(),
             ],
             agent=self.campaign_manager(),
-            output_json=CampaignList,
         )
 
     @task
