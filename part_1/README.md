@@ -32,24 +32,37 @@ poetry install
 
 ### Customizing
 
-**Add your `OPENAI_API_KEY` into the `.env` file**
+**Add these environment variables into the `.env` file**
+```
+CRITEO_CLIENT_ID=
+CRITEO_CLIENT_SECRET=
 
-- Modify `src/part_1/config/agents.yaml` to define your agents
-- Modify `src/part_1/config/tasks.yaml` to define your tasks
-- Modify `src/part_1/crew.py` to add your own logic, tools and specific args
-- Modify `src/part_1/main.py` to add custom inputs for your agents and tasks
+RETAIL_MEDIA_API_URL=https://api.criteo.com/2024-07/retail-media/
+
+# only if you use Azure
+AZURE_OPENAI_API_KEY=
+ZURE_OPENAI_DEPLOYMENT=
+AZURE_API_KEY=
+AZURE_API_BASE=
+AZURE_API_VERSION=
+
+# only if you use GROQ
+GROQ_API_KEY=
+```
 
 ## Running the Project
 
 To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
 
 ```bash
+$ poetry shell
 $ crewai run
 ```
 
 or
 
 ```bash
+$ poetry shell
 poetry run part_1
 ```
 
@@ -59,15 +72,6 @@ This example, unmodified, will run the create a `report.md` file with the output
 
 ## Understanding Your Crew
 
-The part-1 Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
+The part-1 Crew is composed of a single AI agents, with unique roles, goals, and tools. These agent performs on a series of tasks, defined in `config/tasks.yaml`, leveraging it's skills to achieve complex objective. The `config/agents.yaml` file outlines the capabilities and configurations of the agent in the crew.
 
-## Support
 
-For support, questions, or feedback regarding the Part1 Crew or crewAI.
-
-- Visit our [documentation](https://docs.crewai.com)
-- Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
-- [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with our docs](https://chatg.pt/DWjSBZn)
-
-Let's create wonders together with the power and simplicity of crewAI.
