@@ -51,6 +51,8 @@ AZURE_API_VERSION=
 GROQ_API_KEY=
 ```
 
+
+
 ## Running the Project
 
 To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
@@ -75,4 +77,12 @@ This example, unmodified, will run the create a `report.md` file with the output
 
 The part-1 Crew is composed of a single AI agents, with unique roles, goals, and tools. These agent performs on a series of tasks, defined in `config/tasks.yaml`, leveraging it's skills to achieve complex objective. The `config/agents.yaml` file outlines the capabilities and configurations of the agent in the crew.
 
+## References
 
+Reference materials used to create this example:
+
+- Criteo Retail Media API [documentation](https://developers.criteo.com/retail-media/docs/welcome-to-criteo)
+- CrewAI [documentation](https://docs.crewai.com)
+- CrewAI [GitHub repository](https://github.com/joaomdmoura/crewai)
+- Pydantic [documentation](https://docs.pydantic.dev/latest/)
+- Poetry [documentation](https://python-poetry.org/docs/)
