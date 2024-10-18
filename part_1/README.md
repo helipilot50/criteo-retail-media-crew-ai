@@ -1,3 +1,4 @@
+![CrewAI and Criteo](../images/crewai-criteo-transparent.png)
 # Part1 Crew
 
 Welcome to the Part 1 of the Criteo Retail Media API, powered by [crewAI](https://crewai.com). This is a simple example showing how to:
