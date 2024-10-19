@@ -50,7 +50,7 @@ class AccountCampaignsTool(BaseTool):
 
         for campaign_element in response_body["data"]:
             flat = flatten(campaign_element)
-            print("flat campaign --> ", flat)
+            # print("flat campaign --> ", flat)
             campaign = Campaign(**flat)
             the_campaigns.campaigns.append(campaign)
 

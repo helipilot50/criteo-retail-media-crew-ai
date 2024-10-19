@@ -19,9 +19,13 @@ def test_campaigns():
     assert account_id is not None
 
     
-    campaigns_tool_result = campaigns._run(accountId=account_id, pageIndex=0, pageSize=100)
+    campaigns_tool_result = campaigns._run(accountId=account_id, pageIndex=0, pageSize=1000)
     assert campaigns_tool_result is not None
     assert len(campaigns_tool_result.campaigns) > 0
+    campaigns_tool_result_1 = campaigns._run(accountId=account_id, pageIndex=1, pageSize=1000)
+    assert campaigns_tool_result_1 is not None
+    
+    campaigns_tool_result.campaigns.extend(campaigns_tool_result_1.campaigns)
     
     
     fileWriter._run(directory='output', filename=f'test_{account_id}_campaigns.json', content=json.dumps(campaigns_tool_result.model_dump(), indent=2), overwrite=True)

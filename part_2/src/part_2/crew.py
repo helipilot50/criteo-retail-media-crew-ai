@@ -33,7 +33,7 @@ class Part2Crew:
         if inputs["groq_or_azure"] == "groq":
             self.llm = LLM(
                 model="groq/llama-3.1-8b-instant",
-                temperature=0.2,
+                temperature=0.1,
                 base_url="https://api.groq.com/openai/v1",
                 api_key=os.environ["GROQ_API_KEY"],
                 verbose=True,
@@ -41,7 +41,7 @@ class Part2Crew:
         else:
             self.llm = LLM(
                 model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                temperature=0.2,
+                temperature=0.1,
                 base_url=os.environ["AZURE_API_BASE"],
                 api_key=os.environ["AZURE_API_KEY"],
                 verbose=True,
@@ -120,7 +120,7 @@ class Part2Crew:
         """
         return Task(
             config=self.tasks_config["fetch_campaigns_task"],
-            output_file="output/campaigns.json",
+            output_file="output/campaigns.py",
             tools=[
                 AccountCampaignsTool(),
             ],
@@ -150,25 +150,25 @@ class Part2Crew:
             context=[self.fetch_campaigns_task()],  # context improves consistency
         )
 
-    @task
-    def campaigns_report(self) -> Task:
-        """
-        Generates a Task for creating a campaigns report.
-        This is a simple example of a markdown report that lists the campaigns.
+    # @task
+    # def campaigns_report(self) -> Task:
+    #     """
+    #     Generates a Task for creating a campaigns report.
+    #     This is a simple example of a markdown report that lists the campaigns.
 
-        Returns:
-            Task: A Task object configured to generate a campaigns report.
-        """
-        return Task(
-            config=self.tasks_config["campaigns_report"],
-            output_file="output/campaigns_report.md",
-            agent=self.campaign_reporter_agent(),
-            # asynch=True,
-            context=[  # context improves consistency
-                self.fetch_campaigns_task(),
-                self.campaigns_budget_pie_chart(),
-            ],
-        )
+    #     Returns:
+    #         Task: A Task object configured to generate a campaigns report.
+    #     """
+    #     return Task(
+    #         config=self.tasks_config["campaigns_report"],
+    #         output_file="output/campaigns_report.md",
+    #         agent=self.campaign_reporter_agent(),
+    #         # asynch=True,
+    #         context=[  # context improves consistency
+    #             self.fetch_campaigns_task(),
+    #             self.campaigns_budget_pie_chart(),
+    #         ],
+    #     )
 
     @crew
     def crew(self) -> Crew:
