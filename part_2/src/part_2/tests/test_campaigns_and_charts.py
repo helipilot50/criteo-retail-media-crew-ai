@@ -19,20 +19,19 @@ def test_campaigns_pie_chart():
     account_id = accounts_api_result["data"][0]["id"]
     assert account_id is not None
 
-    the_campaigns = campaigns._run(accountId=account_id, pageIndex=0, pageSize=1000)
+    the_campaigns = campaigns._run(accountId=account_id, pageIndex=0, pageSize=100)
     assert the_campaigns is not None
     assert len(the_campaigns.campaigns) > 0
-    campaigns_tool_result_1 = campaigns._run(accountId=account_id, pageIndex=1, pageSize=1000)
-    assert campaigns_tool_result_1 is not None
-
-    the_campaigns.campaigns.extend(campaigns_tool_result_1.campaigns)
+  
 
     fileWriter._run(directory='output', filename=f'test_{account_id}_campaigns.json', content=json.dumps(the_campaigns.model_dump(), indent=2), overwrite=True)
 
     assert os.path.exists(f'output/test_{account_id}_campaigns.json')
     
-    labels = list(map(lambda x: x.name, the_campaigns.campaigns))
-    values = list(map(lambda x: x.budget or 0, the_campaigns.campaigns))
+    campaigns_with_budget = list(filter(lambda x: x.budget is not None, the_campaigns.campaigns))
+    print("campaigns_with_budget", len(campaigns_with_budget))
+    labels = list(map(lambda x: x.name, campaigns_with_budget))
+    values = list(map(lambda x: x.budget, campaigns_with_budget))
     # create a pie chart
     pie = PieChartTool()
     chart = pie._run(
