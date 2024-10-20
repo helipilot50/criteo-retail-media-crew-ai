@@ -2,8 +2,9 @@ fetch_campaigns_task:
   description: >
     Get the first 100 campaigns for account {account_id} using the Campaigns List Tool.
     Start with page 0 and page size 100.
+    If the budget field of a Campaign is null or zero remove the list
+    of campaigns from the response.
     Remember the results as [CampaignsList] in the cache.
-    If the budget field is null, set it to 0.0,
   expected_output: >
     A list of campaigns remembered as [CampaignList].
 
@@ -20,9 +21,12 @@ campaigns_budget_pie_chart:
 campaigns_report:
   description: >
     Create a report in Markdown format, with the data from the [CampaignList].
+    Describe the results of the campaign list. 
     The report should show a table with the campaign name, start date, status, budget, and budgetSpent.
     The report should include a pie chart of the campaign budgets. Use only the file name of the pie chart, do not include the path.
     The 'title' should be Campaign Budget Report for Account {account_id}.
+    Include a total budget and total budget spent at the end of the report.
+    Include a summary of the report at the end.
     do not use "```markdown" or "```" in the markdown file.
   expected_output: >
     A markdown file with the report.

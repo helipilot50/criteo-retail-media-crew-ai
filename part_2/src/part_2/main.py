@@ -57,7 +57,7 @@ def train():
     Train the crew for a given number of iterations.
     """
     try:
-        Part2Crew().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2])
+        Part2Crew(inputs=inputs).crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
 
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
@@ -68,7 +68,7 @@ def replay():
     Replay the crew execution from a specific task.
     """
     try:
-        Part2Crew().crew().replay(task_id=sys.argv[1])
+        Part2Crew(inputs=inputs).crew().replay(task_id=sys.argv[1], inputs=inputs)
 
     except Exception as e:
         raise Exception(f"An error occurred while replaying the crew: {e}")
@@ -79,8 +79,8 @@ def test():
     Test the crew execution and returns the results.
     """
     try:
-        Part2Crew().crew().test(
-            n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2]
+        Part2Crew(inputs=inputs).crew().test(
+            n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs
         )
 
     except Exception as e:

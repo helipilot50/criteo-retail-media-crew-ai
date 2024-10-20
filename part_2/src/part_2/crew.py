@@ -6,8 +6,7 @@ from crewai_tools import (
     DirectoryReadTool,
 )
 
-
-from part_2.models.campaign import CampaignList
+from part_2.tools.calculator_tools import SumListTool
 from part_2.tools.charts import BarChartTool, PieChartTool
 from part_2.tools.campaigns import AccountCampaignsTool
 
@@ -38,10 +37,24 @@ class Part2Crew:
                 api_key=os.environ["GROQ_API_KEY"],
                 verbose=True,
             )
+            self.reporter_llm = LLM(    
+                model="groq/llama-3.1-8b-instant",
+                temperature=0.7,
+                base_url="https://api.groq.com/openai/v1",
+                api_key=os.environ["GROQ_API_KEY"],
+                verbose=True,
+            )
         else:
             self.llm = LLM(
                 model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
                 temperature=0.1,
+                base_url=os.environ["AZURE_API_BASE"],
+                api_key=os.environ["AZURE_API_KEY"],
+                verbose=True,
+            )
+            self.reporter_llm = LLM(
+                model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
+                temperature=0.7,
                 base_url=os.environ["AZURE_API_BASE"],
                 api_key=os.environ["AZURE_API_KEY"],
                 verbose=True,
@@ -102,7 +115,7 @@ class Part2Crew:
         return Agent(
             config=config, 
             tools=[DirectoryReadTool(), FileReadTool()], 
-            llm=self.llm
+            llm=self.reporter_llm
         )
 
     @task
@@ -150,25 +163,27 @@ class Part2Crew:
             context=[self.fetch_campaigns_task()],  # context improves consistency
         )
 
-    # @task
-    # def campaigns_report(self) -> Task:
-    #     """
-    #     Generates a Task for creating a campaigns report.
-    #     This is a simple example of a markdown report that lists the campaigns.
+    @task
+    def campaigns_report(self) -> Task:
+        """
+        Generates a Task for creating a campaigns report.
+        This is a simple example of a markdown report that lists the campaigns.
 
-    #     Returns:
-    #         Task: A Task object configured to generate a campaigns report.
-    #     """
-    #     return Task(
-    #         config=self.tasks_config["campaigns_report"],
-    #         output_file="output/campaigns_report.md",
-    #         agent=self.campaign_reporter_agent(),
-    #         # asynch=True,
-    #         context=[  # context improves consistency
-    #             self.fetch_campaigns_task(),
-    #             self.campaigns_budget_pie_chart(),
-    #         ],
-    #     )
+        Returns:
+            Task: A Task object configured to generate a campaigns report.
+        """
+        return Task(
+            config=self.tasks_config["campaigns_report"],
+            output_file="output/campaigns_report.md",
+            agent=self.campaign_reporter_agent(),
+            # asynch=True,
+            context=[  # context improves consistency
+                self.fetch_campaigns_task(),
+                self.campaigns_budget_pie_chart(),
+            ],
+            tools=[SumListTool()],
+            # human_input=True
+        )
 
     @crew
     def crew(self) -> Crew:
@@ -187,4 +202,5 @@ class Part2Crew:
             planning=True,
             planning_llm=self.llm,
             output_log_file="output/part_2.log",
+            output="output/part_2.md",
         )
