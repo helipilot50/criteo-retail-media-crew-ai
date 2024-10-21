@@ -3,13 +3,14 @@ from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import (
     FileReadTool,
-    DirectoryReadTool,
 )
 
 from part_2.tools.calculator_tools import SumListTool
 from part_2.tools.charts import BarChartTool, PieChartTool
 from part_2.tools.campaigns import AccountCampaignsTool
 
+groq_model = "groq/llama3-8b-8192"
+openai_model = "openai/" + os.environ["OPENAI_MODEL_NAME"]
 
 @CrewBase
 class Part2Crew:
@@ -29,36 +30,50 @@ class Part2Crew:
                 - base_url (str): The base URL for the API, set to "https://api.groq.com/openai/v1".
                 - api_key (str): The API key for authentication, retrieved from the environment variable "GROQ_API_KEY".
         """
-        if inputs["groq_or_azure"] == "groq":
-            self.llm = LLM(
-                model="groq/llama-3.1-8b-instant",
-                temperature=0.1,
-                base_url="https://api.groq.com/openai/v1",
-                api_key=os.environ["GROQ_API_KEY"],
-                verbose=True,
-            )
-            self.reporter_llm = LLM(    
-                model="groq/llama-3.1-8b-instant",
-                temperature=0.7,
-                base_url="https://api.groq.com/openai/v1",
-                api_key=os.environ["GROQ_API_KEY"],
-                verbose=True,
-            )
-        else:
-            self.llm = LLM(
-                model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                temperature=0.1,
-                base_url=os.environ["AZURE_API_BASE"],
-                api_key=os.environ["AZURE_API_KEY"],
-                verbose=True,
-            )
-            self.reporter_llm = LLM(
-                model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                temperature=0.7,
-                base_url=os.environ["AZURE_API_BASE"],
-                api_key=os.environ["AZURE_API_KEY"],
-                verbose=True,
-            )
+        match inputs["target_llm"]:
+            case "groq":
+                self.llm = LLM(
+                    model=groq_model,
+                    temperature=0.1,
+                    base_url="https://api.groq.com/openai/v1",
+                    api_key=os.environ["GROQ_API_KEY"],
+                    verbose=True,
+                )
+                self.reporter_llm = LLM(
+                    model=groq_model,
+                    temperature=0.7,
+                    base_url="https://api.groq.com/openai/v1",
+                    api_key=os.environ["GROQ_API_KEY"],
+                    verbose=True,
+                )
+            case "openai":
+                self.llm = LLM(
+                    model=openai_model,
+                    temperature=0.1,
+                    api_key=os.environ["OPENAI_API_KEY"],
+                    verbose=True,
+                )
+                self.reporter_llm = LLM(
+                    model=openai_model,
+                    temperature=0.7,
+                    api_key=os.environ["OPENAI_API_KEY"],
+                    verbose=True,
+                )
+            case "azure":
+                self.llm = LLM(
+                    model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
+                    temperature=0.1,
+                    base_url=os.environ["AZURE_API_BASE"],
+                    api_key=os.environ["AZURE_API_KEY"],
+                    verbose=True,
+                )
+                self.reporter_llm = LLM(
+                    model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
+                    temperature=0.7,
+                    base_url=os.environ["AZURE_API_BASE"],
+                    api_key=os.environ["AZURE_API_KEY"],
+                    verbose=True,
+                )
 
     """
     Creates and returns an instance of the Agent class configured as a campaign manager.
@@ -114,7 +129,6 @@ class Part2Crew:
         config = self.agents_config["campaign_reporter_agent"]
         return Agent(
             config=config, 
-            tools=[DirectoryReadTool(), FileReadTool()], 
             llm=self.reporter_llm
         )
 
@@ -138,6 +152,7 @@ class Part2Crew:
                 AccountCampaignsTool(),
             ],
             agent=self.campaign_manager(),
+            human_input=True,
         )
 
     @task
@@ -182,7 +197,7 @@ class Part2Crew:
                 self.campaigns_budget_pie_chart(),
             ],
             tools=[SumListTool()],
-            # human_input=True
+            human_input=True
         )
 
     @crew

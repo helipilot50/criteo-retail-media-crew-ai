@@ -32,18 +32,17 @@ def get_user_choice(options, default=None):
             print("Invalid input. Please enter a number.")
 
 
-options = ["groq", "azure"]
+options = ["openai", "groq", "azure"]
 display_menu(options)
-groq_or_azure = get_user_choice(options, default=1)
+target_llm = get_user_choice(options, default=1)
 
 """
 The account ID
 """
 
 account = choose_account()
-# account_id = input("Enter the account ID: ")
 
-inputs = {"account_id": account.id, "groq_or_azure": groq_or_azure.lower()}
+inputs = {"account_id": account.id, "target_llm": target_llm.lower()}
 
 
 def run():

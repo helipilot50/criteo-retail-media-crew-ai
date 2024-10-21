@@ -22,12 +22,11 @@ class AccountsTool(BaseTool):
     """
     name: str = "Retail Media Accounts API Caller"
     description: str = "Calls the Retail Media  REST API and returns the Accounts accessable to the account manager"
-    base_url:str = base_url_env
     
     def _run(self, pageIndex:int=0, pageSize:int=25):
         """Useful to fetch my Retail Media acounts and return relevant results"""
 
-        url = self.base_url + 'accounts'
+        url = base_url_env + 'accounts'
         authHeader:str = "Bearer " + get_token()
         headers = {
             "Authorization": authHeader
@@ -100,14 +99,14 @@ class RetailersTool(BaseTool):
 # choosers
 def choose_account():
     accounts = AccountsTool()._run()
-    print("Please select an account:")
+    print("\nPlease select an account:")
     for i, account in enumerate(accounts, 1):
         print(f"{i}. {account.name}")
 
     while True:
         try:
-            choice = input(f"Enter the number of your account (default is 1): ")
-            if choice == "" and default is not None:
+            choice = input(f"Enter the number of the account (default is 1): ")
+            if choice == "" or choice == "1":
                 return accounts[0]
             choice = int(choice)
             if 1 <= choice <= len(accounts):
