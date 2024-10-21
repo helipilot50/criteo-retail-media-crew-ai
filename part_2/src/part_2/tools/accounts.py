@@ -1,6 +1,7 @@
 from typing import Any
 from crewai_tools import BaseTool
-
+from part_2.tools.utils import flatten
+from part_2.models.account import Account
 from part_2.tools.access import get_token
 import requests
 import os
@@ -33,7 +34,19 @@ class AccountsTool(BaseTool):
         }
         params = {"pageIndex":  pageIndex, "pageSize": pageSize}
         response = requests.get(url=url, headers=headers, params=params)
-        return response.json()
+        if response.status_code != 200:
+            raise Exception("[AccountsTool] error:", response.json())
+        response_body = response.json()
+        if response_body is None or "data" not in response_body:
+            return []
+        the_accounts: list[Account] = []
+        for account_element in response_body["data"]:
+            flat = flatten(account_element)
+            # print("flat account --> ", flat)
+            account = Account(**flat)
+            the_accounts.append(account)
+        return the_accounts
+
     
 
 class BrandsTool(BaseTool):
@@ -83,3 +96,24 @@ class RetailersTool(BaseTool):
         response = requests.get(url=f"{self.base_url}accounts/{accountId}/retailers", headers=headers, params=params)
         return response.json()
     
+
+# choosers
+def choose_account():
+    accounts = AccountsTool()._run()
+    print("Please select an account:")
+    for i, account in enumerate(accounts, 1):
+        print(f"{i}. {account.name}")
+
+    while True:
+        try:
+            choice = input(f"Enter the number of your account (default is 1): ")
+            if choice == "" and default is not None:
+                return accounts[0]
+            choice = int(choice)
+            if 1 <= choice <= len(accounts):
+                return accounts[choice - 1]
+            else:
+                print(f"Please enter a number between 1 and {len(accounts)}.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+

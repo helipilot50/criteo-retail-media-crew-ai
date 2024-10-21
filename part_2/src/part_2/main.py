@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 from part_2.crew import Part2Crew
-
+from part_2.tools.accounts import choose_account
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -39,9 +39,11 @@ groq_or_azure = get_user_choice(options, default=1)
 """
 The account ID
 """
-account_id = input("Enter the account ID: ")
 
-inputs = {"account_id": account_id, "groq_or_azure": groq_or_azure.lower()}
+account = choose_account()
+# account_id = input("Enter the account ID: ")
+
+inputs = {"account_id": account.id, "groq_or_azure": groq_or_azure.lower()}
 
 
 def run():
