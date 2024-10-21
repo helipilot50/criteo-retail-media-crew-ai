@@ -5,6 +5,7 @@ from part_2.models.account import Account
 from part_2.tools.access import get_token
 import requests
 import os
+import logging
 
 base_url_env = os.environ['RETAIL_MEDIA_API_URL']
 
@@ -25,7 +26,8 @@ class AccountsTool(BaseTool):
     
     def _run(self, pageIndex:int=0, pageSize:int=25):
         """Useful to fetch my Retail Media acounts and return relevant results"""
-
+        logger = logging.getLogger("crewai_logger")
+        logger.info(f"[AccountsTool] Calling API with pageIndex: {pageIndex} and pageSize: {pageSize}")
         url = base_url_env + 'accounts'
         authHeader:str = "Bearer " + get_token()
         headers = {

@@ -8,6 +8,15 @@ TOKEN_CACHE = {
 }
 
 def get_token():
+    """
+    Retrieves an access token from the Criteo API.
+    This function checks if a valid access token is available in the TOKEN_CACHE. 
+    If a valid token is not available or has expired, it makes a request to the Criteo API to fetch a new access token using the client ID and client secret provided as environment variables. The fetched access token is then stored in the TOKEN_CACHE for future use.
+    Returns:
+        str: The access token retrieved from the Criteo API.
+    Raises:
+        Exception: If the request to fetch the access token fails.
+    """
     current_time = int(time.time())
     
     if TOKEN_CACHE['token'] is None or TOKEN_CACHE['expires_at'] <= current_time:

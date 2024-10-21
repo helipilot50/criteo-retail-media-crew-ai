@@ -1,20 +1,20 @@
 from typing import List
 from datetime import date, datetime
 from crewai_tools import BaseTool
-from part_3.src.part_3.models.campaign import (
+from part_3.models.campaign import (
     CampaignType,
     ClickAttributionWindow,
     NewCampaign,
     ViewAttributionWindow,
 )
-from part_3.src.part_3.models.concert import Concert
-from part_3.src.part_3.models.lineitem import (
+from part_3.models.concert import Concert
+from part_3.models.lineitem import (
     LineitemBidStrategy,
     LineitemStatus,
     NewAuctionLineitem,
 )
-from part_3.src.part_3.tools.campaigns import NewCampaignTool
-from part_3.src.part_3.tools.lineitems import NewAuctionLineitemTool
+from part_3.tools.campaigns import NewCampaignTool
+from part_3.tools.lineitems import NewAuctionLineitemTool
 
 
 class NewCampaignForConcertTourTool(BaseTool):
@@ -35,7 +35,7 @@ class NewCampaignForConcertTourTool(BaseTool):
         campaignStart: date,
         campaignEnd: date,
         pacing: float,
-        account: int,
+        accountId: str,
         concerts: List[Concert],
     ):
 
@@ -57,7 +57,7 @@ class NewCampaignForConcertTourTool(BaseTool):
         )
 
         createdCampaign = self.newCampaignTool._run(
-            accountId=account, campaign=newCampaign
+            accountId=accountId, campaign=newCampaign
         )
 
         # Create lineitems

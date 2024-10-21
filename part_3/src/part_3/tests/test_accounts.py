@@ -11,11 +11,9 @@ def test_accounts():
 
     accounts = AccountsTool()
     fileWriter = FileWriterTool()
-    accountListData = accounts._run()
-    assert accountListData is not None
-    assert len(accountListData) > 0
-    assert "data" in accountListData
-    accountList = list(map(flatten, accountListData["data"]))
+    accountList = accounts._run()
+    assert accountList is not None
+    assert len(accountList) > 0
     fileWriter._run(
         directory="output",
         filename=f"test_accounts.json",

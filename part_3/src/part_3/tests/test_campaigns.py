@@ -29,11 +29,9 @@ from datetime import date, datetime
 
 def first_account():
     accounts = AccountsTool()
-    accountListData = accounts._run()
-    assert accountListData is not None
-    assert len(accountListData) > 0
-    assert "data" in accountListData
-    accountList = list(map(flatten, accountListData["data"]))
+    accountList = accounts._run()
+    assert accountList is not None
+    assert len(accountList) > 0
     assert accountList is not None
     assert len(accountList) > 0
     return accountList[0]
@@ -72,7 +70,7 @@ def test_new_campaign():
     campainLineitems = AuctionLineitemsTool()
 
     account = first_account()
-    account_id = account["id"]
+    account_id = account.id
     assert account_id is not None
 
     current_datetime = datetime.now()
@@ -93,7 +91,7 @@ def test_new_campaign():
     )
     assert campaign is not None
 
-    theCampaign = newCampaign._run(accountId=account_id, campaign=campaign)
+    theCampaign = newCampaign._run(accountId=account.id, campaign=campaign)
     assert theCampaign is not None
 
     fileWriter._run(

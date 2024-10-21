@@ -1,5 +1,6 @@
 from crewai_tools import BaseTool
 from langchain.tools import tool
+from crewai_tools import tool
 
 
 class CalculatorTool(BaseTool):
@@ -14,7 +15,7 @@ class CalculatorTool(BaseTool):
   def _run(operation):
     return eval(operation)
   
-  from crewai_tools import tool
+ 
 
 class SumListTool(BaseTool):
   """

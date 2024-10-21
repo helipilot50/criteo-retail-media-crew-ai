@@ -6,12 +6,15 @@ from crewai_tools import (
     FileWriterTool,
 )
 
+from part_3.models.account import Account
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
 from part_3.tools.campaigns import CampaignTool, NewCampaignTool
 from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.search import InternetSearch
 
+groq_model = "groq/llama3-8b-8192"
+openai_model = "openai/" + os.environ["OPENAI_MODEL_NAME"]
 
 @CrewBase
 class Part3Crew:
@@ -19,31 +22,57 @@ class Part3Crew:
 
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
+    llm: LLM = None
 
-    def __init__(self, inputs: dict) -> Any:
-        self.account_id = inputs["account_id"]
+    def __init__(self, inputs: dict, account: Account):
         self.artist_name = inputs["artist_name"]
         self.year = inputs["year"]
+        self.target_account = account
 
-        self.fileWriter = FileWriterTool()
-
-        print("Account ID", self.account_id)
-        if inputs["groq_or_azure"] == "groq":
-            self.llm = LLM(
-                model="groq/llama3-8b-8192",
-                temperature=0.7,
-                base_url="https://api.groq.com/openai/v1",
-                api_key=os.environ["GROQ_API_KEY"],
-                verbose=True,
-            )
-        else:
-            self.llm = LLM(
-                model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                temperature=0.5,
-                base_url=os.environ["AZURE_API_BASE"],
-                api_key=os.environ["AZURE_API_KEY"],
-                verbose=True,
-            )
+        match inputs["target_llm"]:
+            case "groq":
+                self.llm = LLM(
+                    model=groq_model,
+                    temperature=0.1,
+                    base_url="https://api.groq.com/openai/v1",
+                    api_key=os.environ["GROQ_API_KEY"],
+                    verbose=True,
+                )
+                self.summary_llm = LLM(
+                    model=groq_model,
+                    temperature=0.7,
+                    base_url="https://api.groq.com/openai/v1",
+                    api_key=os.environ["GROQ_API_KEY"],
+                    verbose=True,
+                )
+            case "openai":
+                self.llm = LLM(
+                    model=openai_model,
+                    temperature=0.1,
+                    api_key=os.environ["OPENAI_API_KEY"],
+                    verbose=True,
+                )
+                self.summary_llm = LLM(
+                    model=openai_model,
+                    temperature=0.7,
+                    api_key=os.environ["OPENAI_API_KEY"],
+                    verbose=True,
+                )
+            case "azure":
+                self.llm = LLM(
+                    model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
+                    temperature=0.1,
+                    base_url=os.environ["AZURE_API_BASE"],
+                    api_key=os.environ["AZURE_API_KEY"],
+                    verbose=True,
+                )
+                self.summary_llm = LLM(
+                    model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
+                    temperature=0.7,
+                    base_url=os.environ["AZURE_API_BASE"],
+                    api_key=os.environ["AZURE_API_KEY"],
+                    verbose=True,
+                )
 
     @agent
     def account_manager(self) -> Agent:
@@ -106,7 +135,7 @@ class Part3Crew:
             config=config,
             # callbacks=[callback_handler],
             verbose=True,
-            llm=self.llm,
+            llm=self.summary_llm,
         )
 
     @agent
@@ -214,7 +243,7 @@ class Part3Crew:
         """Creates the Part 3 crew"""
         print("Artist name", self.artist_name)
         print("Year", self.year)
-        print("Account Id", self.account_id)
+        print("Account Id", self.target_account.id)
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
