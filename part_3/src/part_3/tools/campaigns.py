@@ -27,7 +27,7 @@ class AccountCampaignsTool(BaseTool):
     description: str = "fetches a list of  Campaigns for an account id"
 
     def _run(
-        self, accountId: str, pageIndex: int = 0, pageSize: int = 25
+        self, accountId: str, pageIndex: int = 0, pageSize: int = 25, withBudget: bool = False
     ) -> CampaignList:
         headers = {"Authorization": "Bearer " + get_token()}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
@@ -48,10 +48,15 @@ class AccountCampaignsTool(BaseTool):
 
         for campaign_element in response_body["data"]:
             flat = flatten(campaign_element)
-            print("flat campaign --> ", flat)
+            # print("flat campaign --> ", flat)
             campaign = Campaign(**flat)
-            the_campaigns.campaigns.append(campaign)
+            if withBudget:
+                if campaign.budget is not None and campaign.budget > 0:
+                    the_campaigns.campaigns.append(campaign)
+            else: 
+                the_campaigns.campaigns.append(campaign)
 
+       
         return the_campaigns
 
 

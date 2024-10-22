@@ -1,9 +1,7 @@
 fetch_campaigns_task:
   description: >
-    Get the first 100 campaigns for account {account_id} using the Campaigns List Tool.
+    Get the first 100 campaigns withBudget for account {account_id} using the Campaigns List Tool.
     Start with page 0 and page size 100.
-    If the budget field of a Campaign is null or zero remove the list
-    of campaigns from the response.
     ask the human if the list of campaigns is correct.
     Remember the results as [CampaignsList] in the cache.
   expected_output: >
@@ -29,6 +27,6 @@ campaigns_report:
     Include a total budget and total budget spent at the end of the report.
     Include a summary of the report at the end.
     do not use "```markdown" or "```" in the markdown file.
-    ask the human if the report is correct.
+    
   expected_output: >
     A markdown file with the report.

@@ -9,7 +9,7 @@ from part_2.tools.calculator_tools import SumListTool
 from part_2.tools.charts import BarChartTool, PieChartTool
 from part_2.tools.campaigns import AccountCampaignsTool
 
-groq_model = "groq/llama3-8b-8192"
+groq_model = "groq/llama-3.1-70b-versatile"
 openai_model = "openai/" + os.environ["OPENAI_MODEL_NAME"]
 
 @CrewBase
@@ -152,7 +152,7 @@ class Part2Crew:
                 AccountCampaignsTool(),
             ],
             agent=self.campaign_manager(),
-            human_input=True,
+            # human_input=True,
         )
 
     @task
@@ -197,7 +197,7 @@ class Part2Crew:
                 self.campaigns_budget_pie_chart(),
             ],
             tools=[SumListTool()],
-            human_input=True
+            # human_input=True
         )
 
     @crew

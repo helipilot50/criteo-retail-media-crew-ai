@@ -28,7 +28,7 @@ class AccountCampaignsTool(BaseTool):
     description: str = "fetches a list of  Campaigns for an account id"
 
     def _run(
-        self, accountId: str, pageIndex: int = 0, pageSize: int = 25
+        self, accountId: str, pageIndex: int = 0, pageSize: int = 25, withBudget: bool = False
     ) -> CampaignList:
         fw = FileWriterTool()
         headers = {"Authorization": "Bearer " + get_token()}
@@ -52,7 +52,11 @@ class AccountCampaignsTool(BaseTool):
             flat = flatten(campaign_element)
             # print("flat campaign --> ", flat)
             campaign = Campaign(**flat)
-            the_campaigns.campaigns.append(campaign)
+            if withBudget:
+                if campaign.budget is not None and campaign.budget > 0:
+                    the_campaigns.campaigns.append(campaign)
+            else: 
+                the_campaigns.campaigns.append(campaign)
 
         fw._run(
             directory="output",
