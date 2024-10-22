@@ -1,17 +1,12 @@
-import datetime
+from typing import Optional
 from crewai_tools import BaseTool, FileWriterTool
 from part_2.models.campaign import Campaign, CampaignList, NewCampaign
 from part_2.tools.utils import flatten
 from part_2.tools.access import get_token
 import requests
 import os
-from crewai_tools import (
-    FileReadTool,
-    FileWriterTool,
-    DirectoryReadTool,
-)
 import json
-import logging
+
 
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
@@ -28,17 +23,32 @@ class AccountCampaignsTool(BaseTool):
     description: str = "fetches a list of  Campaigns for an account id"
 
     def _run(
-        self, accountId: str, pageIndex: int = 0, pageSize: int = 25, withBudget: bool = False
+        self,
+        account_id: str,
+        page_index: Optional[int] = 0,
+        page_size: Optional[int] = 100,
+        with_budget: Optional[bool] = False,
+        # **kwargs,
     ) -> CampaignList:
         fw = FileWriterTool()
         headers = {"Authorization": "Bearer " + get_token()}
-        params = {"pageIndex": pageIndex, "pageSize": pageSize}
+        # account_id = kwargs.get("account_id")
+        # if "page_index" in kwargs:
+        #     page_index = kwargs["page_index"] or 0
+        # if "page_size" in kwargs:
+        #     page_size = kwargs["page_size"] or 100
+        # if "with_budget" in kwargs:
+        #     with_budget = kwargs["with_budget"] or False
+        params = {"pageIndex": page_index, "pageSize": page_size}
         response = requests.get(
-            url=f"{base_url_env}accounts/{accountId}/campaigns",
+            url=f"{base_url_env}accounts/{account_id}/campaigns",
             headers=headers,
             params=params,
         )
         if response.status_code != 200:
+            # logger.log(
+            #     "error", f"[AccountCampaignsTool] error: {response.json()}", color="red"
+            # )
             raise Exception("[AccountCampaignsTool] error:", response.json())
 
         response_body = response.json()
@@ -52,15 +62,15 @@ class AccountCampaignsTool(BaseTool):
             flat = flatten(campaign_element)
             # print("flat campaign --> ", flat)
             campaign = Campaign(**flat)
-            if withBudget:
+            if with_budget:
                 if campaign.budget is not None and campaign.budget > 0:
                     the_campaigns.campaigns.append(campaign)
-            else: 
+            else:
                 the_campaigns.campaigns.append(campaign)
 
         fw._run(
             directory="output",
-            filename=f"t_{accountId}_campaigns_{pageIndex}_{pageSize}.json",
+            filename=f"t_{account_id}_campaigns_{page_index}_{page_size}.json",
             content=json.dumps(the_campaigns.model_dump(), indent=2),
             overwrite=True,
         )
@@ -120,8 +130,9 @@ class NewCampaignTool(BaseTool):
 
     def _run(self, accountId: str, campaign: NewCampaign) -> Campaign:
         logger = logging.getLogger("crewai_logger")
-        logger.info(f"[NewCampaignTool] Calling API with accountId: {accountId} and campaign: {campaign}")
-        
+        logger.info(
+            f"[NewCampaignTool] Calling API with accountId: {accountId} and campaign: {campaign}"
+        )
 
         body = dict(
             data=dict(
@@ -140,5 +151,7 @@ class NewCampaignTool(BaseTool):
         data = response.json()["data"]
         flat = flatten(data)
         theCampaign = Campaign(**flat)
-        logger.info(f"[NewCampaignTool] Campaign created {json.dumps(theCampaign.model_dump(), indent=2)}")
+        logger.info(
+            f"[NewCampaignTool] Campaign created {json.dumps(theCampaign.model_dump(), indent=2)}"
+        )
         return theCampaign

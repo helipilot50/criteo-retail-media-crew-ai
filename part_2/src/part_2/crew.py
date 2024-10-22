@@ -5,12 +5,14 @@ from crewai_tools import (
     FileReadTool,
 )
 
+from part_2.models.campaign import CampaignList
 from part_2.tools.calculator_tools import SumListTool
 from part_2.tools.charts import BarChartTool, PieChartTool
 from part_2.tools.campaigns import AccountCampaignsTool
 
 groq_model = "groq/llama-3.1-70b-versatile"
 openai_model = "openai/" + os.environ["OPENAI_MODEL_NAME"]
+
 
 @CrewBase
 class Part2Crew:
@@ -109,9 +111,7 @@ class Part2Crew:
         """
 
         config = self.agents_config["visualizer_agent"]
-        return Agent(
-            config=config, tools=[PieChartTool(), BarChartTool()], llm=self.llm
-        )
+        return Agent(config=config, llm=self.llm)
 
     @agent
     def campaign_reporter_agent(self) -> Agent:
@@ -127,10 +127,7 @@ class Part2Crew:
             Agent: An instance of the campaign reporter agent.
         """
         config = self.agents_config["campaign_reporter_agent"]
-        return Agent(
-            config=config, 
-            llm=self.reporter_llm
-        )
+        return Agent(config=config, llm=self.reporter_llm)
 
     @task
     def fetch_campaigns_task(self) -> Task:
@@ -147,11 +144,13 @@ class Part2Crew:
         """
         return Task(
             config=self.tasks_config["fetch_campaigns_task"],
-            output_file="output/campaigns.py",
+            output_file=f"output/campaigns.py",
+            create_directory=True,
             tools=[
                 AccountCampaignsTool(),
             ],
             agent=self.campaign_manager(),
+            pydantic=CampaignList,
             # human_input=True,
         )
 
@@ -189,7 +188,8 @@ class Part2Crew:
         """
         return Task(
             config=self.tasks_config["campaigns_report"],
-            output_file="output/campaigns_report.md",
+            output_file=f"output/campaigns_report.md",
+            create_directory=True,
             agent=self.campaign_reporter_agent(),
             # asynch=True,
             context=[  # context improves consistency
@@ -216,6 +216,7 @@ class Part2Crew:
             verbose=True,
             planning=True,
             planning_llm=self.llm,
-            output_log_file="output/part_2.log",
-            output="output/part_2.md",
+            output_log_file=f"output/part_2.log",
+            output=f"output/part_2.md",
+            create_directory=True,
         )
