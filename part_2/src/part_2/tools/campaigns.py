@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Type, Any
 from crewai_tools import BaseTool, FileWriterTool
 from part_2.models.campaign import Campaign, CampaignList, NewCampaign
 from part_2.tools.utils import flatten
@@ -6,49 +6,49 @@ from part_2.tools.access import get_token
 import requests
 import os
 import json
+from pydantic import BaseModel
 
 
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
 
+class CampaignListSchema(BaseModel):
+    """Input for Campaigns List Tool."""
+
+    account_id: str = "Account id to select campaigns."
+    page_index: int = 0
+    page_size: int = 100
+    with_budget: bool = False
+
+
 class AccountCampaignsTool(BaseTool):
-    """
-    Used to fetch the Retail Media campaigns and return relevant results.
-    Attributes:
-        name (str): The name of the tool.
-        description (str): The description of the tool.
-    """
 
     name: str = "Campaigns List Tool"
-    description: str = "fetches a list of  Campaigns for an account id"
+    description: str = "fetch a list of Campaigns"
+    args_schema: Type[BaseModel] = CampaignListSchema
 
     def _run(
         self,
-        account_id: str,
-        page_index: Optional[int] = 0,
-        page_size: Optional[int] = 100,
-        with_budget: Optional[bool] = False,
-        # **kwargs,
+        # account_id: str,
+        # page_index: int = 0,
+        # page_size: int = 100,
+        # with_budget: bool = False,
+        **kwargs: Any,
     ) -> CampaignList:
         fw = FileWriterTool()
         headers = {"Authorization": "Bearer " + get_token()}
-        # account_id = kwargs.get("account_id")
-        # if "page_index" in kwargs:
-        #     page_index = kwargs["page_index"] or 0
-        # if "page_size" in kwargs:
-        #     page_size = kwargs["page_size"] or 100
-        # if "with_budget" in kwargs:
-        #     with_budget = kwargs["with_budget"] or False
+        account_id = kwargs.get("account_id")
+        page_index = kwargs.get("page_index", 0)
+        page_size = kwargs.get("page_size", 100)
+        with_budget = kwargs.get("with_budget", False)
         params = {"pageIndex": page_index, "pageSize": page_size}
+        url = f"{base_url_env}accounts/{account_id}/campaigns"
         response = requests.get(
-            url=f"{base_url_env}accounts/{account_id}/campaigns",
+            url=url,
             headers=headers,
             params=params,
         )
         if response.status_code != 200:
-            # logger.log(
-            #     "error", f"[AccountCampaignsTool] error: {response.json()}", color="red"
-            # )
             raise Exception("[AccountCampaignsTool] error:", response.json())
 
         response_body = response.json()

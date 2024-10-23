@@ -1,17 +1,16 @@
 import os
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import (
-    FileReadTool,
-)
 
 from part_2.models.campaign import CampaignList
 from part_2.tools.calculator_tools import SumListTool
-from part_2.tools.charts import BarChartTool, PieChartTool
+from part_2.tools.charts import PieChartTool
 from part_2.tools.campaigns import AccountCampaignsTool
 
 groq_model = "groq/llama-3.1-70b-versatile"
 openai_model = "openai/" + os.environ["OPENAI_MODEL_NAME"]
+
+openai_temperature = 0.2
 
 
 @CrewBase
@@ -51,7 +50,7 @@ class Part2Crew:
             case "openai":
                 self.llm = LLM(
                     model=openai_model,
-                    temperature=0.1,
+                    temperature=openai_temperature,
                     api_key=os.environ["OPENAI_API_KEY"],
                     verbose=True,
                 )
@@ -64,7 +63,7 @@ class Part2Crew:
             case "azure":
                 self.llm = LLM(
                     model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                    temperature=0.1,
+                    temperature=openai_temperature,
                     base_url=os.environ["AZURE_API_BASE"],
                     api_key=os.environ["AZURE_API_KEY"],
                     verbose=True,
@@ -214,6 +213,7 @@ class Part2Crew:
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
+            memory=True,
             planning=True,
             planning_llm=self.llm,
             output_log_file=f"output/part_2.log",
