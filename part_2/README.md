@@ -5,7 +5,7 @@ Welcome to the Part2 Crew project, powered by [crewAI](https://crewai.com).
 
 This part creates a Crew to:
 
-1. Retrieve campaigns for an account
+1. Retrieve the first 100 campaigns for an account
 2. Use campaigns with a budget to create a pie chart with using the campaign budget
 3. Create a report about the campaigns budget, including the chart
 
@@ -29,7 +29,7 @@ The reporitory is hosted in GitHub, use this command to clone the repo:
 git clone https://github.com/helipilot50/criteo-retail-media-crew-ai.git
 ```
 
-Navigate to the repo and change directory to `part_1`
+Navigate to the repo and change directory to `part_2`
 
 ```
 cd part_2
@@ -38,7 +38,7 @@ cd part_2
 Next, install the dependencies:
 
 ```bash
-poetry install --no-root
+poetry install 
 ```
 
 and finally invoke the shell
@@ -65,20 +65,20 @@ The part_2 Crew is composed of multiple AI agents, each with unique roles, goals
 
 ### Agents
 
-- **campaign_reader** - Reads campaigns for a specific account
+- **campaign_manager** - Reads campaigns for a specific account
 - **visualizer_agent** - Visualize campaign data
 - **campaign_reporter_agent** - Report writer for campaign data
 
 ### Tasks
 
-- **fetch_campaigns_with_budget_task** - Gets a collection campaigns for a specific account {account_id}.
-  Use the pageIndex and pageSize parameters to get all campaigns for the account, and ignore the campaign if the budget is not provided or is less than 1.
+- **fetch_campaigns_task** - Gets a collection campaigns for a specific account {account_id}.
+  Use the page index and page size parameters to get the first 100 campaigns for the account, and ignore the campaign if the budget is not provided or is less than 1.
 - **campaigns_budget_pie_chart** - Creates a pie chart from the budget data in the campaigns collection.
 - **campaigns_report** - Creates a report in Markdown format, with the data from the campaigns collection. It has a table with the campaign name, start date, budget, and budgetSpent and a pie chart of the campaign budgets.
 
 ### Tools
 
-Tools are used by agens and tasks to acomplish work or use knowledge that the LLM models _are not trained for_, such as proprietary information. In this case, to access Criteo's APIs and use MatPlotLib to draw charts.
+Tools are used by agents and tasks to acomplish work or use knowledge that the LLM models _are not trained for_, such as proprietary information. In this case, to access Criteo's APIs and use MatPlotLib to draw charts.
 
 The custom tools for this part are are located in the `tools` directory.
 
