@@ -23,8 +23,8 @@ class CampaignListSchema(BaseModel):
 
 class AccountCampaignsTool(BaseTool):
 
-    name: str = "Campaigns List Tool"
-    description: str = "fetch a list of Campaigns"
+    name: str = "Campaigns for Account"
+    description: str = "Calls the Retail Media REST API and returns the  campaigns for account id"
     args_schema: Type[BaseModel] = CampaignListSchema
 
     def _run(
