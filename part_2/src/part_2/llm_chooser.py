@@ -1,6 +1,6 @@
 def choose_llm():
 
-    options = ["groq", "openai", "azure"]
+    options = ["groq", "ollama","openai", "azure"]
 
     print("Please select an LLM provider:")
     for i, option in enumerate(options, 1):

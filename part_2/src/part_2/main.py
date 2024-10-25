@@ -3,6 +3,7 @@ import sys
 from part_2.crew import Part2Crew
 from part_2.llm_chooser import choose_llm
 from part_2.tools.accounts import choose_account
+import os
 from dotenv import load_dotenv
 
 load_dotenv()

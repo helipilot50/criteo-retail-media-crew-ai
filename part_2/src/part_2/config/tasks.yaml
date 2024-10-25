@@ -1,6 +1,36 @@
+accounts:
+  description: >
+    Fetch the accounts available to the account manager. 
+    The results are paginated, so you may need to make multiple requests, 
+    do not make more than the total number of pages.
+  expected_output: >
+    A list of accounts available to this user formatted as a table in Markdown. 
+    Here is an example of the expected output:
+    | Account ID | Name |	Type | Subtype | Countries | Currency | Parent Account Label | Time Zone | Company Name |
+  
+
+brands:
+  description: >
+    Retrieve the Retail Media brands. Use the {account_id} to get the brands.
+  expected_output: >
+    A list of brands for the account formatted as a table in Markdown. Here is an example of the expected output:
+    | Brand ID | Brand Name |
+  
+  
+
+retailers:
+  description: >
+    Retrieve the Retail Media retailers. Use the {account_id} to get the retailers.
+  expected_output: >
+    A list of retailers for the account formatted as a table in Markdown. Here is an example of the expected output:
+    | Retailer ID | Retailer Name | Campaign Eligibilities |
+  
+  
+
 fetch_campaigns_task:
   description: >
     Get the first 100 campaigns for account {account_id} using the Campaigns List Tool and with_budget is true.
+    The tool uses pageIndex starting at 0.
     Remember the results as CampaignsList in the cache.
   expected_output: >
     CampaignList
@@ -11,7 +41,7 @@ campaigns_budget_pie_chart:
     The 'labels' should be the 'name' field for each campaign.
     The 'title' should be 'Campaign Budgets for Account {account_id}'.
     The 'file_name' should be 'campaign_budget_pie_chart.png'.
-    The 'path' should be 'output'.
+    The 'path' should be 'output/{target_llm}'.
   expected_output: >
     A pie chart image file_name.
 
