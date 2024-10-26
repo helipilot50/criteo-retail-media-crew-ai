@@ -20,7 +20,7 @@ from part_3.models.lineitem import (
 from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
 from part_3.tools.utils import flatten
 from part_3.tools.accounts import AccountsTool
-from part_3.tools.campaigns import AccountCampaignsTool, NewCampaignTool
+from part_3.tools.campaigns import new_campaign
 from crewai_tools import (
     FileWriterTool,
 )
@@ -37,34 +37,34 @@ def first_account():
     return accountList[0]
 
 
-def test_campaigns():
-    # tools
-    campaigns = AccountCampaignsTool()
-    fileWriter = FileWriterTool()
+# def test_campaigns():
+#     # tools
+#     campaigns = AccountCampaignsTool()
+#     fileWriter = FileWriterTool()
 
-    account = first_account()
-    account_id = account["id"]
-    assert account_id is not None
+#     account = first_account()
+#     account_id = account["id"]
+#     assert account_id is not None
 
-    campaign_list: CampaignList = campaigns._run(
-        accountId=account_id, pageIndex=1, pageSize=1000
-    )
+#     campaign_list: CampaignList = campaigns._run(
+#         accountId=account_id, pageIndex=1, pageSize=1000
+#     )
 
-    assert campaign_list is not None
-    print("totalItems --> ", campaign_list.totalItems)
-    assert len(campaign_list.campaigns) > 0
+#     assert campaign_list is not None
+#     print("totalItems --> ", campaign_list.totalItems)
+#     assert len(campaign_list.campaigns) > 0
 
-    fileWriter._run(
-        directory="output",
-        filename=f"test_{account_id}_campaigns.json",
-        content=json.dumps(campaign_list.model_dump(), indent=2),
-        overwrite=True,
-    )
+#     fileWriter._run(
+#         directory="output",
+#         filename=f"test_{account_id}_campaigns.json",
+#         content=json.dumps(campaign_list.model_dump(), indent=2),
+#         overwrite=True,
+#     )
 
 
 def test_new_campaign():
     # tools
-    newCampaign = NewCampaignTool()
+    
     fileWriter = FileWriterTool()
     newAuctionLineitem = NewAuctionLineitemTool()
     campainLineitems = AuctionLineitemsTool()
@@ -91,7 +91,7 @@ def test_new_campaign():
     )
     assert campaign is not None
 
-    theCampaign = newCampaign._run(accountId=account.id, campaign=campaign)
+    theCampaign = new_campaign._run(accountId=account.id, campaign=campaign)
     assert theCampaign is not None
 
     fileWriter._run(

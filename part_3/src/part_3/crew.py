@@ -4,17 +4,22 @@ from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import (
     FileWriterTool,
+    SerperDevTool
 )
 
 from part_3.models.account import Account
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
-from part_3.tools.campaigns import CampaignTool, NewCampaignTool
-from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
-from part_3.tools.search import InternetSearch
 
-groq_model = "groq/llama3-8b-8192"
-openai_model = "openai/" + os.environ["OPENAI_MODEL_NAME"]
+from part_3.tools.campaigns import fetch_campaign, new_campaign
+from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
+
+groq_model = "groq/llama-3.1-70b-versatile"
+openai_model = "openai/gpt-4o-mini"
+ollama_model = "ollama/llama3.2"
+
+openai_temperature = 0.2
+
 
 @CrewBase
 class Part3Crew:
@@ -23,11 +28,15 @@ class Part3Crew:
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
     llm: LLM = None
+    searchTool = SerperDevTool()
 
     def __init__(self, inputs: dict, account: Account):
         self.artist_name = inputs["artist_name"]
         self.year = inputs["year"]
         self.target_account = account
+        self.llm_platform = inputs["target_llm"]
+        
+        os.makedirs(f"output/{self.llm_platform}", exist_ok=True)
 
         match inputs["target_llm"]:
             case "groq":
@@ -45,10 +54,23 @@ class Part3Crew:
                     api_key=os.environ["GROQ_API_KEY"],
                     verbose=True,
                 )
+            case "ollama":
+                self.llm = LLM(
+                    model=ollama_model,
+                    temperature=0.1,
+                    api_base="http://localhost:11434",
+                    verbose=True,
+                )
+                self.summary_llm = LLM(
+                    model=ollama_model,
+                    temperature=0.7,
+                    api_base="http://localhost:11434",
+                    verbose=True,
+                )            
             case "openai":
                 self.llm = LLM(
                     model=openai_model,
-                    temperature=0.1,
+                    temperature=openai_temperature,
                     api_key=os.environ["OPENAI_API_KEY"],
                     verbose=True,
                 )
@@ -61,7 +83,7 @@ class Part3Crew:
             case "azure":
                 self.llm = LLM(
                     model="azure/" + os.environ["AZURE_OPENAI_DEPLOYMENT"],
-                    temperature=0.1,
+                    temperature=openai_temperature,
                     base_url=os.environ["AZURE_API_BASE"],
                     api_key=os.environ["AZURE_API_KEY"],
                     verbose=True,
@@ -97,10 +119,8 @@ class Part3Crew:
     @agent
     def demographics_agent(self) -> Agent:
         config = self.agents_config["demographics_agent"]
-        # callback_handler = PanelHandler(config["name"], self.instance)
         return Agent(
             config=config,
-            # callbacks=[callback_handler],
             verbose=True,
             llm=self.llm,
         )
@@ -154,7 +174,7 @@ class Part3Crew:
     def research_demographics(self) -> Task:
         return Task(
             config=self.tasks_config["research_demographics"],
-            output_file=f"output/{self.artist_name}_research_demographics.json",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_research_demographics.json",
             # parameters={"cats": "cats"},
             agent=self.demographics_agent(),
             async_=True,
@@ -164,17 +184,17 @@ class Part3Crew:
     def find_concert_venues(self) -> Task:
         return Task(
             config=self.tasks_config["find_concert_venues"],
-            output_file=f"output/{self.artist_name}_concert_venues.json",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_concert_venues.json",
             # output_json=True,
             agent=self.concert_venue_agent(),
-            tools=[InternetSearch()],
+            tools=[self.searchTool],
         )
 
     @task
     def formulate_lineitem_budget(self) -> Task:
         return Task(
             config=self.tasks_config["formulate_lineitem_budget"],
-            output_file=f"output/{self.artist_name}_venues_budget.json",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_venues_budget.json",
             # output_json=True,
             agent=self.campaign_budget_agent(),
             context=[self.find_concert_venues()],
@@ -185,7 +205,7 @@ class Part3Crew:
     def account(self) -> Task:
         return Task(
             config=self.tasks_config["accounts"],
-            output_file=f"output/{self.artist_name}_accounts.md",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_accounts.md",
             agent=self.account_manager(),
             verbose=True,
         )
@@ -195,12 +215,12 @@ class Part3Crew:
         return Task(
             config=self.tasks_config["create_campaign"],
             cache=True,
-            output_file=f"output/{self.artist_name}_campaign.json",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_campaign.json",
             agent=self.campaign_manager(),
             tools=[
                 calculate_monthly_pacing,
-                NewCampaignTool(),
-                CampaignTool(),
+                new_campaign,
+                fetch_campaign,
             ],
             verbose=True,
         )
@@ -210,7 +230,7 @@ class Part3Crew:
         return Task(
             config=self.tasks_config["create_lineitems"],
             cache=True,
-            output_file=f"output/{self.artist_name}_lineitems.json",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_lineitems.json",
             agent=self.lineitem_manager(),
             context=[
                 self.find_concert_venues(),
@@ -225,7 +245,7 @@ class Part3Crew:
     def summary_task(self) -> Task:
         return Task(
             config=self.tasks_config["summary"],
-            output_file=f"output/{self.artist_name}_summary.md",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_summary.md",
             agent=self.summary_agent(),
             context=[
                 self.account(),
@@ -253,6 +273,6 @@ class Part3Crew:
             # memory=True, #causes weird python error with sqllite.py line 88
             planning=True,
             planning_llm=self.llm,
-            output_log_file=f"output/{self.artist_name}_part_3.log",
-            output_file=f"output/{self.artist_name}_part_3.md",
+            output_log_file=f"output/{self.llm_platform}/{self.artist_name}_part_3.log",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_part_3.md",
         )

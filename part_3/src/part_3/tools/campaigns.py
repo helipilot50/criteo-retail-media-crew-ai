@@ -1,4 +1,5 @@
-from crewai_tools import BaseTool, FileWriterTool
+from typing import Type
+from crewai_tools import FileWriterTool, tool
 from part_3.models.campaign import Campaign, CampaignList, NewCampaign
 from part_3.tools.utils import flatten
 from part_3.tools.access import get_token
@@ -10,128 +11,100 @@ from crewai_tools import (
     DirectoryReadTool,
 )
 import json
-import logging
+from pydantic import BaseModel
 
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
 
-class AccountCampaignsTool(BaseTool):
+@tool("Campaigns for Account")
+
+def campaigns_for_account_with_budget(
+    accountId: str,
+    pageIndex: int, #= 0,
+    pageSize: int, #= 100,
+    # withBudget: bool = False,
+) -> CampaignList:
+    """Calls the Retail Media REST API and returns the  campaigns for account id. 
+    Parameters: 
+    - 'pageIndex' a zero based page index
+    - pageSize is 100 by default
     """
-    Used to fetch the Retail Media campaigns and return relevant results.
-    Attributes:
-        name (str): The name of the tool.
-        description (str): The description of the tool.
-    """
+    fw = FileWriterTool()
+    headers = {"Authorization": "Bearer " + get_token()}
+    params = {"pageIndex": pageIndex, "pageSize": pageSize}
+    url = f"{base_url_env}accounts/{accountId}/campaigns"
+    response = requests.get(
+        url=url,
+        headers=headers,
+        params=params,
+    )
+    if response.status_code != 200:
+        raise Exception("[AccountCampaignsTool] error:", response.json())
 
-    name: str = "Campaigns List Tool"
-    description: str = "fetches a list of  Campaigns for an account id"
-
-    def _run(
-        self, accountId: str, pageIndex: int = 0, pageSize: int = 25, withBudget: bool = False
-    ) -> CampaignList:
-        headers = {"Authorization": "Bearer " + get_token()}
-        params = {"pageIndex": pageIndex, "pageSize": pageSize}
-        response = requests.get(
-            url=f"{base_url_env}accounts/{accountId}/campaigns",
-            headers=headers,
-            params=params,
-        )
-        if response.status_code != 200:
-            raise Exception("[AccountCampaignsTool] error:", response.json())
-
-        response_body = response.json()
-        if response_body is None or "data" not in response_body:
-            return []
-        the_campaigns = CampaignList(
-            totalItems=response_body["metadata"]["totalItemsAcrossAllPages"]
-        )
-
-        for campaign_element in response_body["data"]:
-            flat = flatten(campaign_element)
-            # print("flat campaign --> ", flat)
-            campaign = Campaign(**flat)
-            if withBudget:
-                if campaign.budget is not None and campaign.budget > 0:
-                    the_campaigns.campaigns.append(campaign)
-            else: 
-                the_campaigns.campaigns.append(campaign)
-
-       
-        return the_campaigns
-
-
-class CampaignTool(BaseTool):
-    """
-    operations on a single campaign
-    """
-
-    name: str = "Campaign Tool"
-    description: str = "Fetch a single Campaign by id"
-
-    def _run(self, campaignId: str) -> Campaign:
-        headers = {"Authorization": "Bearer " + get_token()}
-        response = requests.get(
-            url=f"{base_url_env}campaigns/{campaignId}",
-            headers=headers,
-        )
-        if response.status_code != 200:
-            raise Exception("[CampaignTool] error:", response.json())
-        theCampaign = Campaign(**flatten(response.json()["data"]))
-        return theCampaign
-
-
-class NewCampaignTool(BaseTool):
-    """
-    Used to create a Retail Media campaign and return relevant results.
-    Attributes:
-        name (str): The name of the tool.
-        description (str): The description of the tool.
-        base_url (str): The base URL of the API.
-    """
-
-    name: str = "NewCampaignTool"
-    description: str = (
-        """Create  a campaign for an account using {account_id} and NewCampaign object.
-        Example input for new Campaign:
-        {
-            "name": "{artist_name} Concert Tour {year}",
-            "startDate": "2025-01-01",
-            "endDate": "2025-12-31",
-            "budget": 1280000,
-            "monthlyPacing": 500,
-            "dailyBudget": 10,
-            "isAutoDailyPacing": False,
-            "dailyPacing": 10,
-            "type": "auction",
-            "clickAttributionWindow": "30D",
-            "viewAttributionWindow": "None",
-            "clickAttributionScope": "sameSkuCategory",
-            "viewAttributionScope": "sameSkuCategory",
-        }
-        """
+    response_body = response.json()
+    if response_body is None or "data" not in response_body:
+        return []
+    the_campaigns = CampaignList(
+        totalItems=response_body["metadata"]["totalItemsAcrossAllPages"]
     )
 
-    def _run(self, accountId: str, campaign: NewCampaign) -> Campaign:
-        logger = logging.getLogger("crewai_logger")
-        logger.info(f"[NewCampaignTool] Calling API with accountId: {accountId} and campaign: {campaign}")
-        
+    for campaign_element in response_body["data"]:
+        flat = flatten(campaign_element)
+        # print("flat campaign --> ", flat)
+        campaign = Campaign(**flat)
+        # if withBudget:
+        if campaign.budget is not None and campaign.budget > 0:
+            the_campaigns.campaigns.append(campaign)
+        # else:
+        #     the_campaigns.campaigns.append(campaign)
 
-        body = dict(
-            data=dict(
-                type="NewCampaign",
-                attributes=campaign.model_dump(),
-            ),
-        )
-        headers = {"Authorization": "Bearer " + get_token()}
-        response = requests.post(
-            url=f"{base_url_env}accounts/{accountId}/campaigns",
-            headers=headers,
-            json=body,
-        )
-        if response.status_code != 201:
-            raise Exception("[NewCampaignTool] error:", response.json())
-        data = response.json()["data"]
-        flat = flatten(data)
-        theCampaign = Campaign(**flat)
-        logger.info(f"[NewCampaignTool] Campaign created {json.dumps(theCampaign.model_dump(), indent=2)}")
-        return theCampaign
+    fw._run(
+        directory="output",
+        filename=f"debug_{accountId}_campaigns_{pageIndex}_{pageSize}.json",
+        content=json.dumps(the_campaigns.model_dump(), indent=2),
+        overwrite=True,
+    )
+    return the_campaigns
+
+
+@tool("Campaign Tool")
+def fetch_campaign(campaignId: str) -> Campaign:
+    """
+    Fetch a single Campaign by campaignId
+    """
+    headers = {"Authorization": "Bearer " + get_token()}
+    response = requests.get(
+        url=f"{base_url_env}campaigns/{campaignId}",
+        headers=headers,
+    )
+    if response.status_code != 200:
+        raise Exception("[CampaignTool] error:", response.json())
+    theCampaign = Campaign(**flatten(response.json()["data"]))
+    return theCampaign
+
+
+@tool("New Campaign Tool")
+def new_campaign(accountId: str, campaign: NewCampaign) -> Campaign:
+    """
+    Create  a campaign for an account using {account_id} and NewCampaign object.
+    """
+
+    body = dict(
+        data=dict(
+            type="NewCampaign",
+            attributes=campaign.model_dump(),
+        ),
+    )
+    headers = {"Authorization": "Bearer " + get_token()}
+    response = requests.post(
+        url=f"{base_url_env}accounts/{accountId}/campaigns",
+        headers=headers,
+        json=body,
+    )
+    if response.status_code != 201:
+        raise Exception("[NewCampaignTool] error:", response.json())
+    data = response.json()["data"]
+    flat = flatten(data)
+    theCampaign = Campaign(**flat)
+
+    return theCampaign

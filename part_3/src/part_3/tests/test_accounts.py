@@ -1,5 +1,5 @@
 import json
-from part_3.tools.accounts import AccountsTool, BalancesTool, BrandsTool, RetailersTool
+from part_3.tools.accounts import AccountsTool, BrandsTool, RetailersTool
 from crewai_tools import (
     FileWriterTool,
 )
@@ -17,8 +17,8 @@ def test_accounts():
     fileWriter._run(
         directory="output",
         filename=f"test_accounts.json",
+        content=json.dumps([acc.model_dump() for acc in accountList], indent=2),
         overwrite=True,
-        content=json.dumps(accountList, indent=2),
     )
     return accountList
 
@@ -28,69 +28,45 @@ def test_accounts_brands():
     fileWriter = FileWriterTool()
     accountList = test_accounts()
 
-    account_id = accountList[0]["id"]
+    account_id = accountList[0].id
     assert account_id is not None
 
     brands = BrandsTool()
-    brands_api_result = brands._run(accountId=account_id)
-    assert brands_api_result is not None
-    assert brands_api_result["data"] is not None
-    assert len(brands_api_result["data"]) > 0
-    data = list(map(flatten, brands_api_result["data"]))
+    brands_list = brands._run(accountId=account_id)
+    assert brands_list is not None
+    assert len(brands_list) > 0
+    print("brands_list --> ", brands_list)
     fileWriter._run(
         directory="output",
         filename=f"test_account_{account_id}_brands.json",
         overwrite=True,
-        content=json.dumps(data, indent=2),
+        content=json.dumps([acc.model_dump() for acc in brands_list], indent=2),
     )
 
 
 def test_accounts_retailers():
 
-    accounts = AccountsTool()
     fileWriter = FileWriterTool()
     retailers = RetailersTool()
 
-    accountListData = accounts._run()
-    assert accountListData is not None
-    assert len(accountListData) > 0
-    assert "data" in accountListData
-    accountList = list(map(flatten, accountListData["data"]))
+    accountList = test_accounts()
+    assert accountList is not None
+    assert len(accountList) > 0
 
-    account_id = accountList[0]["id"]
+    account_id = accountList[0].id
     assert account_id is not None
 
-    retailers_api_result = retailers._run(accountId=account_id)
-    assert retailers_api_result is not None
-    assert retailers_api_result["data"] is not None
-    assert len(retailers_api_result["data"]) > 0
-    data = list(map(flatten, retailers_api_result["data"]))
+    retailers_list = retailers._run(accountId=account_id)
+    assert retailers_list is not None
+    assert len(retailers_list) > 0
+    print("retailers_list --> ", retailers_list)
 
     fileWriter._run(
         directory="output",
         filename=f"test_account_{account_id}_retailers.json",
         overwrite=True,
-        content=json.dumps(data, indent=2),
+        content=json.dumps([acc.model_dump() for acc in retailers_list], indent=2),
     )
 
 
-def test_accounts_balances():
-    fileWriter = FileWriterTool()
-    balances = BalancesTool()
 
-    accountList = test_accounts()
-
-    account_id = accountList[0]["id"]
-    assert account_id is not None
-
-    balances_api_result = balances._run(accountId=account_id)
-    assert balances_api_result is not None
-    assert balances_api_result["data"] is not None
-    data = list(map(flatten, balances_api_result["data"]))
-
-    fileWriter._run(
-        directory="output",
-        filename=f"test_account_{account_id}_balances.json",
-        overwrite=True,
-        content=json.dumps(data, indent=2),
-    )

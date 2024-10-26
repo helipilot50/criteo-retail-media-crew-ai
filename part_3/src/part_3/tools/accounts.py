@@ -1,7 +1,7 @@
 from typing import Any
 from crewai_tools import BaseTool
 from part_3.tools.utils import flatten
-from part_3.models.account import Account
+from part_3.models.account import Account, Brand, Retailer
 from part_3.tools.access import get_token
 import requests
 import os
@@ -71,7 +71,16 @@ class BrandsTool(BaseTool):
         } 
         params = {"pageIndex":  pageIndex, "pageSize": pageSize}
         response = requests.get(url=f"{self.base_url}accounts/{accountId}/brands", headers=headers, params=params)
-        return response.json()
+        response_body = response.json()
+        if response_body is None or "data" not in response_body:
+            return []
+        the_brands: list[Brand] = []
+        for brand_element in response_body["data"]:
+            flat = flatten(brand_element)
+            # print("flat brand --> ", flat)
+            brand = Brand(**flat)
+            the_brands.append(brand)
+        return the_brands
  
     
 class RetailersTool(BaseTool):
@@ -95,7 +104,16 @@ class RetailersTool(BaseTool):
         }   
         params = {"pageIndex":  pageIndex, "pageSize": pageSize} 
         response = requests.get(url=f"{self.base_url}accounts/{accountId}/retailers", headers=headers, params=params)
-        return response.json()
+        response_body = response.json()
+        if response_body is None or "data" not in response_body:
+            return []
+        the_retailers: list[Retailer] = []
+        for retailer_element in response_body["data"]:
+            flat = flatten(retailer_element)
+            # print("flat retailer --> ", flat)
+            retailer = Retailer(**flat)
+            the_retailers.append(retailer)
+        return the_retailers
     
 
 # choosers

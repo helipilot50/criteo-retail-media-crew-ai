@@ -21,4 +21,19 @@ class Account(BaseModel):
     def to_json(self) -> str:
         return self.model_dump_json()
     
-   
+
+class CampaignEligibility(str, Enum):
+      auction ="auction",
+      preferred = "preferred",
+      offsiteCpc ="offsiteCpc",
+      offsite ="offsite"
+    
+class Retailer(BaseModel):
+    name: str
+    campaignEligibilities: List[CampaignEligibility]
+    id: str
+
+
+class Brand(BaseModel):
+    name: str
+    id: str
