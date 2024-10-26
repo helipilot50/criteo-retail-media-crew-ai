@@ -10,7 +10,7 @@ from part_2.tools.campaigns import campaigns_for_account_with_budget
 
 groq_model = "groq/llama-3.1-70b-versatile"
 openai_model = "openai/gpt-4o-mini"
-ollama_model = "ollama/crewai-mistral"
+ollama_model = "ollama/llama3.2"
 
 openai_temperature = 0.2
 
@@ -26,12 +26,6 @@ class Part2Crew:
     def __init__(self, inputs: dict):
         """
         Initializes the Crew class with an instance of the LLM model.
-        Attributes:
-            llm (LLM): An instance of the LLM class initialized with specific parameters.
-                - model (str): The model identifier, set to "groq/llama-3.1-8b-instant".
-                - temperature (float): The temperature setting for the model, set to 0.7.
-                - base_url (str): The base URL for the API, set to "https://api.groq.com/openai/v1".
-                - api_key (str): The API key for authentication, retrieved from the environment variable "GROQ_API_KEY".
         """
         self.llm_platform = inputs["target_llm"]
         
@@ -97,20 +91,19 @@ class Part2Crew:
 
  
     @agent
-    def account_manager(self) -> Agent:
-        return Agent(
-            config=self.agents_config["account_manager"],
-            llm=self.llm,
-            # memory=True,
-        )
-    
-    @agent
     def campaign_manager(self) -> Agent:
-        config = self.agents_config["campaign_manager"]
+        """
+        Creates and returns an instance of the Agent class configured for managing campaigns.
+
+        This method uses the configuration specified in `self.agents_config` for the 
+        "campaign_manager" key and the language model `self.llm` to initialize the Agent.
+
+        Returns:
+            Agent: An instance of the Agent class configured for campaign management.
+        """
         return Agent(
-            config=config,
+            config=self.agents_config["campaign_manager"],
             llm=self.llm,
-            # memory=True,
         )
 
     @agent
@@ -126,8 +119,10 @@ class Part2Crew:
             Agent: An instance of the Agent class configured with visualization tools.
         """
 
-        config = self.agents_config["visualizer_agent"]
-        return Agent(config=config, llm=self.llm)
+        return Agent(
+            config=self.agents_config["visualizer_agent"], 
+            llm=self.llm
+        )
 
     @agent
     def campaign_reporter_agent(self) -> Agent:
@@ -145,39 +140,7 @@ class Part2Crew:
         config = self.agents_config["campaign_reporter_agent"]
         return Agent(config=config, llm=self.reporter_llm)
     
-    @task
-    def brands(self) -> Task:
-        """
-        Brands task instance created from the config file.
-        This function is decorated with the @agent decorator to indicate that it is an agent.
-        It's job is to retrieve Brands data for a specific Account and produce a Markdown file.
-        """
-        return Task(
-            config=self.tasks_config["brands"],
-            output_file=f"output/{self.llm_platform}/brands.md",
-            tools=[
-                BrandsTool(),
-            ],
-            agent=self.account_manager(),
-        )
     
-    @task
-    def retailers(self) -> Task:
-        """
-        Retailers task instance created from the config file.
-        This function is decorated with the @agent decorator to indicate that it is an agent.
-        It's job is to retrieve Retailers data for a specific Account and produce a Markdown file.
-        """
-        return Task(
-            config=self.tasks_config["retailers"],
-            output_file=f"output/{self.llm_platform}/retailers.md",
-            tools=[
-                RetailersTool(),
-            ],
-            agent=self.account_manager(),
-        )
-
-
     @task
     def fetch_campaigns_task(self) -> Task:
         """
@@ -199,8 +162,6 @@ class Part2Crew:
                 campaigns_for_account_with_budget,
             ],
             agent=self.campaign_manager(),
-            pydantic=CampaignList,
-            # human_input=True,
         )
 
     @task
@@ -240,13 +201,11 @@ class Part2Crew:
             output_file=f"output/{self.llm_platform}/campaigns_report.md",
             create_directory=True,
             agent=self.campaign_reporter_agent(),
-            # asynch=True,
             context=[  # context improves consistency
                 self.fetch_campaigns_task(),
                 self.campaigns_budget_pie_chart(),
             ],
             tools=[SumListTool()],
-            # human_input=True
         )
 
     @crew
@@ -263,7 +222,6 @@ class Part2Crew:
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            # memory=True,
             planning=True,
             planning_llm=self.llm,
             output_log_file=f"output/{self.llm_platform}/part_2.log",
