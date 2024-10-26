@@ -1,5 +1,5 @@
 import json
-from crewai_tools import BaseTool
+from crewai_tools import BaseTool, tool
 from crewai_tools import (
     FileReadTool,
     FileWriterTool,
@@ -94,21 +94,10 @@ class AuctionLineitemsTool(BaseTool):
         return lineitem_list
 
 
-class AccountLineitemsTool(BaseTool):
-    """
-    Used to fetch the Retail Media account Lineitems and return relevant results.
-    Attributes:
-        name (str): The name of the tool.
-        description (str): The description of the tool.
-        base_url (str): The base URL of the API.
-    """
-
-    name: str = "Retail Media Account Lineitems API Caller"
-    description: str = "Fetch the account lineitems for account id"
-
-    def _run(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
+@tool("Account Lineitems Tool")
+def account_lineitems_tool(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
         """
-        Fetches the Retail Media account Lineitems for account id {accountId}.
+        Fetch the Retail Media Lineitems for account {accountId}.
         """
         headers = {"Authorization": "Bearer " + get_token()}
         params = {"pageIndex": pageIndex, "pageSize": pageSize}
@@ -122,65 +111,50 @@ class AccountLineitemsTool(BaseTool):
         return response.json()
 
 
-class NewAuctionLineitemTool(BaseTool):
+@tool("New Auction Lineitem Tool")
+def new_auction_lineitem(self, campaignId: str, lineitem: NewAuctionLineitem):
     """
-    Onsite Sponsored Products Line Items
-    Used to create a Retail Media Auction Lineitem and return relevant results.
-    Attributes:
-        name (str): The name of the tool.
-        description (str): The description of the tool.
+    Create a NewAuctionLineitem for a campaign id.
+    Example input data for a new lineitem:
+    {
+        "name": Taylor Swift 2025 - AccorHotels Arena Paris- 2025-05-20,
+        "campaignId": "626444481539563520",
+        "status": "paused",
+        "targetRetailerId": "1106",
+        "budget": 50,
+        "startDate": "2025-10-1",
+        "endDate": "2025-12-31",
+        "bidStrategy": "conversion",
+        "targetBid": 1.0,
+    }
     """
 
-    name: str = "NewAuctionLineitemTool"
-    description: str = (
-        """
-        Creates a NewAuctionLineitem for a campaign id.
-        Example input data for a new lineitem:
-        {
-            "name": Taylor Swift 2025 - AccorHotels Arena Paris- 2025-05-20,
-            "campaignId": "626444481539563520",
-            "status": "paused",
-            "targetRetailerId": "1106",
-            "budget": 50,
-            "startDate": "2025-10-1",
-            "endDate": "2025-12-31",
-            "bidStrategy": "conversion",
-            "targetBid": 1.0,
-        }
-        """
+    fileWriter = FileWriterTool()
+    headers = {"Authorization": "Bearer " + get_token()}
+
+    payload = dict(
+        data=dict(type="NewAuctionLineitem", attributes=lineitem.model_dump())
     )
-
-    def _run(self, campaignId: str, lineitem: NewAuctionLineitem):
-        """
-        Creates an  Auction Lineitem for a campaign id
-        """
-
-        fileWriter = FileWriterTool()
-        headers = {"Authorization": "Bearer " + get_token()}
-
-        payload = dict(
-            data=dict(type="NewAuctionLineitem", attributes=lineitem.model_dump())
+    response = requests.post(
+        url=f"{base_url_env}campaigns/{campaignId}/auction-line-items",
+        json=payload,
+        headers=headers,
+    )
+    if response.status_code != 201:
+        print("[NewAuctionLineitemTool] errors:", response.json()["errors"])
+        raise Exception(
+            "[NewAuctionLineitemTool] errors:", response.json()["errors"]
         )
-        response = requests.post(
-            url=f"{base_url_env}campaigns/{campaignId}/auction-line-items",
-            json=payload,
-            headers=headers,
-        )
-        if response.status_code != 201:
-            print("[NewAuctionLineitemTool] errors:", response.json()["errors"])
-            raise Exception(
-                "[NewAuctionLineitemTool] errors:", response.json()["errors"]
-            )
-        data = response.json()["data"]
-        flat = flatten(data)
-        theLineitem = AuctionLineitem(**flat)
-        fileWriter._run(
-            content=json.dumps(theLineitem.model_dump(), indent=2),
-            directory="output",
-            filename=f"t_{campaignId}_lineitem_{theLineitem.id}.json",
-            overwrite=True
-        )
-        return theLineitem
+    data = response.json()["data"]
+    flat = flatten(data)
+    theLineitem = AuctionLineitem(**flat)
+    fileWriter._run(
+        content=json.dumps(theLineitem.model_dump(), indent=2),
+        directory="output",
+        filename=f"t_{campaignId}_lineitem_{theLineitem.id}.json",
+        overwrite=True
+    )
+    return theLineitem
 
 
 

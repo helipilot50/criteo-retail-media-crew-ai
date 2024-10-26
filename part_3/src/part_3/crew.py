@@ -12,7 +12,7 @@ from part_3.tools.accounts import AccountsTool
 from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
 
 from part_3.tools.campaigns import fetch_campaign, new_campaign
-from part_3.tools.lineitems import AuctionLineitemsTool, NewAuctionLineitemTool
+from part_3.tools.lineitems import AuctionLineitemsTool, new_auction_lineitem
 
 groq_model = "groq/llama-3.1-70b-versatile"
 openai_model = "openai/gpt-4o-mini"
@@ -237,7 +237,7 @@ class Part3Crew:
                 self.create_campaign(),
                 self.formulate_lineitem_budget(),
             ],
-            tools=[NewAuctionLineitemTool(), AuctionLineitemsTool()],
+            tools=[new_auction_lineitem],
             # human_input=True,
         )
 
@@ -253,7 +253,7 @@ class Part3Crew:
                 self.find_concert_venues(),
                 self.create_campaign(),
                 self.formulate_lineitem_budget(),
-                # self.create_lineitems(),
+                self.create_lineitems(),
             ],
             
         )
