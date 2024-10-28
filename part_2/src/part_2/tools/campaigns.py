@@ -13,15 +13,14 @@ base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
 
 @tool("Campaigns for Account")
-
 def campaigns_for_account_with_budget(
     accountId: str,
-    pageIndex: int, #= 0,
-    pageSize: int, #= 100,
+    pageIndex: int,  # = 0,
+    pageSize: int,  # = 100,
     # withBudget: bool = False,
 ) -> CampaignList:
-    """Calls the Retail Media REST API and returns the  campaigns for account id. 
-    Parameters: 
+    """Calls the Retail Media REST API and returns the  campaigns for account id.
+    Parameters:
     - 'pageIndex' a zero based page index
     - pageSize is 100 by default
     """
@@ -35,7 +34,7 @@ def campaigns_for_account_with_budget(
         params=params,
     )
     if response.status_code != 200:
-        raise Exception("[AccountCampaignsTool] error:", response.json())
+        raise Exception("[Campaigns for Account] error:", response.json())
 
     response_body = response.json()
     if response_body is None or "data" not in response_body:
@@ -74,7 +73,7 @@ def fetch_campaign(campaignId: str) -> Campaign:
         headers=headers,
     )
     if response.status_code != 200:
-        raise Exception("[CampaignTool] error:", response.json())
+        raise Exception("[Campaign Tool] error:", response.json())
     theCampaign = Campaign(**flatten(response.json()["data"]))
     return theCampaign
 
@@ -82,23 +81,23 @@ def fetch_campaign(campaignId: str) -> Campaign:
 @tool("New Campaign Tool")
 def new_campaign(accountId: str, campaign: NewCampaign) -> Campaign:
     """Create  a campaign for an account using {account_id} and NewCampaign object.
-        Example input for new Campaign:
-        {
-            "name": "{artist_name} Concert Tour {year}",
-            "startDate": "2025-01-01",
-            "endDate": "2025-12-31",
-            "budget": 1280000,
-            "monthlyPacing": 500,
-            "dailyBudget": 10,
-            "isAutoDailyPacing": False,
-            "dailyPacing": 10,
-            "type": "auction",
-            "clickAttributionWindow": "30D",
-            "viewAttributionWindow": "None",
-            "clickAttributionScope": "sameSkuCategory",
-            "viewAttributionScope": "sameSkuCategory",
-        }
-        """
+    Example input for new Campaign:
+    {
+        "name": "{artist_name} Concert Tour {year}",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "budget": 1280000,
+        "monthlyPacing": 500,
+        "dailyBudget": 10,
+        "isAutoDailyPacing": False,
+        "dailyPacing": 10,
+        "type": "auction",
+        "clickAttributionWindow": "30D",
+        "viewAttributionWindow": "None",
+        "clickAttributionScope": "sameSkuCategory",
+        "viewAttributionScope": "sameSkuCategory",
+    }
+    """
 
     body = dict(
         data=dict(
@@ -113,7 +112,7 @@ def new_campaign(accountId: str, campaign: NewCampaign) -> Campaign:
         json=body,
     )
     if response.status_code != 201:
-        raise Exception("[NewCampaignTool] error:", response.json())
+        raise Exception("[New Campaign Tool] error:", response.json())
     data = response.json()["data"]
     flat = flatten(data)
     theCampaign = Campaign(**flat)
