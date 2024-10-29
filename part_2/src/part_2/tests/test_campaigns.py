@@ -1,6 +1,6 @@
 import json
 from part_2.tools.accounts import AccountsTool
-from part_2.tools.campaigns import AccountCampaignsTool
+from part_2.tools.campaigns import campaigns_for_account_with_budget
 from crewai_tools import (
     FileWriterTool,
 )
@@ -9,7 +9,6 @@ from crewai_tools import (
 def test_campaigns():
     # tools
     accounts = AccountsTool()
-    campaigns = AccountCampaignsTool()
     fileWriter = FileWriterTool()
 
     accounts_result = accounts._run()
@@ -19,14 +18,15 @@ def test_campaigns():
     account_id = accounts_result[0].id
     assert account_id is not None
 
-    campaigns_tool_result = campaigns._run(
-        account_id=account_id, page_index=0, page_size=1000
+    campaigns_tool_result = campaigns_for_account_with_budget._run(
+        accountId=account_id, pageIndex=0, pageSize=1000
     )
     assert campaigns_tool_result is not None
     assert len(campaigns_tool_result.campaigns) > 0
-    campaigns_tool_result_1 = campaigns._run(
-        account_id=account_id,
-        page_index=1,  # no page size
+    campaigns_tool_result_1 = campaigns_for_account_with_budget._run(
+        accountId=account_id,
+        pageIndex=1,  
+        pageSize=100
     )
     assert campaigns_tool_result_1 is not None
 

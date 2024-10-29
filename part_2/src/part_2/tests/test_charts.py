@@ -1,15 +1,10 @@
 import os
-from part_2.tests.utils import full_file_path
-from part_2.tools.charts import BarChartTool, PieChartTool
-import matplotlib.pyplot as plt
-import numpy as np
-
+from part_2.tools.charts import pie_chart_tool, bar_chart_tool
 
 def test_bar_chart_tool():
     file_name = "test_bar_chart.png"
 
-    bar = BarChartTool()
-    chart = bar._run(
+    chart = bar_chart_tool._run(
         categories=[
             "2020-01-02",
             "2020-04-07",
@@ -214,8 +209,7 @@ def test_pie_chart_tool():
     if os.path.exists(f"{path}/{file_name}"):
         os.remove(f"{path}/{file_name}")
 
-    pie = PieChartTool()
-    chart = pie._run(
+    chart = pie_chart_tool._run(
         values=[1, 2, 3],
         labels=["cats", "dogs", "snakes"],
         title="Test Pie Chart",

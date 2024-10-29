@@ -5,7 +5,7 @@ from crewai.project import CrewBase, agent, crew, task
 from part_2.models.campaign import CampaignList
 from part_2.tools.accounts import BrandsTool, RetailersTool
 from part_2.tools.calculator_tools import sum_list_tool
-from part_2.tools.charts import PieChartTool
+from part_2.tools.charts import pie_chart_tool
 from part_2.tools.campaigns import campaigns_for_account_with_budget
 
 groq_model = "groq/llama-3.1-70b-versatile"
@@ -181,7 +181,7 @@ class Part2Crew:
         return Task(
             config=self.tasks_config["campaigns_budget_pie_chart"],
             tools=[
-                PieChartTool(),
+                pie_chart_tool,
             ],
             agent=self.visualizer_agent(),
             context=[self.fetch_campaigns_task()],  # context improves consistency

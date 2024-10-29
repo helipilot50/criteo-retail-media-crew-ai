@@ -1,15 +1,14 @@
 import json
 import os
-from part_2.tools.charts import PieChartTool
+from part_2.tools.charts import pie_chart_tool
 from part_2.tools.accounts import AccountsTool
-from part_2.tools.campaigns import AccountCampaignsTool
+from part_2.tools.campaigns import campaigns_for_account_with_budget
 from crewai_tools import FileWriterTool
 
 
 def test_campaigns_pie_chart():
     # tools
     accounts = AccountsTool()
-    campaigns = AccountCampaignsTool()
     fileWriter = FileWriterTool()
 
     accounts_result = accounts._run()
@@ -19,8 +18,8 @@ def test_campaigns_pie_chart():
     account_id = accounts_result[0].id
     assert account_id is not None
 
-    the_campaigns = campaigns._run(
-        account_id=account_id, page_index=0, page_size=100, with_budget=True
+    the_campaigns = campaigns_for_account_with_budget._run(
+        accountId=account_id, pageIndex=0, pageSize=100
     )
     assert the_campaigns is not None
     assert len(the_campaigns.campaigns) > 0
@@ -41,8 +40,7 @@ def test_campaigns_pie_chart():
     labels = list(map(lambda x: x.name, campaigns_with_budget))
     values = list(map(lambda x: x.budget, campaigns_with_budget))
     # create a pie chart
-    pie = PieChartTool()
-    chart = pie._run(
+    chart = pie_chart_tool._run(
         values=values,
         labels=labels,
         title="Test Pie Chart",
