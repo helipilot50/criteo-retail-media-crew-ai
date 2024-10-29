@@ -19,79 +19,57 @@ import os
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
 
-class PreferredLineitemsTool(BaseTool):
-    """
-    Used to fetch the Retail Media preferred Lineitems and return relevant results.
-    Attributes:
-        name (str): The name of the tool.
-        description (str): The description of the tool.
-    """
 
-    name: str = "Preferred Lineitems Tool"
-    description: str = (
-        "Fetch a list of preferred Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results."
+@tool("Preferred Lineitems Tool")
+def preferred_lineitems_tool(self, campaignId: str, pageIndex: int = 0, pageSize: int = 25):
+    """
+    "Fetch a list of preferred Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results."
+    """
+    headers = {"Authorization": "Bearer " + get_token()}
+    params = {"pageIndex": pageIndex, "pageSize": pageSize}
+    response = requests.get(
+        url=f"{base_url_env}campaigns/{campaignId}/preferred-line-items",
+        headers=headers,
+        params=params,
     )
-
-    def _run(self, campaignId: str, pageIndex: int = 0, pageSize: int = 25):
-        """
-        Fetches the Retail Media preferred Lineitems for campaign by {campaignId} and returns relevant results
-        """
-        headers = {"Authorization": "Bearer " + get_token()}
-        params = {"pageIndex": pageIndex, "pageSize": pageSize}
-        response = requests.get(
-            url=f"{base_url_env}campaigns/{campaignId}/preferred-line-items",
-            headers=headers,
-            params=params,
-        )
-        if response.status_code != 200:
-            raise Exception("[PreferredLineitemsTool] error:", response.json())
-        response_body = response.json()
-        if response_body is None:
-            return []
-        return response_body
+    if response.status_code != 200:
+        raise Exception("[PreferredLineitemsTool] error:", response.json())
+    response_body = response.json()
+    if response_body is None:
+        return []
+    return response_body
 
 
-class AuctionLineitemsTool(BaseTool):
+
+@tool("Auction Lineitems Tool")
+def auction_lineitem_tool(
+    self, campaignId: str, pageIndex: int = 0, pageSize: int = 25
+) -> list[AuctionLineitem]:
     """
-    Used to fetch the Retail Media auction Lineitems and return relevant results.
-    Attributes:
-        name (str): The name of the tool.
-        description (str): The description of the tool.
+    Fetch a list of auction Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results.
     """
-
-    name: str = "AuctionLineitemsTool"
-    description: str = (
-        "Fetch a list of  auction Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results."
+    headers = {"Authorization": "Bearer " + get_token()}
+    params = {"pageIndex": pageIndex, "pageSize": pageSize}
+    response = requests.get(
+        url=f"{base_url_env}campaigns/{campaignId}/auction-line-items",
+        headers=headers,
+        params=params,
     )
+    if response.status_code != 200:
+        raise Exception("[AuctionLineitemsTool] error:", response.json())
 
-    def _run(
-        self, campaignId: str, pageIndex: int = 0, pageSize: int = 25
-    ) -> list[AuctionLineitem]:
-        """
-        Fetches the Retail Media auction Lineitems for campaign by {campaignId} and returns relevant results.
-        """
-        headers = {"Authorization": "Bearer " + get_token()}
-        params = {"pageIndex": pageIndex, "pageSize": pageSize}
-        response = requests.get(
-            url=f"{base_url_env}campaigns/{campaignId}/auction-line-items",
-            headers=headers,
-            params=params,
-        )
-        if response.status_code != 200:
-            raise Exception("[AuctionLineitemsTool] error:", response.json())
+    response_body = response.json()
+    if response_body is None or "data" not in response_body:
+        return []
 
-        response_body = response.json()
-        if response_body is None or "data" not in response_body:
-            return []
+    lineitem_list = LineitemList(
+        totalItems=response_body["metadata"]["totalItemsAcrossAllPages"]
+    )
+    for lineitem_element in response_body["data"]:
+        flat = flatten(lineitem_element)
+        lineitem_list.lineitems.append(AuctionLineitem(**flat))
 
-        lineitem_list = LineitemList(
-            totalItems=response_body["metadata"]["totalItemsAcrossAllPages"]
-        )
-        for lineitem_element in response_body["data"]:
-            flat = flatten(lineitem_element)
-            lineitem_list.lineitems.append(AuctionLineitem(**flat))
-
-        return lineitem_list
+    return lineitem_list
 
 
 @tool("Account Lineitems Tool")

@@ -12,7 +12,7 @@ from part_3.tools.accounts import AccountsTool
 from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
 
 from part_3.tools.campaigns import fetch_campaign, new_campaign
-from part_3.tools.lineitems import AuctionLineitemsTool, new_auction_lineitem
+from part_3.tools.lineitems import new_auction_lineitem
 
 groq_model = "groq/llama-3.1-70b-versatile"
 openai_model = "openai/gpt-4o-mini"
