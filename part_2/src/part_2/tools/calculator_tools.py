@@ -1,40 +1,29 @@
 from crewai_tools import BaseTool
-from langchain.tools import tool
 from crewai_tools import tool
 
 
-class CalculatorTool(BaseTool):
+@tool("Calculator Tool")
+def calculator_tool(operation):
   """
-  Make a calculation
-  Useful to perform any mathematical calculations, like sum, minus, multiplication, division, etc.
-  The input to this tool should be a mathematical expression, a couple examples are `200*7` or `5000/2*10`
+  Useful to perform any mathematical calculations, like sum, minus, multiplication, division, etc. The input to this tool should be a mathematical expression, a couple examples are `200*7` or `5000/2*10`
   """
-
-  name:str = "Make a calculation"
-  description:str = "Useful to perform any mathematical calculations, like sum, minus, multiplication, division, etc. The input to this tool should be a mathematical expression, a couple examples are `200*7` or `5000/2*10`"
-  def _run(operation):
-    return eval(operation)
+  return eval(operation)
   
  
 
-class SumListTool(BaseTool):
-  """
-  Sum List Tool
-  Useful for when you need to sum a list of numbers.
-  """
 
-  name:str = "Sum List Tool"
-  description:str = "Useful for when you need to sum a list of numbers."
-  def _run(numbers):
-    return sum(numbers)
-
-class CountListTool(BaseTool):
+@tool("Sum List Tool")
+def sum_list_tool(numbers):
   """
-  Count List Tool
-  Useful for when you need to count the number of items in a list.
+  Useful for when you need to sum a list of numbers. The input to this tool should be a list of numbers, a couple examples are `[1, 2, 3, 4, 5]` or `[10, 20, 30, 40, 50]`
   """
+  return sum(numbers)
 
-  name:str = "Count List Tool"
-  description:str = "Useful for when you need to count the number of items in a list."
-  def _run(items):
-    return len(items)
+
+
+@tool("Count List Tool")
+def count_list_tool(items):
+  """
+  Useful for when you need to count the number of items in a list. The input to this tool should be a list of items, a couple examples are `[1, 2, 3, 4, 5]` or `['apple', 'banana', 'cherry', 'date', 'elderberry']`
+  """
+  return len(items)
