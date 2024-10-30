@@ -1,4 +1,5 @@
 ![CrewAI and Criteo](../images/crewai-criteo-transparent.png)
+
 # Part 2 Crew [WORK IN PROGRESS]
 
 Welcome to the Part2 Crew project, powered by [crewAI](https://crewai.com).
@@ -38,10 +39,10 @@ cd part_2
 Next, install the dependencies:
 
 ```bash
-poetry install 
+poetry install
 ```
 
-and finally invoke the shell
+and finally invoke the shell to use the environment
 
 ```
 poetry shell
