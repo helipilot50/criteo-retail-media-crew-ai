@@ -7,7 +7,6 @@ accounts:
     A list of accounts available to this user formatted as a table in Markdown. 
     Here is an example of the expected output:
     | Account ID | Name |	Type | Subtype | Countries | Currency | Parent Account Label | Time Zone | Company Name |
- 
 
 campaigns:
   description: >
@@ -33,15 +32,13 @@ find_concert_venues:
     Include the data of each concert.
     Do not hallucinate.
     Do not fabricate data.
-   
 
   expected_output: >
     A JSON array of concerts, dates, venues and their searing capacity for the artist.
 
-
 formulate_lineitem_budget:
   description: >
-    
+
     Use the {digital_advertising_budget} to formulate the budget for the lineitems. 
     The sum of the lineitem budgets should equal the {digital_advertising_budget}.
     Express the budget in USD.
@@ -50,6 +47,37 @@ formulate_lineitem_budget:
   expected_output: >
     A JSON object with the budget for the lineitems.
 
+create_campaign_for_tour:
+  description: >
+    Create a ConcertCampaign for the  tour using the tool:'Campaign for concert tour'.
+    The campaign should include all the concerts and venues for the tour.
+    The campaign name is the {artist_name}, the {year}, the date of the first concert and the date of the last concert.
+    The start date of the campaign should be 60 days before the first concert.
+    The end date of the campaign should be the date of the last concert.
+    startDate and endDate should be in the format "YYYY-MM-DD"
+    The budget is the {digital_advertising_budget}.
+    The monthlyPacing is calculated using the calculate monthly pacing tool.
+    Include the campaign name, the campaign start date, the campaign end date, the campaign budget.
+
+    Remember the new campaign as [newCampaign] 
+    Example campaign fields data:
+              "name": "{artist_name} Concert Tour {year}"
+              "startDate": "2025-01-01"
+              "endDate": "2025-12-31"
+              "budget": {digital_advertising_budget}
+              "monthlyPacing": 500
+              "dailyBudget": 10
+              "isAutoDailyPacing": fals
+              "dailyPacing": 10
+              "type": "auction"
+              "clickAttributionWindow": "30D"
+              "viewAttributionWindow": "None"
+              "clickAttributionScope": "sameSkuCategory"
+              "viewAttributionScope": "sameSkuCategory"
+          
+    do not add any fields not in the example campaign input data.
+  expected_output: >
+    the new ConcertCampaign.
 
 create_campaign:
   description: >
@@ -80,7 +108,6 @@ create_campaign:
               "viewAttributionScope": "sameSkuCategory",
           
       do not add any fields not in the example campaign input data.
-    
 
   expected_output: >
     [newCampaign] object as JSON.
@@ -116,7 +143,7 @@ summary:
   description: >
     Provide a summary of the campaign.
     Include:
-    
+
     1. use [newCampaign] id, name, start date, end date, total budget.
     2. Format the [LineitemList] as a table with these columns: lineitem name, budget amount, lineitem id, lineitem startDate and lineitem endDate
     3. A summary of the demographics for the artist.

@@ -2,6 +2,9 @@ from pydantic import BaseModel, field_serializer, field_validator
 from typing import List, Optional
 from datetime import date, datetime
 
+from part_3.src.part_3.models.campaign import Campaign
+from part_3.src.part_3.models.lineitem import LineitemList
+
 
 class Concert(BaseModel):
     name: str
@@ -29,3 +32,8 @@ class Tour(BaseModel):
     year: str
     description: str
     concerts: Optional[List[Concert]]
+
+
+class ConcertCampaign(BaseModel):
+    campaign: Campaign
+    lineitems: LineitemList

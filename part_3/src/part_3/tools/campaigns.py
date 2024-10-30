@@ -39,7 +39,7 @@ def campaigns_for_account_with_budget(
         params=params,
     )
     if response.status_code != 200:
-        raise Exception("[AccountCampaignsTool] error:", response.json())
+        raise Exception("[Campaigns for Account] error:", response.json())
 
     response_body = response.json()
     if response_body is None or "data" not in response_body:
@@ -78,7 +78,7 @@ def fetch_campaign(campaignId: str) -> Campaign:
         headers=headers,
     )
     if response.status_code != 200:
-        raise Exception("[CampaignTool] error:", response.json())
+        raise Exception("[Campaign Tool] error:", response.json())
     theCampaign = Campaign(**flatten(response.json()["data"]))
     return theCampaign
 
@@ -102,7 +102,7 @@ def new_campaign(accountId: str, campaign: NewCampaign) -> Campaign:
         json=body,
     )
     if response.status_code != 201:
-        raise Exception("[NewCampaignTool] error:", response.json())
+        raise Exception("[New Campaign Tool] error:", response.json())
     data = response.json()["data"]
     flat = flatten(data)
     theCampaign = Campaign(**flat)

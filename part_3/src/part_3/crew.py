@@ -2,12 +2,10 @@ import os
 from typing import Any
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import (
-    FileWriterTool,
-    SerperDevTool
-)
+from crewai_tools import FileWriterTool, SerperDevTool
 
 from part_3.models.account import Account
+from part_3.src.part_3.tools.entertainment import campaign_for_tour
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
 
@@ -35,7 +33,7 @@ class Part3Crew:
         self.year = inputs["year"]
         self.target_account = account
         self.llm_platform = inputs["target_llm"]
-        
+
         os.makedirs(f"output/{self.llm_platform}", exist_ok=True)
 
         match inputs["target_llm"]:
@@ -66,7 +64,7 @@ class Part3Crew:
                     temperature=0.7,
                     api_base="http://localhost:11434",
                     verbose=True,
-                )            
+                )
             case "openai":
                 self.llm = LLM(
                     model=openai_model,
@@ -104,7 +102,6 @@ class Part3Crew:
             vernose=True,
             tools=[AccountsTool()],
         )
-    
 
     @agent
     def campaign_manager(self) -> Agent:
@@ -134,7 +131,7 @@ class Part3Crew:
             # callbacks=[callback_handler],
             verbose=True,
             llm=self.llm,
-    )
+        )
 
     @agent
     def campaign_budget_agent(self) -> Agent:
@@ -211,35 +208,49 @@ class Part3Crew:
         )
 
     @task
-    def create_campaign(self) -> Task:
+    def create_campaign_lfor_tour(self) -> Task:
         return Task(
-            config=self.tasks_config["create_campaign"],
+            config=self.tasks_config["create_campaign_for_tour"],
             cache=True,
-            output_file=f"output/{self.llm_platform}/{self.artist_name}_campaign.json",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_tour_campaign.json",
             agent=self.campaign_manager(),
             tools=[
                 calculate_monthly_pacing,
-                new_campaign,
-                fetch_campaign,
+                campaign_for_tour,
             ],
             verbose=True,
         )
 
-    @task
-    def create_lineitems(self) -> Task:
-        return Task(
-            config=self.tasks_config["create_lineitems"],
-            cache=True,
-            output_file=f"output/{self.llm_platform}/{self.artist_name}_lineitems.json",
-            agent=self.lineitem_manager(),
-            context=[
-                self.find_concert_venues(),
-                self.create_campaign(),
-                self.formulate_lineitem_budget(),
-            ],
-            tools=[new_auction_lineitem],
-            # human_input=True,
-        )
+    # @task
+    # def create_campaign(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["create_campaign"],
+    #         cache=True,
+    #         output_file=f"output/{self.llm_platform}/{self.artist_name}_campaign.json",
+    #         agent=self.campaign_manager(),
+    #         tools=[
+    #             calculate_monthly_pacing,
+    #             new_campaign,
+    #             fetch_campaign,
+    #         ],
+    #         verbose=True,
+    #     )
+
+    # @task
+    # def create_lineitems(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["create_lineitems"],
+    #         cache=True,
+    #         output_file=f"output/{self.llm_platform}/{self.artist_name}_lineitems.json",
+    #         agent=self.lineitem_manager(),
+    #         context=[
+    #             self.find_concert_venues(),
+    #             self.create_campaign(),
+    #             self.formulate_lineitem_budget(),
+    #         ],
+    #         tools=[new_auction_lineitem],
+    #         # human_input=True,
+    #     )
 
     @task
     def summary_task(self) -> Task:
@@ -255,7 +266,6 @@ class Part3Crew:
                 self.formulate_lineitem_budget(),
                 self.create_lineitems(),
             ],
-            
         )
 
     @crew

@@ -8,9 +8,9 @@ account_manager:
     You're known for your ability to provide accurate and up-to-date information to help your team make informed decisions.
     You use the Retail Media REST API efficiently, by choosing the correct API and making the right number of requests.
     Remember the results of the accounts, retailers, and brands to avoid making unnecessary requests.
-
   verbose: True
   cache: True
+
 campaign_manager:
   name: Campaign Manager
   role: >
@@ -18,11 +18,11 @@ campaign_manager:
   goal: >
     A list of Campaigns
   backstory: >
-    You are expert in managing sampaigns and retrieving information about campaigns.
-    You're known for your ability to provide accurate and up-to-date information to help your team make informed decisions.
+    You are expert in managing campaigns and retrieving information about campaigns.
+    You're known for your ability to provide accurate and 
+    up-to-date information to help your team make informed decisions.
     You use the Campaigns List Tool efficiently, by making the right number of requests.
     Remember the results of the campaigns to avoid making unnecessary requests.
-
   verbose: True
   cache: True
 
@@ -30,16 +30,18 @@ visualizer_agent:
   role: >
     Visualize campaign data
   goal: >
-    Create pie to visualize campaign data
+    Create pie and bar charts to visualize campaign data
   backstory: >
-    You're an expert in data visualization and you know how to create meaningful visualizations.
+    You're an expert in data visualization 
+    and you know how to create meaningful visualizations
+    such as Pie and Bar charts.
   verbose: True
 
 campaign_reporter_agent:
   role: >
     Report writer for campaign data
   goal: >
-    Create a report with the data from the campaigns including graphs and charts. THe final remport in markdown format.
+    The final report in markdown format.
   backstory: >
     You're an expert in creating reports and you know how to create meaningful reports. 
     You reports contain all the necessary information about the campaigns and charts.
