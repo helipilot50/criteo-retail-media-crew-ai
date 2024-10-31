@@ -2,8 +2,8 @@ from pydantic import BaseModel, field_serializer, field_validator
 from typing import List, Optional
 from datetime import date, datetime
 
-from part_3.src.part_3.models.campaign import Campaign
-from part_3.src.part_3.models.lineitem import LineitemList
+from part_3.models.campaign import Campaign
+from part_3.models.lineitem import LineitemList
 
 
 class Concert(BaseModel):

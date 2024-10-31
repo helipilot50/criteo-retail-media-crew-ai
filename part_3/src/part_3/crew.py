@@ -1,11 +1,10 @@
 import os
-from typing import Any
-from crewai import Agent, Crew, Process, Task, LLM
+from crewai import Agent, Crew, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import FileWriterTool, SerperDevTool
+from crewai_tools import SerperDevTool
 
 from part_3.models.account import Account
-from part_3.src.part_3.tools.entertainment import campaign_for_tour
+from part_3.tools.entertainment import campaign_for_tour
 from part_3.tools.accounts import AccountsTool
 from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
 
@@ -262,9 +261,9 @@ class Part3Crew:
                 self.account(),
                 self.research_demographics(),
                 self.find_concert_venues(),
-                self.create_campaign(),
+                # self.create_campaign(),
                 self.formulate_lineitem_budget(),
-                self.create_lineitems(),
+                # self.create_lineitems(),
             ],
         )
 
