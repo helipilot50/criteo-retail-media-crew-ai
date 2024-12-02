@@ -4,12 +4,14 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool
 
 from part_3.models.account import Account
+from part_3.models.concert import Concert
 from part_3.tools.entertainment import campaign_for_tour
 from part_3.tools.accounts import AccountsTool
-from part_3.tools.budget import calculate_monthly_pacing, venue_budget_calculator
+from part_3.tools.budget import (
+    calculate_monthly_pacing,
+    concert_budget_calculator,
+)
 
-from part_3.tools.campaigns import fetch_campaign, new_campaign
-from part_3.tools.lineitems import new_auction_lineitem
 
 groq_model = "groq/llama-3.1-70b-versatile"
 openai_model = "openai/gpt-4o-mini"
@@ -130,6 +132,7 @@ class Part3Crew:
             # callbacks=[callback_handler],
             verbose=True,
             llm=self.llm,
+            output_pydantic=list[Concert],
         )
 
     @agent
@@ -184,17 +187,18 @@ class Part3Crew:
             # output_json=True,
             agent=self.concert_venue_agent(),
             tools=[self.searchTool],
+            expected_output=list[Concert],
         )
 
     @task
-    def formulate_lineitem_budget(self) -> Task:
+    def formulate_concert_budget(self) -> Task:
         return Task(
             config=self.tasks_config["formulate_lineitem_budget"],
-            output_file=f"output/{self.llm_platform}/{self.artist_name}_venues_budget.json",
+            output_file=f"output/{self.llm_platform}/{self.artist_name}_concert_budget.json",
             # output_json=True,
             agent=self.campaign_budget_agent(),
             context=[self.find_concert_venues()],
-            tools=[venue_budget_calculator],
+            tools=[concert_budget_calculator],
         )
 
     @task
@@ -207,7 +211,7 @@ class Part3Crew:
         )
 
     @task
-    def create_campaign_lfor_tour(self) -> Task:
+    def create_campaign_for_tour(self) -> Task:
         return Task(
             config=self.tasks_config["create_campaign_for_tour"],
             cache=True,
@@ -262,7 +266,7 @@ class Part3Crew:
                 self.research_demographics(),
                 self.find_concert_venues(),
                 # self.create_campaign(),
-                self.formulate_lineitem_budget(),
+                self.formulate_concert_budget(),
                 # self.create_lineitems(),
             ],
         )

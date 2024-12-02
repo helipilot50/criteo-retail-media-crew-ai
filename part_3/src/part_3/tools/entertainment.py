@@ -1,6 +1,6 @@
 from typing import List
 from datetime import date, datetime
-from crewai_tools import BaseTool, tool
+from crewai_tools import tool
 from part_3.models.campaign import (
     Campaign,
     CampaignType,
@@ -50,9 +50,7 @@ def campaign_for_tour(
         viewAttributionScope="sameSkuCategory",
     )
 
-    createdCampaign: Campaign = new_campaign._run(
-        accountId=accountId, campaign=newCampaign
-    )
+    createdCampaign: Campaign = new_campaign(accountId=accountId, campaign=newCampaign)
 
     # Create lineitems
 
@@ -71,7 +69,7 @@ def campaign_for_tour(
                 bidStrategy=LineitemBidStrategy.conversion,
             )
 
-            createdLineitem = new_auction_lineitem._run(
+            createdLineitem = new_auction_lineitem(
                 campaignId=createdCampaign.id,
                 lineitem=newLineitem,
             )

@@ -19,9 +19,10 @@ import os
 base_url_env = os.environ["RETAIL_MEDIA_API_URL"]
 
 
-
 @tool("Preferred Lineitems Tool")
-def preferred_lineitems_tool(self, campaignId: str, pageIndex: int = 0, pageSize: int = 25):
+def preferred_lineitems_tool(
+    self, campaignId: str, pageIndex: int = 0, pageSize: int = 25
+):
     """
     "Fetch a list of preferred Lineitems for a campaign id. This tool uses pageIndex and pageSize to paginate the results."
     """
@@ -38,7 +39,6 @@ def preferred_lineitems_tool(self, campaignId: str, pageIndex: int = 0, pageSize
     if response_body is None:
         return []
     return response_body
-
 
 
 @tool("Auction Lineitems Tool")
@@ -73,24 +73,26 @@ def auction_lineitem_tool(
 
 
 @tool("Account Lineitems Tool")
-def account_lineitems_tool(self, accountId: str, pageIndex: int = 0, pageSize: int = 25):
-        """
-        Fetch the Retail Media Lineitems for account {accountId}.
-        """
-        headers = {"Authorization": "Bearer " + get_token()}
-        params = {"pageIndex": pageIndex, "pageSize": pageSize}
-        response = requests.get(
-            url=f"{base_url_env}accounts/{accountId}/line-items",
-            headers=headers,
-            params=params,
-        )
-        if response.status_code != 200:
-            raise Exception("[AccountLineitemsTool] error:", response.json())
-        return response.json()
+def account_lineitems_tool(accountId: str, pageIndex: int = 0, pageSize: int = 25):
+    """
+    Fetch the Retail Media Lineitems for account {accountId}.
+    """
+    headers = {"Authorization": "Bearer " + get_token()}
+    params = {"pageIndex": pageIndex, "pageSize": pageSize}
+    response = requests.get(
+        url=f"{base_url_env}accounts/{accountId}/line-items",
+        headers=headers,
+        params=params,
+    )
+    if response.status_code != 200:
+        raise Exception("[AccountLineitemsTool] error:", response.json())
+    return response.json()
 
 
 @tool("New Auction Lineitem Tool")
-def new_auction_lineitem(self, campaignId: str, lineitem: NewAuctionLineitem):
+def new_auction_lineitem(
+    campaignId: str, lineitem: NewAuctionLineitem
+) -> AuctionLineitem:
     """
     Create a NewAuctionLineitem for a campaign id.
     Example input data for a new lineitem:
@@ -120,9 +122,7 @@ def new_auction_lineitem(self, campaignId: str, lineitem: NewAuctionLineitem):
     )
     if response.status_code != 201:
         print("[NewAuctionLineitemTool] errors:", response.json()["errors"])
-        raise Exception(
-            "[NewAuctionLineitemTool] errors:", response.json()["errors"]
-        )
+        raise Exception("[NewAuctionLineitemTool] errors:", response.json()["errors"])
     data = response.json()["data"]
     flat = flatten(data)
     theLineitem = AuctionLineitem(**flat)
@@ -130,10 +130,9 @@ def new_auction_lineitem(self, campaignId: str, lineitem: NewAuctionLineitem):
         content=json.dumps(theLineitem.model_dump(), indent=2),
         directory="output",
         filename=f"t_{campaignId}_lineitem_{theLineitem.id}.json",
-        overwrite=True
+        overwrite=True,
     )
     return theLineitem
-
 
 
 class NewPreferredLineitemTool(BaseTool):
